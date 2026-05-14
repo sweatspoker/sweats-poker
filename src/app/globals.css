@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --brand-red: #ef2b2b;
+  --brand-red-deep: #b91c1c;
+  --brand-green: #00d563;
+  --brand-green-hover: #00b554;
+  --muted: #9ca3af;
+  --surface: #141414;
+  --surface-2: #1c1c1c;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-red: var(--brand-red);
+  --color-brand-red-deep: var(--brand-red-deep);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-hover: var(--brand-green-hover);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top right, rgba(239, 43, 43, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom left, rgba(185, 28, 28, 0.18) 0%, transparent 60%),
+    var(--background);
+  background-attachment: fixed;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
+}
+.live-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+
+@keyframes ticker-tick {
+  0% { transform: translateY(8px); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; transform: translateY(0); }
+  100% { transform: translateY(-8px); opacity: 0; }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
