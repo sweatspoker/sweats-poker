@@ -3,11 +3,18 @@ import { LobbyPhone } from "@/components/LobbyPhone";
 import { BuySellPhone } from "@/components/BuySellPhone";
 import { TradingViewMock } from "@/components/TradingViewMock";
 import { SettlementReceipt } from "@/components/SettlementReceipt";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return (
     <main className="flex flex-col w-full">
-      <Header />
+      <Header signedIn={!!user} />
       <Hero />
       <HowItWorks />
       <ProductDeepDive />
@@ -19,16 +26,35 @@ export default function Home() {
   );
 }
 
-function Header() {
+function Header({ signedIn }: { signedIn: boolean }) {
   return (
     <header className="w-full max-w-6xl mx-auto flex items-center justify-between px-6 py-6 md:py-8">
       <Logo />
-      <a
-        href="#waitlist"
-        className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-5 py-2.5 text-sm font-semibold text-black"
-      >
-        Get early access
-      </a>
+      <div className="flex items-center gap-3">
+        {signedIn ? (
+          <a
+            href="/profile"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors px-5 py-2.5 text-sm font-semibold"
+          >
+            Your profile
+          </a>
+        ) : (
+          <>
+            <a
+              href="/login"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors px-5 py-2.5 text-sm font-semibold"
+            >
+              Sign in
+            </a>
+            <a
+              href="#waitlist"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-5 py-2.5 text-sm font-semibold text-black"
+            >
+              Get early access
+            </a>
+          </>
+        )}
+      </div>
     </header>
   );
 }
