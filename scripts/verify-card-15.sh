@@ -81,8 +81,8 @@ aeq("setup.shares_held", cur.fetchone()[0], 5)
 # Trigger no-show cancel.
 cur.execute("SELECT ipo.no_show_cancel(%s, %s, %s)", (oid, admin, 'player_no_show'))
 result = cur.fetchone()[0]
-aeq("no_show.refunded_count", result['refunded_count'], 1)
-aeq("no_show.total_refunded", result['total_refunded_minor'], 1000)
+aeq("no_show.refunded_count", result['winners_refunded'], 1)
+aeq("no_show.total_refunded", result['total_winner_refund_minor'], 1000)
 
 # Session marked cancelled.
 cur.execute("SELECT session_state, no_show_cancelled_at IS NOT NULL FROM ipo.offerings WHERE offering_id=%s", (oid,))
