@@ -69,7 +69,7 @@ function Logo() {
       <div className="flex flex-col leading-none">
         <span className="text-2xl font-black tracking-tight">SWEATS</span>
         <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
-          live poker markets
+          Interactive Poker Stream Trading
         </span>
       </div>
     </div>
