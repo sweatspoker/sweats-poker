@@ -359,40 +359,41 @@ function PokerTableArc() {
         aria-hidden
       >
         <defs>
-          <radialGradient id="tableFill" cx="50%" cy="100%" r="65%">
-            <stop offset="0%" stopColor="#161616" stopOpacity="0.95" />
-            <stop offset="55%" stopColor="#0d0d0d" stopOpacity="0.55" />
+          <radialGradient id="tableFill" cx="50%" cy="95%" r="62%">
+            <stop offset="0%" stopColor="#3a3a3a" stopOpacity="0.85" />
+            <stop offset="40%" stopColor="#262626" stopOpacity="0.70" />
+            <stop offset="80%" stopColor="#141414" stopOpacity="0.30" />
             <stop offset="100%" stopColor="#0a0a0a" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="rimLight" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.10)" />
+            <stop offset="0%" stopColor="rgba(255,255,255,0.32)" />
             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </linearGradient>
           <linearGradient id="edgeFade" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="white" stopOpacity="0" />
-            <stop offset="22%" stopColor="white" stopOpacity="1" />
-            <stop offset="78%" stopColor="white" stopOpacity="1" />
+            <stop offset="18%" stopColor="white" stopOpacity="1" />
+            <stop offset="82%" stopColor="white" stopOpacity="1" />
             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
           <mask id="archFade">
             <rect width="1000" height="700" fill="url(#edgeFade)" />
           </mask>
         </defs>
-        {/* table surface — charcoal radial, faded at far edge */}
+        {/* table surface — lifted-charcoal radial, faded at far edge */}
         <ellipse
           cx="500"
-          cy="700"
-          rx="520"
-          ry="360"
+          cy="720"
+          rx="540"
+          ry="380"
           fill="url(#tableFill)"
           mask="url(#archFade)"
         />
         {/* far-rim catch-light — single thin curve suggesting the table edge */}
         <path
-          d="M -20 360 Q 500 280 1020 360"
+          d="M -20 340 Q 500 240 1020 340"
           fill="none"
           stroke="url(#rimLight)"
-          strokeWidth="1.25"
+          strokeWidth="2"
           mask="url(#archFade)"
         />
       </svg>
