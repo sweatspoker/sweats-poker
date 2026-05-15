@@ -46,7 +46,7 @@ for fn in ('redemptions_request_catalog_item','redemptions_fulfill_request','red
 # End-to-end smoke
 test_user = str(uuid.uuid4())
 cur.execute("INSERT INTO auth.users (id) VALUES (%s) ON CONFLICT (id) DO NOTHING", (test_user,))
-cur.execute("UPDATE public.profiles SET display_name='C12 Test', age_verified=true, dob='1990-01-01' WHERE user_id=%s", (test_user,))
+cur.execute("UPDATE public.profiles SET display_name='C12 Test', age_verified=true, dob='1990-01-01', tier='upgraded' WHERE user_id=%s", (test_user,))
 cur.execute("INSERT INTO ledger.accounts (user_id, account_type) VALUES (%s, 'available') ON CONFLICT (user_id, account_type) DO NOTHING", (test_user,))
 cur.execute("SELECT ledger.admin_grant(%s, 100000, %s, %s, 'card-12 catalog')", (test_user, f"c12_grant_{test_user}", test_user))
 admin = test_user
@@ -66,7 +66,7 @@ req_id = result['request_id']
 atrue("request.code_8_chars", len(code) == 8)
 aeq("request.gc_debited", result['gc_debited'], 25000)
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='available'", (test_user,))
-aeq("request.available_debited", cur.fetchone()[0], 75000)
+aeq("request.available_debited", cur.fetchone()[0], 76000)  # 100000 grant + 1000 welcome - 25000 request
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='escrow_redemption'", (test_user,))
 aeq("request.escrow_credited", cur.fetchone()[0], 25000)
 cur.execute("SELECT status, expires_at FROM redemptions.requests WHERE request_id=%s", (req_id,))
@@ -98,8 +98,8 @@ s, reason = cur.fetchone()
 aeq("cancel.status_cancelled", s, 'cancelled')
 aeq("cancel.reason", reason, 'user_requested_cancel')
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='available'", (test_user,))
-# 75000 (after first request) - 25000 (second request) + 25000 (cancel refund) = 75000
-aeq("cancel.refund_to_available", cur.fetchone()[0], 75000)
+# 76000 (after first request fulfilled) - 25000 (second request escrow) + 25000 (cancel refund) = 76000
+aeq("cancel.refund_to_available", cur.fetchone()[0], 76000)
 
 # Age-verified gate
 unverified = str(uuid.uuid4())

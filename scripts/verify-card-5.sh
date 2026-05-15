@@ -52,7 +52,7 @@ treasury_uid = '00000000-0000-0000-0000-000000000000'
 
 for u in bidders:
     cur.execute("INSERT INTO auth.users (id) VALUES (%s) ON CONFLICT (id) DO NOTHING", (u,))
-    cur.execute("UPDATE public.profiles SET display_name='C5 Test', age_verified=true, dob='1990-01-01' WHERE user_id=%s", (u,))
+    cur.execute("UPDATE public.profiles SET display_name='C5 Test', age_verified=true, dob='1990-01-01', tier='upgraded' WHERE user_id=%s", (u,))
     cur.execute("INSERT INTO ledger.accounts (user_id, account_type) VALUES (%s, 'available') ON CONFLICT (user_id, account_type) DO NOTHING", (u,))
     cur.execute("SELECT ledger.admin_grant(%s, 100000, %s, %s, 'card-5 auction smoke')", (u, f"c5_grant_{u}", u))
 
@@ -109,7 +109,7 @@ atrue("raise.lower_rejected", rejected)
 # --- 6. cancel_bid: place a 4th bid then cancel it; refund full.
 extra_bidder = str(uuid.uuid4())
 cur.execute("INSERT INTO auth.users (id) VALUES (%s) ON CONFLICT (id) DO NOTHING", (extra_bidder,))
-cur.execute("UPDATE public.profiles SET display_name='C5 Cancel', age_verified=true, dob='1990-01-01' WHERE user_id=%s", (extra_bidder,))
+cur.execute("UPDATE public.profiles SET display_name='C5 Cancel', age_verified=true, dob='1990-01-01', tier='upgraded' WHERE user_id=%s", (extra_bidder,))
 cur.execute("INSERT INTO ledger.accounts (user_id, account_type) VALUES (%s, 'available') ON CONFLICT (user_id, account_type) DO NOTHING", (extra_bidder,))
 cur.execute("SELECT ledger.admin_grant(%s, 10000, %s, %s, 'card-5 cancel smoke')", (extra_bidder, f"c5_extragrant_{extra_bidder}", extra_bidder))
 
@@ -124,7 +124,7 @@ s, e = cur.fetchone()
 aeq("cancel.status_cancelled", s, 'cancelled')
 aeq("cancel.escrow_zero", e, 0)
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='available'", (extra_bidder,))
-aeq("cancel.refund_to_available", cur.fetchone()[0], 10000)
+aeq("cancel.refund_to_available", cur.fetchone()[0], 11000)  # 10000 grant + 1000 welcome bonus
 
 # --- 7. Clear the offering. Re-compute expectations with bidder[1] raised to 250:
 #   Sorted: bidder[0]@300 (5 shares), bidder[1]@250 (4 shares), bidder[2]@150 (6 shares)
@@ -154,14 +154,14 @@ aeq("portfolio.bidder2_shares", cur.fetchone()[0], 1)
 
 # Refund availability.
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='available'", (bidders[0],))
-# initial 100000 - escrow 1500 + overbid refund 750 = 99250
-aeq("post_clear.bidder0_available", cur.fetchone()[0], 99250)
+# initial 100000 grant + 1000 welcome - escrow 1500 + overbid refund 750 = 100250
+aeq("post_clear.bidder0_available", cur.fetchone()[0], 100250)
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='available'", (bidders[1],))
-# initial 100000 - escrow 1000 (after raise) + overbid 400 = 99400
-aeq("post_clear.bidder1_available", cur.fetchone()[0], 99400)
+# initial 100000 + 1000 welcome - escrow 1000 (after raise) + overbid 400 = 100400
+aeq("post_clear.bidder1_available", cur.fetchone()[0], 100400)
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='available'", (bidders[2],))
-# initial 100000 - escrow 900 + unfilled refund 750 + overbid 0 = 99850
-aeq("post_clear.bidder2_available", cur.fetchone()[0], 99850)
+# initial 100000 + 1000 welcome - escrow 900 + unfilled refund 750 + overbid 0 = 100850
+aeq("post_clear.bidder2_available", cur.fetchone()[0], 100850)
 
 # Treasury net +1000, platform_revenue net +500.
 cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='platform_treasury'", (treasury_uid,))
