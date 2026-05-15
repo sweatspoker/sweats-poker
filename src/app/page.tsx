@@ -342,26 +342,18 @@ function Footer() {
 }
 
 function PokerTableArc() {
-  // Council R-blend convergence (poll 97b6f3b8, DeepSeek + GPT 2-of-2):
-  // the previous failure was STRUCTURAL — image was bounded by the same
-  // max-w-6xl box as the hero content, so its rectangle was visible
-  // regardless of how many gradient overlays were stacked inside.
-  //
-  // Fix: break out of the max-w container with a full-viewport-width
-  // absolute layer (`left-1/2 w-screen -translate-x-1/2`). Image now
-  // spans the entire viewport horizontally, well past the section's
-  // 1152px max-w, so there's no visible right-edge clip.
-  //
-  // Edges per council:
-  //   - Right: extends past max-w into viewport, no seam against body bg
-  //   - Bottom: hard fade to the page bg's exact #0a0a0a so the transition
-  //     to the next section is invisible
-  //   - Top: similar fade up into the header area
-  //   - Left: image's left edge is naturally dark (atmospheric depth) so
-  //     it merges with the dark left side of the hero
+  // Gemini reviewer verdict (iteration 5, image-blend council intervention):
+  // overlay-on-rect approach plateaus because gradients darken pixels but
+  // the image's rectangular alpha is still there. Switch to alpha-blending
+  // the image itself: radial mask-image dissolves the image's actual alpha
+  // at all four edges, and mix-blend-mode: lighten makes any pixel darker
+  // than the page bg #0a0a0a literally disappear — no chromatic cliff.
+  // One subtle linear mask added for headline legibility on the left.
+  const maskImage =
+    "radial-gradient(ellipse 75% 70% at 70% 55%, black 25%, rgba(0,0,0,0.85) 50%, transparent 90%), linear-gradient(90deg, transparent 0%, transparent 35%, black 70%)";
   return (
     <div
-      className="absolute left-1/2 w-screen -translate-x-1/2 bottom-0 z-0 pointer-events-none overflow-hidden"
+      className="absolute left-1/2 w-screen -translate-x-1/2 bottom-0 z-0 pointer-events-none"
       style={{ top: "-160px" }}
     >
       <Image
@@ -369,44 +361,15 @@ function PokerTableArc() {
         alt=""
         fill
         priority
-        className="object-cover object-right"
         sizes="100vw"
-      />
-      {/* legibility overlay: dark on the left where headline sits */}
-      <div
-        className="absolute inset-0"
+        className="object-cover object-right mix-blend-lighten"
         style={{
-          background:
-            "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 80%)",
-        }}
-      />
-      {/* bottom HARD fade to exact page bg #0a0a0a — invisible section seam */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-2/5"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.85) 60%, #0a0a0a 100%)",
-        }}
-      />
-      {/* top HARD fade — image extends 160px above the section into the
-          header zone, then dissolves to exact page bg so the top edge is
-          invisible. Larger fade region (h-1/2) than bottom because the header
-          sits in this zone and needs a clean dark background to read against */}
-      <div
-        className="absolute inset-x-0 top-0 h-1/2"
-        style={{
-          background:
-            "linear-gradient(0deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.85) 55%, #0a0a0a 100%)",
-        }}
-      />
-      {/* far-right body-glow continuation — body bg has a red radial top-right;
-          this extends that red bleed past the image so the image's red ceiling
-          glow hands off to the body glow seamlessly */}
-      <div
-        className="absolute inset-y-0 right-0 w-1/3"
-        style={{
-          background:
-            "radial-gradient(ellipse at top right, rgba(239,43,43,0.18) 0%, transparent 60%)",
+          WebkitMaskImage: maskImage,
+          maskImage,
+          WebkitMaskComposite: "source-in",
+          maskComposite: "intersect",
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
         }}
       />
     </div>
