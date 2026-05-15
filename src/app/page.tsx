@@ -346,15 +346,20 @@ function Footer() {
 }
 
 function PokerTableArc() {
-  // Pivoted from SVG-drawn shapes (4 iterations didn't land) to a GPT-generated
-  // photoreal poker-table image — angled-perspective stadium shape, charcoal
-  // felt, subtle red ambient glow on the right matching the brand. The phones
-  // are composited on top so they appear to stand at the back edge of the
-  // table. Image is positioned absolutely behind the phones, scaled to fill
-  // the column with a slight bottom-anchored bias so the front of the table
-  // extends toward the viewer.
+  // GPT-generated photoreal poker-table image, masked with a soft radial
+  // vignette so the edges fade into the page background instead of clipping
+  // as a hard rectangle. The mask keeps the table center fully visible and
+  // fades to transparent at all four sides.
+  const fadeMask =
+    "radial-gradient(ellipse 75% 70% at 50% 50%, black 35%, transparent 90%)";
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    <div
+      className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
+      style={{
+        maskImage: fadeMask,
+        WebkitMaskImage: fadeMask,
+      }}
+    >
       <Image
         src="/poker-table-hero.png"
         alt=""
