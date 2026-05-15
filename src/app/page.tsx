@@ -342,17 +342,25 @@ function Footer() {
 }
 
 function PokerTableArc() {
-  // Full-hero atmospheric background. GPT redesign per quangholio feedback:
-  // the table extends from the right as a horizon-receding element rather
-  // than dominating as a slab; the atmosphere bleeds across the whole hero
-  // so the headline text on the left sits on top of the same continuous
-  // poker-room mood rather than against pure black. Two layered overlays
-  // keep the text legible:
-  //   - left-to-right linear darkener so the headline reads on dark felt
-  //   - bottom-fade so the section blends into the page below
-  //   - corner-fade vignette to soften the outer edges into the bg
+  // Council R-blend convergence (poll 97b6f3b8, DeepSeek + GPT 2-of-2):
+  // the previous failure was STRUCTURAL — image was bounded by the same
+  // max-w-6xl box as the hero content, so its rectangle was visible
+  // regardless of how many gradient overlays were stacked inside.
+  //
+  // Fix: break out of the max-w container with a full-viewport-width
+  // absolute layer (`left-1/2 w-screen -translate-x-1/2`). Image now
+  // spans the entire viewport horizontally, well past the section's
+  // 1152px max-w, so there's no visible right-edge clip.
+  //
+  // Edges per council:
+  //   - Right: extends past max-w into viewport, no seam against body bg
+  //   - Bottom: hard fade to the page bg's exact #0a0a0a so the transition
+  //     to the next section is invisible
+  //   - Top: similar fade up into the header area
+  //   - Left: image's left edge is naturally dark (atmospheric depth) so
+  //     it merges with the dark left side of the hero
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    <div className="absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 z-0 pointer-events-none overflow-hidden">
       <Image
         src="/poker-table-hero.png"
         alt=""
@@ -361,29 +369,38 @@ function PokerTableArc() {
         className="object-cover object-right"
         sizes="100vw"
       />
-      {/* legibility overlay: dark on the left where the headline sits,
-          fading toward the right where the table is */}
+      {/* legibility overlay: dark on the left where headline sits */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 35%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%)",
+            "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 80%)",
         }}
       />
-      {/* bottom fade — section blends into page bg below the hero */}
+      {/* bottom HARD fade to exact page bg #0a0a0a — invisible section seam */}
       <div
-        className="absolute inset-x-0 bottom-0 h-1/3"
+        className="absolute inset-x-0 bottom-0 h-2/5"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.75) 70%, rgba(10,10,10,1) 100%)",
+            "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.85) 60%, #0a0a0a 100%)",
         }}
       />
-      {/* top fade — headers area dissolves into bg */}
+      {/* top fade to page bg so header area dissolves */}
       <div
         className="absolute inset-x-0 top-0 h-1/4"
         style={{
           background:
-            "linear-gradient(0deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.6) 70%, rgba(10,10,10,1) 100%)",
+            "linear-gradient(0deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.7) 60%, #0a0a0a 100%)",
+        }}
+      />
+      {/* far-right body-glow continuation — body bg has a red radial top-right;
+          this extends that red bleed past the image so the image's red ceiling
+          glow hands off to the body glow seamlessly */}
+      <div
+        className="absolute inset-y-0 right-0 w-1/3"
+        style={{
+          background:
+            "radial-gradient(ellipse at top right, rgba(239,43,43,0.18) 0%, transparent 60%)",
         }}
       />
     </div>
