@@ -77,6 +77,11 @@ try:
     grant_key = 'ipo-smoke:'+str(uuid.uuid4())
     cur.execute("SELECT ledger.admin_grant(%s, 10000, %s, %s, 'card-5 smoke prep')", (test_user, grant_key, test_user))
 
+    # Card 6 introduced players.players FK on ipo.offerings — seed the test player first.
+    cur.execute("""INSERT INTO players.players (player_id, display_name, sport, status)
+                   VALUES ('player-test-1','Test Player','poker','active')
+                   ON CONFLICT (player_id) DO UPDATE SET status='active'""")
+
     # Create an offering: 5 shares at 1000 minor units (10 GC) per share.
     cur.execute("""INSERT INTO ipo.offerings (player_id, player_display_name, total_shares, shares_remaining, price_per_share_minor, opens_at, closes_at, created_by)
                    VALUES (%s, %s, 5, 5, 1000, now() - interval '1 minute', now() + interval '1 hour', %s)
@@ -171,6 +176,7 @@ finally:
                 ('ipo:%','ipo-smoke:%','bid:%', test_user))
     cur.execute("DELETE FROM ipo.portfolio WHERE user_id=%s", (test_user,))
     cur.execute("DELETE FROM ipo.offerings WHERE created_by=%s OR player_id LIKE %s", (test_user, 'player-test-%'))
+    cur.execute("DELETE FROM players.players WHERE player_id LIKE %s", ('player-test-%',))
     cur.execute("DELETE FROM ledger.transactions WHERE transaction_id NOT IN (SELECT DISTINCT transaction_id FROM ledger.entries)")
     cur.execute("DELETE FROM ledger.accounts WHERE user_id=%s", (test_user,))
     cur.execute("""UPDATE ledger.accounts SET balance_cached =
