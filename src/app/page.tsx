@@ -354,46 +354,56 @@ function PokerTableArc() {
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
       <svg
         viewBox="0 0 1000 700"
-        preserveAspectRatio="xMidYMax slice"
-        className="absolute inset-x-[-15%] bottom-[-12%] w-[130%] h-[85%]"
+        preserveAspectRatio="xMidYMid slice"
+        className="absolute inset-x-[-10%] inset-y-[5%] w-[120%] h-[95%]"
         aria-hidden
       >
         <defs>
-          <radialGradient id="tableFill" cx="50%" cy="95%" r="62%">
-            <stop offset="0%" stopColor="#3a3a3a" stopOpacity="0.85" />
-            <stop offset="40%" stopColor="#262626" stopOpacity="0.70" />
-            <stop offset="80%" stopColor="#141414" stopOpacity="0.30" />
+          <radialGradient id="tableFill" cx="50%" cy="78%" r="55%">
+            <stop offset="0%" stopColor="#5a5a5a" stopOpacity="1" />
+            <stop offset="35%" stopColor="#3d3d3d" stopOpacity="0.9" />
+            <stop offset="70%" stopColor="#1c1c1c" stopOpacity="0.5" />
             <stop offset="100%" stopColor="#0a0a0a" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="rimLight" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.32)" />
+            <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          </linearGradient>
+          <linearGradient id="rimShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(0,0,0,0)" />
+            <stop offset="100%" stopColor="rgba(0,0,0,0.7)" />
           </linearGradient>
           <linearGradient id="edgeFade" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="white" stopOpacity="0" />
-            <stop offset="18%" stopColor="white" stopOpacity="1" />
-            <stop offset="82%" stopColor="white" stopOpacity="1" />
+            <stop offset="15%" stopColor="white" stopOpacity="1" />
+            <stop offset="85%" stopColor="white" stopOpacity="1" />
             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
           <mask id="archFade">
             <rect width="1000" height="700" fill="url(#edgeFade)" />
           </mask>
         </defs>
-        {/* table surface — lifted-charcoal radial, faded at far edge */}
+        {/* shadow above the table edge — gives the rim something to catch against */}
+        <path
+          d="M -20 200 Q 500 110 1020 200 L 1020 290 Q 500 200 -20 290 Z"
+          fill="url(#rimShadow)"
+          mask="url(#archFade)"
+        />
+        {/* table surface — lifted-charcoal radial, centered in the visible viewport */}
         <ellipse
           cx="500"
-          cy="720"
-          rx="540"
-          ry="380"
+          cy="540"
+          rx="600"
+          ry="320"
           fill="url(#tableFill)"
           mask="url(#archFade)"
         />
-        {/* far-rim catch-light — single thin curve suggesting the table edge */}
+        {/* far-rim catch-light — the load-bearing curve */}
         <path
-          d="M -20 340 Q 500 240 1020 340"
+          d="M -20 250 Q 500 130 1020 250"
           fill="none"
           stroke="url(#rimLight)"
-          strokeWidth="2"
+          strokeWidth="3"
           mask="url(#archFade)"
         />
       </svg>
