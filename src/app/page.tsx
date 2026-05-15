@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { LobbyPhone } from "@/components/LobbyPhone";
 import { BuySellPhone } from "@/components/BuySellPhone";
@@ -345,109 +346,23 @@ function Footer() {
 }
 
 function PokerTableArc() {
-  // The Glass Racetrack — Gemini-judged synthesis (poll bc5c23f2) of the R3
-  // three-way fork: GPT's angled perspective + DeepSeek's visible rail rim,
-  // executed in fintech-trading-desk material rather than literal-felt material.
-  //
-  // Stadium-shaped (rounded-rectangle) charcoal frosted-glass surface in
-  // perspective. Phones stand at the back/far edge of the table, glass surface
-  // extends forward toward the viewer with most of the felt-area visible in
-  // the lower hero. Etched 1px outline traces the rail. Phones cast soft
-  // shadows down onto the glass.
-  //
-  // Constraints held from R2: charcoal palette (no green, no brand red on the
-  // felt itself), no chips, no cards, no rail detailing beyond the single
-  // outline stroke. Brand red stays on the CTA where it belongs.
+  // Pivoted from SVG-drawn shapes (4 iterations didn't land) to a GPT-generated
+  // photoreal poker-table image — angled-perspective stadium shape, charcoal
+  // felt, subtle red ambient glow on the right matching the brand. The phones
+  // are composited on top so they appear to stand at the back edge of the
+  // table. Image is positioned absolutely behind the phones, scaled to fill
+  // the column with a slight bottom-anchored bias so the front of the table
+  // extends toward the viewer.
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-      {/* backdrop-blur layer behind the SVG — frosted-glass material cue */}
-      <div
-        className="absolute"
-        style={{
-          left: "8%",
-          right: "8%",
-          top: "28%",
-          bottom: "0%",
-          backdropFilter: "blur(18px)",
-          WebkitBackdropFilter: "blur(18px)",
-          maskImage:
-            "radial-gradient(ellipse 70% 90% at 50% 50%, black 60%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 70% 90% at 50% 50%, black 60%, transparent 100%)",
-        }}
+      <Image
+        src="/poker-table-hero.png"
+        alt=""
+        fill
+        priority
+        className="object-cover object-center"
+        sizes="(min-width: 768px) 50vw, 100vw"
       />
-      <svg
-        viewBox="0 0 1000 800"
-        preserveAspectRatio="xMidYMid meet"
-        className="absolute inset-0 w-full h-full"
-        aria-hidden
-      >
-        <defs>
-          {/* charcoal-glass surface — brighter near the back edge (catching
-              ambient light from above), darker toward the viewer foreground */}
-          <linearGradient id="glassFill" x1="50%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stopColor="#3a3a3a" stopOpacity="0.65" />
-            <stop offset="50%" stopColor="#2a2a2a" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.35" />
-          </linearGradient>
-          {/* etched-outline stroke — single 1px hairline tracing the stadium */}
-          <linearGradient id="rimEtch" x1="50%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.55)" />
-            <stop offset="50%" stopColor="rgba(255,255,255,0.30)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.18)" />
-          </linearGradient>
-          {/* far-edge rim catch-light — highlight on the back of the rail */}
-          <linearGradient id="farRimGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.20)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-          </linearGradient>
-          {/* soft drop-shadow beneath the entire stadium */}
-          <radialGradient id="tableShadow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(0,0,0,0.6)" />
-            <stop offset="100%" stopColor="rgba(0,0,0,0)" />
-          </radialGradient>
-        </defs>
-
-        {/* ground shadow under the stadium — separates table from page bg */}
-        <ellipse cx="500" cy="760" rx="460" ry="50" fill="url(#tableShadow)" />
-
-        {/* THE STADIUM in perspective — a horse-track shape tilted ~50deg.
-            Top edge (FAR side): narrow arc at y=200
-            Bottom edge (NEAR side): wider arc at y=720
-            Sides: straight lines tapering outward as they come forward */}
-        <path
-          d="
-            M 280 200
-            A 220 55 0 0 1 720 200
-            L 920 720
-            A 420 110 0 0 1 80 720
-            Z
-          "
-          fill="url(#glassFill)"
-        />
-
-        {/* etched outline — the load-bearing 'this is a poker table' cue */}
-        <path
-          d="
-            M 280 200
-            A 220 55 0 0 1 720 200
-            L 920 720
-            A 420 110 0 0 1 80 720
-            Z
-          "
-          fill="none"
-          stroke="url(#rimEtch)"
-          strokeWidth="1.25"
-        />
-
-        {/* extra catch-light on the far rim — depth cue, ambient room light */}
-        <path
-          d="M 280 200 A 220 55 0 0 1 720 200"
-          fill="none"
-          stroke="url(#farRimGlow)"
-          strokeWidth="3"
-        />
-      </svg>
     </div>
   );
 }
