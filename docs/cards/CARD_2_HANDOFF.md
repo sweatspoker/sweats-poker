@@ -63,6 +63,7 @@ All 3 voter brains (GPT, DeepSeek, Claude.ai) converged on these for any GC-move
 3. **At Card 2 closeout:**
    - Have Claude.ai produce `CARD_2_SPEC.docx` + `CARD_2_MANIFEST.docx` as artifacts (Tommy downloads)
    - Save `CARD_2_SPEC.md` + `CARD_2_MANIFEST.md` to `docs/cards/`
+   - **MANDATORY: run Gemini reviewer pass on the final state** (`~/.npm-global/bin/gemini --skip-trust --output-format text` piping bundle on stdin + reviewer-role prompt via `-p`). Independent audit, separate from voter cross-poll. Fold real findings; verify against working production (Gemini false-positives on Next 16 + new Supabase key naming).
    - Commit + push
    - Write `CARD_3_HANDOFF.md` so next session picks up
 4. **Cross-poll on GC-touching code is mandatory**, not optional. "Doubt is the cross-poll trigger" + GC is the riskiest surface.
