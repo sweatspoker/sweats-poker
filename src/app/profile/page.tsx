@@ -85,6 +85,12 @@ export default async function ProfilePage({
             value={new Date(profile.created_at).toLocaleDateString()}
             tone="muted"
           />
+          <a
+            href="/wallet"
+            className="mt-2 self-start rounded-full bg-white/10 hover:bg-white/15 transition-colors px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em]"
+          >
+            View wallet →
+          </a>
         </section>
       </div>
     </main>
