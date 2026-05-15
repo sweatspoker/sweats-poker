@@ -29,7 +29,7 @@ export default async function Home() {
 
 function Header({ signedIn }: { signedIn: boolean }) {
   return (
-    <header className="w-full max-w-6xl mx-auto flex items-center justify-between px-6 py-6 md:py-8">
+    <header className="relative z-30 w-full max-w-6xl mx-auto flex items-center justify-between px-6 py-6 md:py-8">
       <Logo />
       <div className="flex items-center gap-3">
         {signedIn ? (
@@ -360,7 +360,10 @@ function PokerTableArc() {
   //   - Left: image's left edge is naturally dark (atmospheric depth) so
   //     it merges with the dark left side of the hero
   return (
-    <div className="absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 z-0 pointer-events-none overflow-hidden">
+    <div
+      className="absolute left-1/2 w-screen -translate-x-1/2 bottom-0 z-0 pointer-events-none overflow-hidden"
+      style={{ top: "-160px" }}
+    >
       <Image
         src="/poker-table-hero.png"
         alt=""
@@ -385,12 +388,15 @@ function PokerTableArc() {
             "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.85) 60%, #0a0a0a 100%)",
         }}
       />
-      {/* top fade to page bg so header area dissolves */}
+      {/* top HARD fade — image extends 160px above the section into the
+          header zone, then dissolves to exact page bg so the top edge is
+          invisible. Larger fade region (h-1/2) than bottom because the header
+          sits in this zone and needs a clean dark background to read against */}
       <div
-        className="absolute inset-x-0 top-0 h-1/4"
+        className="absolute inset-x-0 top-0 h-1/2"
         style={{
           background:
-            "linear-gradient(0deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.7) 60%, #0a0a0a 100%)",
+            "linear-gradient(0deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.85) 55%, #0a0a0a 100%)",
         }}
       />
       {/* far-right body-glow continuation — body bg has a red radial top-right;
