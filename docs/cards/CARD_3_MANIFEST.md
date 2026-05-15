@@ -4,13 +4,18 @@
 
 - `supabase/migrations/0005_card3_purchase.sql` — extends `transactions_type_check` to include `purchase_settled` + `purchase_refunded`; adds `ledger.purchase_complete` + `ledger.purchase_refund` wrappers.
 - `supabase/migrations/0006_card3_public_wrappers.sql` — PostgREST shim: `public.purchase_complete` + `public.purchase_refund` forward verbatim to ledger.* (NOTIFY pgrst at end).
+- `supabase/migrations/0007_card3_nits.sql` — R2 council nits: promotes `purchase_source` to a DB column with CHECK constraint; backfills existing rows from metadata; partial index `transactions_synthetic_idx`; ledger.purchase_complete + purchase_refund updated to stamp the column.
 
 ## Server code (new)
 
-- `src/lib/payments/webhook-verify.ts` — HMAC verify + Stripe-stub branch + `signSyntheticPayload` helper.
-- `src/app/api/payments/webhook/route.ts` — single webhook endpoint, dispatches `purchase_complete` vs `purchase_refund` by event type; rate-limit, NODE_ENV gate, flag gate.
-- `src/app/api/payments/simulate/route.ts` — user-facing trigger; signs synthetic payload + forwards to webhook.
-- `src/app/api/admin/payments/refund/route.ts` — operator-only refund via shared `LEDGER_ADMIN_TOKEN`.
+- `src/lib/payments/webhook-verify.ts` — Returns `CanonicalEvent` (provider/event_id/user_id/amount_minor/type/idempotency_key/raw_event_excerpt) so the route stays Stripe-agnostic. Annotated Stripe stub branch. `signSyntheticPayload` + `syntheticPathBlockedReason` helpers. Includes hand-rolled `parseAndValidate` schema guard.
+- `src/app/api/payments/webhook/route.ts` — single webhook endpoint; treats verifier output opaquely. NODE_ENV + VERCEL_ENV double gate. Memory-resident 5s/user rate limit.
+- `src/app/api/payments/simulate/route.ts` — user-facing trigger; signs synthetic payload + forwards to webhook. Uses shared `syntheticPathBlockedReason`.
+- `src/app/api/admin/payments/refund/route.ts` — operator-only refund via shared `LEDGER_ADMIN_TOKEN`; same NODE_ENV+VERCEL_ENV synthetic guard.
+
+## Scripts
+
+- `scripts/wipe-synthetic-purchases.sql` — Card 3 R2 dry-run wipe script for synthetic-source ledger entries (default ROLLBACK; change to COMMIT to execute). Honors structural `purchase_source` column, not metadata.
 
 ## Client code (new)
 
@@ -23,7 +28,7 @@
 ## Verification
 
 ```bash
-bash scripts/verify-card-3.sh   # 20 PASS / 0 FAIL  (DB layer)
+bash scripts/verify-card-3.sh   # 28 PASS / 0 FAIL  (DB layer + R2 nit coverage)
 bash scripts/verify-card-2.sh   # 11 PASS / 0 FAIL  (regression)
 pnpm exec tsc --noEmit          # clean
 pnpm exec next build            # routes compile: /api/payments/webhook + /simulate + /admin/payments/refund

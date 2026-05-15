@@ -5,8 +5,10 @@
 **Council poll:** `602c22f8-8927-4689-b27f-7427449641d3` (Tier 2)
 **Convergence:** `a902459f-7460-4e43-bb10-7f1cd6979b4c`
 **Amendment:** `5b2f3d83-4db4-4bb2-ace1-2b55652f7746` (Tommy scope-down 2026-05-15)
-**Gemini judge verdict:** GO-WITH-NITS (all addressed)
-**Gemini final-stamp:** STAMP
+**R1 council vote:** DeepSeek (proposed design) + Gemini judge GO-WITH-NITS (all addressed) + Gemini final-stamp STAMP
+**R2 ratification:** GPT RATIFY-WITH-NITS (event `d1c8e2fc`) + Claude.ai RATIFY-WITH-NITS (event `febc969c`) — both R2 nits folded in commit `2d51e44`
+**R2 convergence event:** `c4c85bd1-628f-452b-82e7-bec96dbc1765`
+**Protocol note:** R1 closed without polling GPT + Claude.ai (orchestrator gap; sovereign flagged); rectified by R2 ratification round. Claude.ai recommended a future quorum rule requiring one vote from each {reasoning-model, judge, peer-reviewer} tier before convergence.
 
 ## What shipped
 
@@ -37,17 +39,24 @@ discipline, and UI are all source-agnostic.
 | 10 | PostgREST shim: `public.purchase_complete` + `purchase_refund` forward to ledger.* | Discovery — ledger schema not exposed to PostgREST |
 | 11 | `purchase_settled` + `purchase_refunded` added to `ledger.transactions` CHECK | Inherited from Card 2 carry-forward |
 | 12 | Locked rate $1 = 10 GC = 1000 minor units / dollar enforced application-side | Council convergence carry-forward from Card 2 |
+| 13 | Verifier returns CanonicalEvent `{provider, event_id, user_id, amount_minor, type, idempotency_key, raw_event_excerpt}`; route stays Stripe-agnostic | R2 unanimous (GPT + Claude.ai) |
+| 14 | `purchase_source` promoted from JSON metadata to a DB column with CHECK (`synthetic\|stripe`); partial index `transactions_synthetic_idx` for wipe queries | R2 unanimous |
+| 15 | `VERCEL_ENV === 'production'` positive assertion alongside `NODE_ENV` gate (two independent signals) | R2 Claude.ai |
+| 16 | Synthetic-wipe SQL committed as `scripts/wipe-synthetic-purchases.sql` (dry-run with default ROLLBACK) | R2 Claude.ai |
+| 17 | Strengthened payload validation at verifier boundary (`parseAndValidate`) — no new dep | R2 Claude.ai equivalent of Zod schema |
 
 ## Open Tier-3 sovereign question (deferred to Tommy)
 
 Synthetic-source ledger entries are **permanent** rows tagged
-`metadata.purchase_source = 'synthetic'`. If Tommy decides at real-Stripe
-cutover that founding-member synthetic credits should be wiped, the action is:
+`purchase_source = 'synthetic'` (structural column, not metadata, per R2
+nit). If Tommy decides at real-Stripe cutover that founding-member synthetic
+credits should be wiped, run `scripts/wipe-synthetic-purchases.sql` (default
+dry-run; change ROLLBACK to COMMIT to execute). The core SQL is:
 
 ```sql
 DELETE FROM ledger.entries WHERE transaction_id IN
   (SELECT transaction_id FROM ledger.transactions
-    WHERE metadata->>'purchase_source' = 'synthetic');
+    WHERE purchase_source = 'synthetic');
 DELETE FROM ledger.transactions WHERE metadata->>'purchase_source' = 'synthetic';
 DELETE FROM ledger.idempotency_keys WHERE key LIKE 'synthetic:%';
 -- recompute platform_float balance_cached from entries

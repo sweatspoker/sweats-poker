@@ -7,15 +7,17 @@
 
 ## What you start with
 
-Card 3 is done. Live on `sweats.poker` after this push (`092e7e3`). The
-synthetic walkthrough is gated off in prod (no `SYNTHETIC_WEBHOOK_SECRET`
-configured); the webhook + admin refund routes are deployed but inert until
-real Stripe is wired or the flag is enabled in a dev env.
+Card 3 is done — both R1 (DeepSeek + Gemini judge) and R2 (GPT + Claude.ai)
+council rounds converged at RATIFY-WITH-NITS, all nits folded in (commit
+`2d51e44`). Live on `sweats.poker`. The synthetic walkthrough is gated off
+in prod (no `SYNTHETIC_WEBHOOK_SECRET` configured + double NODE_ENV/VERCEL_ENV
+guard); the webhook + admin refund routes are deployed but inert until real
+Stripe is wired or the flag is enabled in a dev env.
 
 Read first, in order:
-1. [`docs/cards/CARD_3_SPEC.md`](CARD_3_SPEC.md) — narrative + decisions register
+1. [`docs/cards/CARD_3_SPEC.md`](CARD_3_SPEC.md) — narrative + decisions register (R1 + R2)
 2. [`docs/cards/CARD_3_MANIFEST.md`](CARD_3_MANIFEST.md) — inventory + verification
-3. Run `bash scripts/verify-card-3.sh` — should print 20 PASS / 0 FAIL
+3. Run `bash scripts/verify-card-3.sh` — should print 28 PASS / 0 FAIL
 4. Run `bash scripts/verify-card-2.sh` — should print 11 PASS / 0 FAIL
 
 ## Possible Card 4 candidates (Tommy picks)
@@ -62,10 +64,15 @@ explicitly at the start of Card 3a (Option C) — the answer determines whether
 
 ## Protocol going forward (carried from Card 3 — DO NOT skip)
 
-1. **Council cross-poll** at architectural decision points. Card 3 used a
-   focused R1-only flow under sovereign pre-ratification (Tommy's scope-down).
-   Future Cards involving real money flows should go to all three brains
-   (DeepSeek API + GPT desktop + Claude.ai Chrome MCP) with Gemini judge.
+1. **Council cross-poll** at architectural decision points. Card 3's R1 went
+   only to DeepSeek, then closed convergence on DeepSeek + Gemini judge +
+   Gemini reviewer without polling GPT or Claude.ai. Sovereign correctly
+   flagged this as a protocol gap; R2 ratification round rectified. **Future
+   Cards: every cross-poll must hit all three brains (DeepSeek API + GPT
+   desktop + Claude.ai Chrome MCP) before declaring R1 converged.** Claude.ai
+   recommended a formal quorum rule: convergence requires one vote each from
+   {reasoning-model, judge, peer-reviewer} tiers. Worth surfacing to the
+   SiXiS protocol layer at the next FORCED_RULE proposal.
 2. **Per-brain relay matrix** (unchanged from Card 2 handoff):
    - DeepSeek → API via `~/Documents/Claude/Projects/SixiS/projects/deepseek_api_v0_1/sixis/deepseek_client.py` (REMEMBER: `DEEPSEEK_API_KEY` in `~/.zshrc`, bash does not auto-source).
    - GPT → ChatGPT desktop app, **sweats.poker** project folder.
