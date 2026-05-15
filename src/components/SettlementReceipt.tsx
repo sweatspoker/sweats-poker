@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 // Below-fold "Settlement at cashout" feature: STATIC cashout-receipt screen.
 // Per the council convergence (Claude.ai R2 + DeepSeek R1): rendered as an
 // in-app receipt state, NOT a push-notification animation. Reads as
@@ -13,9 +15,13 @@ export function SettlementReceipt() {
       >
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <div className="size-6 rounded-md bg-[var(--brand-red)] grid place-items-center text-[10px] font-black">
-              S
-            </div>
+            <Image
+              src="/sweats-icon.png"
+              alt=""
+              width={251}
+              height={237}
+              className="size-6 object-contain"
+            />
             <span className="text-[11px] font-black tracking-wider">
               SWEATS
             </span>

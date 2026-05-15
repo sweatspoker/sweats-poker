@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { PhoneFrame } from "./PhoneFrame";
 
 type Player = {
@@ -76,9 +77,13 @@ export function LobbyPhone() {
       <div className="size-full flex flex-col bg-[#070707] text-white">
         <div className="pt-9 pb-3 px-4 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <div className="size-5 rounded-md bg-[var(--brand-red)] grid place-items-center text-[10px] font-black">
-              S
-            </div>
+            <Image
+              src="/sweats-icon.png"
+              alt=""
+              width={251}
+              height={237}
+              className="size-5 object-contain"
+            />
             <span className="text-[11px] font-black tracking-wider">SWEATS</span>
           </div>
           <div className="flex items-center gap-2">
