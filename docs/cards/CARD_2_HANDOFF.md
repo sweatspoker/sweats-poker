@@ -71,6 +71,16 @@ All 3 voter brains (GPT, DeepSeek, Claude.ai) converged on these for any GC-move
 
 ---
 
+## REQUIRED early in Card 2 (council-ratified at Card 1 closeout, poll `0411a731`)
+
+These are not deferrable to "later in Card 2" — they are forcing conditions BEFORE ledger writes can land safely:
+
+1. **Profile-row invariant — defensive lazy-create AND monitoring hook.** On first authed read of `profiles` (in `loadProfile()` or equivalent), if no row exists for `auth.uid()`, INSERT one (with `ON CONFLICT (user_id) DO NOTHING` for idempotency). This masks the symptom of `handle_new_user` trigger failure. ALSO add a monitoring/alert hook that detects silent trigger failures — orphan `auth.users` rows without a `profiles` row should page someone. Lazy-create alone hides the cause; monitoring surfaces it. Claude.ai's exact framing: "lazy-create masks the symptom but doesn't surface the cause."
+
+2. **Audit sibling authed write paths for the `requireVerifiedUser` guard.** Card 1's reviewer finding F3 fixed `/profile/save`. Claude.ai flagged: if Card 2 introduces avatar upload / preferences / wallet preferences / any authed write path, each one needs the same `age_verified` check or it becomes whack-a-mole. Add to your Card 2 checklist: enumerate every authed POST/PATCH route Card 2 introduces and confirm each calls `requireVerifiedUser()` (or equivalent guard) before mutating.
+
+---
+
 ## Open follow-ups carried from Card 1 (revisit during/after Card 2)
 
 These are NOT Card 2 scope, but ledger/wallet work may touch them:
