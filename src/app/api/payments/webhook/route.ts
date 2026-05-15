@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     ? { p_refund_event_id: event.event_id }
     : { p_event_id: event.event_id };
 
-  const { data, error } = await admin.schema("ledger").rpc(rpcName, {
+  const { data, error } = await admin.rpc(rpcName, {
     ...idArg,
     p_user_id: event.user_id,
     p_amount_minor: event.amount_minor,

@@ -1,4 +1,5 @@
 import { requireVerifiedUser } from "@/lib/auth/require-user";
+import { SimulateCheckoutButton } from "./SimulateCheckoutButton";
 
 type LedgerEntry = {
   entry_id: number;
@@ -33,6 +34,7 @@ function fmtDate(iso: string): string {
 export default async function WalletPage() {
   const { supabase, user, profile } = await requireVerifiedUser();
   void profile;
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
 
   const { data, error } = await supabase.rpc("get_my_ledger_summary");
   if (error) {
@@ -112,6 +114,8 @@ export default async function WalletPage() {
             </ul>
           )}
         </section>
+
+        {demoMode && <SimulateCheckoutButton />}
 
         <footer className="mt-16 text-xs text-zinc-600">
           Append-only ledger. Drift-checked. SECURITY DEFINER writes only.

@@ -62,18 +62,28 @@ function Header({ signedIn }: { signedIn: boolean }) {
 
 function Logo() {
   return (
-    <div className="flex flex-col items-center leading-none">
+    <div className="flex items-center gap-3">
       <Image
-        src="/sweats-logo.png"
-        alt="sweats.poker"
-        width={900}
-        height={256}
+        src="/sweats-icon.png"
+        alt=""
+        width={251}
+        height={237}
         priority
-        className="h-10 md:h-12 w-auto"
+        className="h-11 md:h-12 w-auto"
       />
-      <span className="mt-1.5 text-[10px] md:text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
-        Interactive Poker Stream Trading
-      </span>
+      <div className="flex flex-col items-start leading-none gap-1.5">
+        <Image
+          src="/sweats-wordmark.png"
+          alt="sweats.poker"
+          width={641}
+          height={122}
+          priority
+          className="h-5 md:h-6 w-auto"
+        />
+        <span className="text-[10px] md:text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
+          Interactive Poker Stream Trading
+        </span>
+      </div>
     </div>
   );
 }
