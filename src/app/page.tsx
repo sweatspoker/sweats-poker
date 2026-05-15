@@ -169,7 +169,7 @@ function HowItWorks() {
             <div className="text-[var(--brand-red)] font-black text-4xl tracking-tight">
               0{s.n}
             </div>
-            <div className="mt-5 font-semibold text-xl leading-tight">
+            <div className="mt-5 font-semibold text-xl leading-tight min-h-[2lh]">
               {s.title}
             </div>
             <div className="mt-3 text-base text-white/65 leading-relaxed">
