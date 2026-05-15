@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import { requireUser, loadProfile } from "@/lib/auth/require-user";
+import { requireVerifiedUser } from "@/lib/auth/require-user";
 
 export const dynamic = "force-dynamic";
 
@@ -8,10 +7,7 @@ export default async function ProfilePage({
 }: {
   searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
-  const { user } = await requireUser();
-  const profile = await loadProfile(user.id);
-  if (!profile?.age_verified) redirect("/age-gate");
-
+  const { user, profile } = await requireVerifiedUser();
   const { saved, error } = await searchParams;
 
   return (
@@ -84,11 +80,6 @@ export default async function ProfilePage({
             Account
           </div>
           <Row label="Age verified" value="Yes — 18+" tone="green" />
-          <Row
-            label="Date of birth on file"
-            value={profile.dob ?? "—"}
-            tone="muted"
-          />
           <Row
             label="Member since"
             value={new Date(profile.created_at).toLocaleDateString()}
