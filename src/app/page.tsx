@@ -104,9 +104,14 @@ function Hero() {
       </div>
 
       <div className="md:col-span-6 relative h-[640px] md:h-[720px]">
+        {/* Charcoal table-arc behind the phones — surface of the game, not the venue.
+            Per council R2 convergence (poll 6070cbec): arc not ellipse, charcoal not red,
+            no rail / no chip shadows / no detailing. Just the curve. The phones (the
+            trading interface) sit on the table (the poker world). */}
+        <PokerTableArc />
         <div className="absolute inset-0 grid place-items-center">
           <div
-            className="absolute z-0"
+            className="absolute z-10"
             style={{
               transform: "translate(-32%, 6%) rotate(-9deg) scale(0.92)",
               filter: "drop-shadow(0 30px 60px rgba(0,0,0,0.55))",
@@ -115,7 +120,7 @@ function Hero() {
             <LobbyPhone />
           </div>
           <div
-            className="absolute z-10"
+            className="absolute z-20"
             style={{
               transform: "translate(22%, -4%) rotate(7deg)",
               filter: "drop-shadow(0 35px 70px rgba(0,0,0,0.6))",
@@ -336,6 +341,62 @@ function Footer() {
         <span>© {new Date().getFullYear()} Sweats</span>
       </div>
     </footer>
+  );
+}
+
+function PokerTableArc() {
+  // Council R2 (poll 6070cbec-73d9-486c-83d9-a8c2d6d5990d): an abstract poker-table
+  // arc behind the hero phones is the right poker-signal — but only if it stays
+  // architectural (charcoal, not red), reads as an arc not a full ellipse, and
+  // carries no table detailing (no rail, no chip-shadows). Anything more lands
+  // in the casino-venue register the positioning is trying to escape.
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      <svg
+        viewBox="0 0 1000 700"
+        preserveAspectRatio="xMidYMax slice"
+        className="absolute inset-x-[-15%] bottom-[-12%] w-[130%] h-[85%]"
+        aria-hidden
+      >
+        <defs>
+          <radialGradient id="tableFill" cx="50%" cy="100%" r="65%">
+            <stop offset="0%" stopColor="#161616" stopOpacity="0.95" />
+            <stop offset="55%" stopColor="#0d0d0d" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#0a0a0a" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="rimLight" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.10)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          </linearGradient>
+          <linearGradient id="edgeFade" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="white" stopOpacity="0" />
+            <stop offset="22%" stopColor="white" stopOpacity="1" />
+            <stop offset="78%" stopColor="white" stopOpacity="1" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </linearGradient>
+          <mask id="archFade">
+            <rect width="1000" height="700" fill="url(#edgeFade)" />
+          </mask>
+        </defs>
+        {/* table surface — charcoal radial, faded at far edge */}
+        <ellipse
+          cx="500"
+          cy="700"
+          rx="520"
+          ry="360"
+          fill="url(#tableFill)"
+          mask="url(#archFade)"
+        />
+        {/* far-rim catch-light — single thin curve suggesting the table edge */}
+        <path
+          d="M -20 360 Q 500 280 1020 360"
+          fill="none"
+          stroke="url(#rimLight)"
+          strokeWidth="1.25"
+          mask="url(#archFade)"
+        />
+      </svg>
+    </div>
   );
 }
 

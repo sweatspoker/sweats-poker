@@ -15,6 +15,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login`, { status: 303 });
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("age_verified")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!profile?.age_verified) {
+    return NextResponse.redirect(`${origin}/age-gate`, { status: 303 });
+  }
+
   const { error } = await supabase
     .from("profiles")
     .update({ display_name })
