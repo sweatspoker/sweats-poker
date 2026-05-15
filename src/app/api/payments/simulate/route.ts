@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "node:crypto";
 import { requireUser } from "@/lib/auth/require-user";
-import { signSyntheticPayload } from "@/lib/payments/webhook-verify";
+import { signSyntheticPayload, syntheticPathBlockedReason } from "@/lib/payments/webhook-verify";
 
 /**
  * Card 3 synthetic-checkout trigger.
@@ -34,11 +34,9 @@ const TIER_AMOUNTS_USD: Record<string, number> = {
 };
 
 export async function POST(request: NextRequest) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "synthetic_blocked_in_production" }, { status: 403 });
-  }
-  if (process.env.SYNTHETIC_PAYMENTS_ENABLED !== "1") {
-    return NextResponse.json({ error: "synthetic_payments_disabled" }, { status: 403 });
+  const blocked = syntheticPathBlockedReason();
+  if (blocked) {
+    return NextResponse.json({ error: blocked }, { status: 403 });
   }
 
   const { user } = await requireUser();

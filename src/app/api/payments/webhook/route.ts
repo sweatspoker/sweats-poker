@@ -1,39 +1,34 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { verifyAndParseWebhook, WebhookVerifyError } from "@/lib/payments/webhook-verify";
+import {
+  verifyAndParseWebhook,
+  syntheticPathBlockedReason,
+  WebhookVerifyError,
+  type CanonicalEvent,
+} from "@/lib/payments/webhook-verify";
 
 /**
  * Card 3 payments webhook — receives signed payment events from either
- * (a) Stripe (real, future cycle), or (b) the synthetic-walkthrough simulator
- * (this cycle). Same route, same handler shape. Distinguished by which secret
- * verified the signature (see lib/payments/webhook-verify).
+ * Stripe (real, future cycle) or the synthetic-walkthrough simulator
+ * (this cycle). The route is provider-agnostic by construction: it never
+ * inspects raw Stripe object structure. The verifier maps everything into
+ * a CanonicalEvent, and the route dispatches on `event.provider` +
+ * `event.type` alone.
  *
- * Sovereign scope: skip real Stripe; placeholder synthetic walkthrough only.
- *   Tier-2 amendment 5b2f3d83, council-poll 602c22f8 R1 convergence + Gemini
- *   judge GO-WITH-NITS verdict (2026-05-15).
- *
- * Production-safety stack (defense-in-depth):
- *   1. NODE_ENV gate — synthetic requests rejected outright in production.
- *   2. SYNTHETIC_PAYMENTS_ENABLED env — must be exactly "1" to allow synthetic.
- *   3. SYNTHETIC_WEBHOOK_SECRET — synthetic verifier returns 500 if unset.
- *   4. Ledger metadata.purchase_source — every transaction tagged, auditable.
- *   5. Idempotency-key namespace — 'synthetic:<event_id>' vs 'stripe:<event_id>'.
- *
- * Real Stripe cutover (later Card):
- *   - Install `stripe` npm package.
- *   - Replace the synthetic branch in webhook-verify with stripe.webhooks.constructEvent.
- *   - Set STRIPE_WEBHOOK_SECRET in Vercel; unset SYNTHETIC_WEBHOOK_SECRET.
- *   - Idempotency key prefix flips to 'stripe:<event.id>'; everything else
- *     downstream is identical because purchase_complete is source-agnostic.
+ * Council R2 unanimous ratification (GPT + Claude.ai 2026-05-15):
+ *   - Verifier returns canonical {provider, event_id, user_id,
+ *     amount_minor, type, idempotency_key, raw_event_excerpt}. Route
+ *     stays Stripe-agnostic.
+ *   - DB-level CHECK constraint on purchase_source (migration 0007)
+ *     promotes the audit discriminator from metadata-only to a structural
+ *     invariant.
+ *   - VERCEL_ENV positive assertion alongside NODE_ENV gate.
  */
 export async function POST(request: NextRequest) {
-  // Per-request rate-limit (synthetic only). Memory-resident; resets on deploy.
-  // Crude on purpose: synthetic is dev/demo path, not prod scale. Real Stripe
-  // path has Stripe's own delivery dedup + the ledger idempotency table.
   const signature = request.headers.get("x-webhook-signature");
   const rawBody = await request.text();
 
-  let event;
+  let event: CanonicalEvent;
   try {
     event = await verifyAndParseWebhook(rawBody, signature);
   } catch (e) {
@@ -43,18 +38,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "verify_failed" }, { status: 500 });
   }
 
-  if (event.source === "synthetic") {
-    if (process.env.NODE_ENV === "production") {
-      return NextResponse.json(
-        { error: "synthetic_blocked_in_production" },
-        { status: 403 }
-      );
-    }
-    if (process.env.SYNTHETIC_PAYMENTS_ENABLED !== "1") {
-      return NextResponse.json(
-        { error: "synthetic_payments_disabled" },
-        { status: 403 }
-      );
+  // Production safety: synthetic provider requires three independent
+  // positive signals (NODE_ENV != production, VERCEL_ENV != production,
+  // SYNTHETIC_PAYMENTS_ENABLED == "1"). Real Stripe events are never
+  // subject to this gate.
+  if (event.provider === "synthetic") {
+    const blocked = syntheticPathBlockedReason();
+    if (blocked) {
+      return NextResponse.json({ error: blocked }, { status: 403 });
     }
     if (!checkSyntheticRateLimit(event.user_id)) {
       return NextResponse.json(
@@ -76,16 +67,13 @@ export async function POST(request: NextRequest) {
     ...idArg,
     p_user_id: event.user_id,
     p_amount_minor: event.amount_minor,
-    p_source: event.source,
+    p_source: event.provider,
     p_initiated_by: event.user_id,
     p_extra_metadata: { webhook_event_type: event.type },
   });
 
   if (error) {
     const msg = error.message ?? "unknown";
-    // Age-verified gate: webhook responds 200 (Stripe shouldn't retry a
-    // compliance failure) but the audit row in ledger.audit will be 'critical'
-    // (post_transaction logs it inside the RPC). Operator follows up offline.
     if (msg.includes("unverified_identity")) {
       console.warn("[payments/webhook] unverified_identity for user", event.user_id);
       return NextResponse.json(
@@ -113,12 +101,15 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     ok: true,
     transaction_id: data,
-    source: event.source,
+    provider: event.provider,
     type: event.type,
   });
 }
 
-// Memory-resident per-user cooldown. 5s for synthetic. Resets on cold-start.
+// Memory-resident per-user cooldown. 5s for synthetic. Multi-region Vercel
+// note (Claude.ai R2): this is per-instance; the DB idempotency table is
+// the real concurrency guard. Synthetic is dev/demo-only so per-instance
+// granularity is sufficient.
 const SYNTHETIC_COOLDOWN_MS = 5_000;
 const lastSyntheticAt = new Map<string, number>();
 
@@ -127,7 +118,6 @@ function checkSyntheticRateLimit(userId: string): boolean {
   const prev = lastSyntheticAt.get(userId) ?? 0;
   if (now - prev < SYNTHETIC_COOLDOWN_MS) return false;
   lastSyntheticAt.set(userId, now);
-  // Bounded map size — drop oldest if it grows unreasonably.
   if (lastSyntheticAt.size > 1000) {
     const oldestKey = lastSyntheticAt.keys().next().value;
     if (oldestKey) lastSyntheticAt.delete(oldestKey);

@@ -1,11 +1,23 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-export type VerifiedEvent = {
-  source: "stripe" | "synthetic";
+/**
+ * Canonical normalized event shape returned by the verifier. Council R2
+ * unanimous nit (GPT + Claude.ai): if the route handler ever knows the
+ * provider's native object structure, the single-file cutover claim is a
+ * lie. The verifier is the only seam that maps {Stripe SDK Event |
+ * synthetic JSON payload} into this canonical shape; the route then calls
+ * the same ledger RPC with this shape regardless of provider.
+ */
+export type CanonicalEvent = {
+  provider: "stripe" | "synthetic";
   event_id: string;
   user_id: string;
   amount_minor: number;
   type: "payment_intent.succeeded" | "charge.refunded";
+  /** Pre-derived inside the verifier so the route doesn't reconstruct it. */
+  idempotency_key: string;
+  /** For debugging + audit; route should NOT inspect this. */
+  raw_event_excerpt: string;
 };
 
 export class WebhookVerifyError extends Error {
@@ -24,28 +36,81 @@ function constantTimeStringEq(a: string, b: string): boolean {
 }
 
 /**
+ * Validate payload shape strictly at the verifier boundary. Council R2
+ * Claude.ai nit: a schema check at this exact seam prevents synthetic
+ * payloads from drifting from the real Stripe contract without a hard
+ * error. Hand-rolled to avoid a new dependency.
+ */
+function parseAndValidate(rawBody: string): {
+  event_id: string;
+  user_id: string;
+  amount_minor: number;
+  type: "payment_intent.succeeded" | "charge.refunded";
+} {
+  let payload: unknown;
+  try {
+    payload = JSON.parse(rawBody);
+  } catch {
+    throw new WebhookVerifyError("invalid_json", 400);
+  }
+
+  if (!payload || typeof payload !== "object") {
+    throw new WebhookVerifyError("payload_not_object", 400);
+  }
+  const p = payload as Record<string, unknown>;
+
+  if (typeof p.event_id !== "string" || p.event_id.length === 0) {
+    throw new WebhookVerifyError("event_id_required", 400);
+  }
+  if (typeof p.user_id !== "string" || p.user_id.length === 0) {
+    throw new WebhookVerifyError("user_id_required", 400);
+  }
+  if (
+    typeof p.amount_minor !== "number" ||
+    !Number.isInteger(p.amount_minor) ||
+    p.amount_minor <= 0
+  ) {
+    throw new WebhookVerifyError("amount_minor_must_be_positive_int", 400);
+  }
+  if (
+    p.type !== "payment_intent.succeeded" &&
+    p.type !== "charge.refunded"
+  ) {
+    throw new WebhookVerifyError("unsupported_event_type", 400);
+  }
+
+  return {
+    event_id: p.event_id,
+    user_id: p.user_id,
+    amount_minor: p.amount_minor,
+    type: p.type,
+  };
+}
+
+/**
  * Card 3 dual-path webhook verifier.
  *
- * Real Stripe flow (future cutover, single-file swap at this site):
- *   if (process.env.STRIPE_WEBHOOK_SECRET) {
- *     // Replace the HMAC verify branch with stripe.Webhook.constructEvent.
- *     // Payload shape is already Stripe-style (event_id/user_id/amount_minor).
- *   }
+ * The verifier is the ONLY place that needs to change at real-Stripe cutover.
+ * It returns a CanonicalEvent including the namespaced idempotency_key —
+ * route.ts treats the return value opaquely.
+ *
+ * Real Stripe flow (future cutover):
+ *   - `pnpm add stripe`
+ *   - Replace the synthetic branch below with:
+ *       const ev = stripe.webhooks.constructEvent(rawBody, sigHeader, stripeSecret);
+ *       const pi = ev.data.object;
+ *       parsed = { event_id: ev.id, user_id: pi.metadata.user_id, ... };
+ *   - Set provider='stripe' and idempotency_key='stripe:'+ev.id.
  *
  * Synthetic flow (this cycle):
- *   HMAC-SHA256 of the raw JSON body using SYNTHETIC_WEBHOOK_SECRET,
- *   delivered in X-Webhook-Signature header. Fails closed if secret unset.
- *
- * Production safety: when NODE_ENV=production AND SYNTHETIC_WEBHOOK_SECRET is
- * still set (operator misconfiguration), every synthetic-signed request is
- * still gated by SYNTHETIC_PAYMENTS_ENABLED in the handler. Even past those
- * two, the idempotency-key prefix 'synthetic:' goes into ledger.audit and
- * surfaces in any audit query.
+ *   HMAC-SHA256 of the raw body with SYNTHETIC_WEBHOOK_SECRET in the
+ *   X-Webhook-Signature header. Verifier returns 500 if secret unset, 401
+ *   on signature mismatch.
  */
 export async function verifyAndParseWebhook(
   rawBody: string,
   signatureHeader: string | null
-): Promise<VerifiedEvent> {
+): Promise<CanonicalEvent> {
   if (!signatureHeader) {
     throw new WebhookVerifyError("missing_signature");
   }
@@ -53,77 +118,58 @@ export async function verifyAndParseWebhook(
   const stripeSecret = process.env.STRIPE_WEBHOOK_SECRET;
   const synthSecret = process.env.SYNTHETIC_WEBHOOK_SECRET;
 
-  let source: "stripe" | "synthetic" | null = null;
-
   if (stripeSecret) {
-    // Cutover path. Card 3 ships without Stripe SDK installed; this branch is
-    // intentionally a stub so a future Card replaces it with a 4-line install:
-    //   import Stripe from "stripe";
-    //   const ev = stripe.webhooks.constructEvent(rawBody, signatureHeader, stripeSecret);
-    //   source = "stripe"; payload = ev.data.object;
+    // Cutover seam — annotated stub so the next Card knows exactly where to
+    // edit. Returns 501 today; replaced when Stripe SDK lands.
     throw new WebhookVerifyError(
       "stripe_path_not_yet_implemented; install stripe SDK in next Card",
       501
     );
-  } else if (synthSecret) {
-    const expected = createHmac("sha256", synthSecret).update(rawBody).digest("hex");
-    if (!constantTimeStringEq(signatureHeader, expected)) {
-      throw new WebhookVerifyError("bad_signature");
-    }
-    source = "synthetic";
-  } else {
+  }
+
+  if (!synthSecret) {
     throw new WebhookVerifyError("no_webhook_secret_configured", 500);
   }
 
-  let payload: {
-    event_id?: string;
-    user_id?: string;
-    amount_minor?: number;
-    type?: string;
-  };
-  try {
-    payload = JSON.parse(rawBody);
-  } catch {
-    throw new WebhookVerifyError("invalid_json", 400);
+  const expected = createHmac("sha256", synthSecret).update(rawBody).digest("hex");
+  if (!constantTimeStringEq(signatureHeader, expected)) {
+    throw new WebhookVerifyError("bad_signature");
   }
 
-  if (!payload.event_id || typeof payload.event_id !== "string") {
-    throw new WebhookVerifyError("event_id_required", 400);
-  }
-  if (!payload.user_id || typeof payload.user_id !== "string") {
-    throw new WebhookVerifyError("user_id_required", 400);
-  }
-  if (
-    typeof payload.amount_minor !== "number" ||
-    !Number.isInteger(payload.amount_minor) ||
-    payload.amount_minor <= 0
-  ) {
-    throw new WebhookVerifyError("amount_minor_must_be_positive_int", 400);
-  }
-  if (
-    payload.type !== "payment_intent.succeeded" &&
-    payload.type !== "charge.refunded"
-  ) {
-    throw new WebhookVerifyError("unsupported_event_type", 400);
-  }
+  const parsed = parseAndValidate(rawBody);
+  const refundSuffix = parsed.type === "charge.refunded" ? "refund:" : "";
 
   return {
-    source,
-    event_id: payload.event_id,
-    user_id: payload.user_id,
-    amount_minor: payload.amount_minor,
-    type: payload.type,
+    provider: "synthetic",
+    event_id: parsed.event_id,
+    user_id: parsed.user_id,
+    amount_minor: parsed.amount_minor,
+    type: parsed.type,
+    idempotency_key: `synthetic:${refundSuffix}${parsed.event_id}`,
+    raw_event_excerpt: rawBody.slice(0, 256),
   };
 }
 
 /**
- * Helper used by the synthetic UI server action to sign a synthetic payload
- * with the dev secret. NEVER call from the client. If this function returns
- * null, synthetic mode is disabled and the UI should treat that as a hard
- * block (no fallback path).
+ * Helper used by the synthetic UI simulator. NEVER call from the client.
+ * Returns null when SYNTHETIC_WEBHOOK_SECRET is unset — synthetic mode
+ * is a hard block in that case (no fallback).
  */
 export function signSyntheticPayload(rawBody: string): string | null {
   const synthSecret = process.env.SYNTHETIC_WEBHOOK_SECRET;
   if (!synthSecret) return null;
   return createHmac("sha256", synthSecret).update(rawBody).digest("hex");
+}
+
+/**
+ * Belt-and-braces production guard. Council R2 Claude.ai nit: NODE_ENV is
+ * a string env var that can be misset; cross-checking with VERCEL_ENV gives
+ * two independent signals before allowing any synthetic path to proceed.
+ * Returns the reason string if synthetic is disallowed here, or null if OK.
+ */
+export function syntheticPathBlockedReason(): string | null {
+  if (process.env.NODE_ENV === "production") return "synthetic_blocked_in_production";
+  if (process.env.VERCEL_ENV === "production") return "synthetic_blocked_in_vercel_production";
+  if (process.env.SYNTHETIC_PAYMENTS_ENABLED !== "1") return "synthetic_payments_disabled";
+  return null;
 }

@@ -193,6 +193,67 @@ try:
                     WHERE user_id=%s OR user_id='00000000-0000-0000-0000-000000000000'::uuid""", (test_user,))
     assert_true("ledger.no_drift", cur.fetchone()[0])
 
+    # ─── Card 3 R2 council nit coverage ──────────────────────────────────
+    # 15. Structural column: purchase_source on ledger.transactions exists +
+    #     CHECK constraint rejects unknown values.
+    cur.execute("""SELECT column_name FROM information_schema.columns
+                    WHERE table_schema='ledger' AND table_name='transactions'
+                      AND column_name='purchase_source'""")
+    assert_true("schema.purchase_source_column_exists", cur.fetchone() is not None)
+
+    bad_source_rejected = False
+    try:
+        cur.execute("""INSERT INTO ledger.transactions (transaction_type, initiated_by, metadata, purchase_source)
+                       VALUES ('purchase_settled', %s, '{}'::jsonb, 'paypal')""", (test_user,))
+    except psycopg2.Error as e:
+        if 'purchase_source_check' in str(e) or 'check constraint' in str(e).lower():
+            bad_source_rejected = True
+    assert_true("schema.purchase_source_check_constraint", bad_source_rejected)
+
+    # 16. Structural column actually populated by purchase_complete (not just metadata).
+    pe = 'sim-r2-'+str(uuid.uuid4())
+    cur.execute("""SELECT ledger.purchase_complete(%s, %s, %s, 'synthetic', %s, '{}'::jsonb)""",
+                (pe, test_user, 500, test_user))
+    txn_r2 = cur.fetchone()[0]
+    cur.execute("SELECT purchase_source FROM ledger.transactions WHERE transaction_id=%s", (txn_r2,))
+    assert_eq("synthetic.purchase_source_column_populated", cur.fetchone()[0], 'synthetic')
+
+    # 17. Cross-namespace replay: same event_id, different source → distinct txns
+    #     (already covered by source.namespace_independent at #7, but explicit
+    #     for the council-cited concern).
+    cur.execute("""SELECT ledger.purchase_complete(%s, %s, %s, 'stripe', %s, '{}'::jsonb)""",
+                (pe, test_user, 500, test_user))
+    txn_cross = cur.fetchone()[0]
+    assert_true("cross_namespace.distinct_transactions", txn_cross != txn_r2)
+    cur.execute("SELECT purchase_source FROM ledger.transactions WHERE transaction_id=%s", (txn_cross,))
+    assert_eq("cross_namespace.source_column_per_row", cur.fetchone()[0], 'stripe')
+
+    # 18. Refund amount greater than original purchase: should succeed at RPC layer
+    #     (the RPC doesn't enforce the upper bound — that's caller-side policy),
+    #     but if user available has insufficient funds, post_transaction rejects.
+    #     Test the insufficient-funds path explicitly.
+    cur.execute("SELECT balance_cached FROM ledger.accounts WHERE user_id=%s AND account_type='available'", (test_user,))
+    avail = cur.fetchone()[0]
+    over_refund_rejected = False
+    try:
+        cur.execute("""SELECT ledger.purchase_refund(%s, %s, %s, 'synthetic', %s, '{}'::jsonb)""",
+                    ('sim-overrefund-'+str(uuid.uuid4()), test_user, avail + 1, test_user))
+    except psycopg2.Error as e:
+        if 'insufficient_funds' in str(e):
+            over_refund_rejected = True
+    assert_true("refund.overrefund_rejected_when_insufficient", over_refund_rejected)
+
+    # 19. Partial index for synthetic wipe query exists (Claude.ai R2 nit).
+    cur.execute("""SELECT count(*) FROM pg_indexes
+                    WHERE schemaname='ledger' AND indexname='transactions_synthetic_idx'""")
+    assert_eq("schema.synthetic_partial_index", cur.fetchone()[0], 1)
+
+    # 20. Public PostgREST shims still present after 0007 (migration didn't drop them).
+    cur.execute("""SELECT proname FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+                    WHERE n.nspname='public' AND proname IN ('purchase_complete','purchase_refund')""")
+    public_fns = sorted([r[0] for r in cur.fetchall()])
+    assert_eq("schema.public_shims_intact", public_fns, ['purchase_complete', 'purchase_refund'])
+
 finally:
     cur.execute("UPDATE public.profiles SET age_verified=%s, dob=%s WHERE user_id=%s",
                 (orig_av, orig_dob, test_user))

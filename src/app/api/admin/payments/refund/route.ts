@@ -63,7 +63,10 @@ export async function POST(request: NextRequest) {
   if (source !== "stripe" && source !== "synthetic") {
     return NextResponse.json({ error: "invalid_source" }, { status: 400 });
   }
-  if (source === "synthetic" && process.env.NODE_ENV === "production") {
+  if (
+    source === "synthetic" &&
+    (process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production")
+  ) {
     return NextResponse.json(
       { error: "synthetic_blocked_in_production" },
       { status: 403 }
