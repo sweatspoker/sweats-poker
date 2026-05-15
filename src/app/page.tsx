@@ -62,16 +62,18 @@ function Header({ signedIn }: { signedIn: boolean }) {
 
 function Logo() {
   return (
-    <div className="flex items-center gap-3">
-      <div className="size-11 rounded-xl bg-[var(--brand-red)] grid place-items-center font-black text-white text-xl shadow-[0_0_24px_rgba(239,43,43,0.45)]">
-        S
-      </div>
-      <div className="flex flex-col leading-none">
-        <span className="text-2xl font-black tracking-tight">SWEATS</span>
-        <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
-          Interactive Poker Stream Trading
-        </span>
-      </div>
+    <div className="flex flex-col items-center leading-none">
+      <Image
+        src="/sweats-logo.png"
+        alt="sweats.poker"
+        width={900}
+        height={256}
+        priority
+        className="h-10 md:h-12 w-auto"
+      />
+      <span className="mt-1.5 text-[10px] md:text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
+        Interactive Poker Stream Trading
+      </span>
     </div>
   );
 }
