@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sweats — Trade shares of poker players live",
+  title: "Sweats: Trade shares of poker players live",
   description:
     "Sweats is a live trading platform for poker streams. Buy shares of players when they sit down. Trade their swings in real time. Cash out when they do.",
   openGraph: {
-    title: "Sweats — Trade shares of poker players live",
+    title: "Sweats: Trade shares of poker players live",
     description:
       "Buy shares of players when they sit. Trade their swings. Cash out when they do.",
     url: "https://sweats.poker",

@@ -1,4 +1,4 @@
-// Below-fold "Settlement at cashout" feature — STATIC cashout-receipt screen.
+// Below-fold "Settlement at cashout" feature: STATIC cashout-receipt screen.
 // Per the council convergence (Claude.ai R2 + DeepSeek R1): rendered as an
 // in-app receipt state, NOT a push-notification animation. Reads as
 // proof-of-payout for visitors and proof-of-system for partner rooms.

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const alt =
-  "Sweats — Trade shares of poker players live";
+  "Sweats: Trade shares of poker players live";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

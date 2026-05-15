@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-// Supabase wiring deferred — at this point in build we surface the
+// Supabase wiring deferred. At this point in build we surface the
 // infra heads-up (Supabase project creation under Tommy's account).
 // Until creds land in env, this endpoint just validates + logs to stdout
 // so the form ships behaviorally complete.

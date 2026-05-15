@@ -56,7 +56,7 @@ export default async function AgeGatePage({
           )}
           {error === "invalid" && (
             <div className="text-xs text-[var(--brand-red)] mt-1">
-              That date doesn&apos;t look right — please try again.
+              That date doesn&apos;t look right. Please try again.
             </div>
           )}
           {error === "save_failed" && (

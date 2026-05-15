@@ -79,7 +79,7 @@ export default async function ProfilePage({
           <div className="text-xs uppercase tracking-[0.15em] text-white/50 font-semibold">
             Account
           </div>
-          <Row label="Age verified" value="Yes — 18+" tone="green" />
+          <Row label="Age verified" value="Yes, 18+" tone="green" />
           <Row
             label="Member since"
             value={new Date(profile.created_at).toLocaleDateString()}

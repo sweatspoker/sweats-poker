@@ -1,4 +1,4 @@
-// Below-fold "Trading View" feature — full version with order-book depth.
+// Below-fold "Trading View" feature: full version with order-book depth.
 // Per the council convergence, this lives below the fold where partner-room
 // audiences linger on order-book detail without the 5-second comprehension tax.
 export function TradingViewMock() {

@@ -200,9 +200,9 @@ function ProductDeepDive() {
           </h3>
           <p className="mt-5 text-lg text-white/75 leading-relaxed">
             Bids and asks update in real time as the table plays. No bonding
-            curves, no AMMs — peer-to-peer trading, the way real markets
-            work. Watch the depth, post your limit, take the market when the
-            stream tells you to move.
+            curves, no AMMs. Peer-to-peer trading, the way real markets work.
+            Watch the depth, post your limit, take the market when the stream
+            tells you to move.
           </p>
         </div>
         <div className="rounded-3xl border border-white/10 bg-[var(--surface)]/80 p-2 backdrop-blur-sm shadow-2xl">
@@ -221,7 +221,7 @@ function ProductDeepDive() {
           <p className="mt-5 text-lg text-white/75 leading-relaxed">
             No abstract settlement line. No oracle disputes. When the player
             cashes out, the pool pays every shareholder proportionally based
-            on the final stack. The market closes the way it opened — at the
+            on the final stack. The market closes the way it opened. At the
             table.
           </p>
         </div>
@@ -241,7 +241,7 @@ function WhyNow() {
     },
     {
       title: "Chip stacks are live assets.",
-      body: "In poker, value changes with every card dealt. Sweats turns that volatility into a liquid market — fans trade players' stacks in real time as the stream unfolds.",
+      body: "In poker, value changes with every card dealt. Sweats turns that volatility into a liquid market. Fans trade players' stacks in real time as the stream unfolds.",
     },
     {
       title: "Streams need a second layer.",
@@ -257,7 +257,7 @@ function WhyNow() {
             key={p.title}
             className="rounded-2xl border border-white/8 bg-gradient-to-b from-[var(--surface)]/80 to-[var(--surface-2)]/40 p-8"
           >
-            <div className="font-semibold text-xl leading-tight">
+            <div className="font-semibold text-xl leading-tight min-h-[2lh]">
               {p.title}
             </div>
             <div className="mt-4 text-base text-white/65 leading-relaxed">
@@ -285,7 +285,7 @@ function Partner() {
           <p className="mt-4 text-white/70 max-w-xl text-base leading-relaxed">
             Sweats partners with one poker room per market. You bring the
             stream and the players. We bring the audience and the trading
-            layer. A new revenue line on every session — and a reason for
+            layer. A new revenue line on every session, and a reason for
             your viewers to never leave the broadcast.
           </p>
         </div>
@@ -309,7 +309,7 @@ function FooterCTA() {
         </h2>
         <p className="mt-6 text-lg md:text-xl text-white/75 max-w-lg mx-auto leading-relaxed">
           We&apos;re opening the waitlist before our first stream. Drop your
-          email — first-day traders get a Gold Coin bonus on launch.
+          email. First-day traders get a Gold Coin bonus on launch.
         </p>
         <div className="mt-10 max-w-md mx-auto">
           <WaitlistForm />
@@ -347,7 +347,7 @@ function PokerTableArc() {
   // the image's rectangular alpha is still there. Switch to alpha-blending
   // the image itself: radial mask-image dissolves the image's actual alpha
   // at all four edges, and mix-blend-mode: lighten makes any pixel darker
-  // than the page bg #0a0a0a literally disappear — no chromatic cliff.
+  // than the page bg #0a0a0a literally disappear, killing the chromatic cliff.
   // One subtle linear mask added for headline legibility on the left.
   const maskImage =
     "radial-gradient(ellipse 75% 70% at 70% 55%, black 25%, rgba(0,0,0,0.85) 50%, transparent 90%), linear-gradient(90deg, transparent 0%, transparent 35%, black 70%)";

@@ -36,7 +36,7 @@ export async function loadProfile(userId: string) {
 
 /**
  * Single guard for any post-auth route that needs an age-verified user.
- * Future Cards (2/5/7/9) MUST use this — never re-check `age_verified` ad-hoc.
+ * Future Cards (2/5/7/9) MUST use this; never re-check `age_verified` ad-hoc.
  */
 export async function requireVerifiedUser() {
   const { supabase, user } = await requireUser();
