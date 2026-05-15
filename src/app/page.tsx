@@ -236,16 +236,16 @@ function ProductDeepDive() {
 function WhyNow() {
   const points = [
     {
-      title: "Poker streaming is bigger than ever",
-      body: "Hustler Casino Live, PokerGO, partypoker — millions of hours watched monthly. The audience is here. They just have no way to participate.",
+      title: "Watching isn't enough anymore.",
+      body: "Millions of fans watch high-stakes poker for hours every night. They're deeply invested in the action, yet stuck behind the glass. We build the bridge.",
     },
     {
-      title: "Pick'em players want skin in the game",
-      body: "PrizePicks and Underdog proved fans will engage with markets on athletes. Poker players ARE the game. The unit economics are stronger.",
+      title: "Chip stacks are live assets.",
+      body: "In poker, value changes with every card dealt. Sweats turns that volatility into a liquid market — fans trade players' stacks in real time as the stream unfolds.",
     },
     {
-      title: "Rooms need a new content angle",
-      body: "Free-roll tournaments and reload bonuses are tapped. A live trading layer on streams gives partner rooms a brand-new retention surface.",
+      title: "Streams need a second layer.",
+      body: "Passive viewing has reached its ceiling. Turning spectators into active traders transforms a one-way broadcast into a high-velocity ecosystem where every hand matters.",
     },
   ];
   return (
