@@ -345,66 +345,64 @@ function Footer() {
 }
 
 function PokerTableArc() {
-  // Council R2 (poll 6070cbec-73d9-486c-83d9-a8c2d6d5990d): an abstract poker-table
-  // arc behind the hero phones is the right poker-signal — but only if it stays
-  // architectural (charcoal, not red), reads as an arc not a full ellipse, and
-  // carries no table detailing (no rail, no chip-shadows). Anything more lands
-  // in the casino-venue register the positioning is trying to escape.
+  // Originally per council R2 (poll 6070cbec) was a single abstract arc — but
+  // user feedback (quangholio, 2026-05-14) was that the abstraction didn't read
+  // as a table at all. Pivoted to a clearly recognizable oval table surface:
+  // still charcoal (no green felt, no brand-red), still no rail/chip-shadow
+  // detailing, but the shape itself is unmistakably a poker table.
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
       <svg
         viewBox="0 0 1000 700"
-        preserveAspectRatio="xMidYMid slice"
-        className="absolute inset-x-[-10%] inset-y-[5%] w-[120%] h-[95%]"
+        preserveAspectRatio="xMidYMid meet"
+        className="absolute inset-0 w-full h-full"
         aria-hidden
       >
         <defs>
-          <radialGradient id="tableFill" cx="50%" cy="78%" r="55%">
-            <stop offset="0%" stopColor="#5a5a5a" stopOpacity="1" />
-            <stop offset="35%" stopColor="#3d3d3d" stopOpacity="0.9" />
-            <stop offset="70%" stopColor="#1c1c1c" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#0a0a0a" stopOpacity="0" />
+          {/* table SURFACE — darker at center (felt), lifting toward the rim */}
+          <radialGradient id="tableSurface" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#1a1a1a" stopOpacity="1" />
+            <stop offset="55%" stopColor="#262626" stopOpacity="1" />
+            <stop offset="88%" stopColor="#3a3a3a" stopOpacity="1" />
+            <stop offset="100%" stopColor="#4a4a4a" stopOpacity="1" />
           </radialGradient>
-          <linearGradient id="rimLight" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
+          {/* outer rim catching room light — the visible top edge */}
+          <linearGradient id="rimLightTop" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.45)" />
             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </linearGradient>
-          <linearGradient id="rimShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient id="rimShadowBottom" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="rgba(0,0,0,0)" />
             <stop offset="100%" stopColor="rgba(0,0,0,0.7)" />
           </linearGradient>
-          <linearGradient id="edgeFade" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="white" stopOpacity="0" />
-            <stop offset="15%" stopColor="white" stopOpacity="1" />
-            <stop offset="85%" stopColor="white" stopOpacity="1" />
-            <stop offset="100%" stopColor="white" stopOpacity="0" />
-          </linearGradient>
-          <mask id="archFade">
-            <rect width="1000" height="700" fill="url(#edgeFade)" />
-          </mask>
         </defs>
-        {/* shadow above the table edge — gives the rim something to catch against */}
-        <path
-          d="M -20 200 Q 500 110 1020 200 L 1020 290 Q 500 200 -20 290 Z"
-          fill="url(#rimShadow)"
-          mask="url(#archFade)"
-        />
-        {/* table surface — lifted-charcoal radial, centered in the visible viewport */}
+
+        {/* drop-shadow halo beneath the table — separates it from page bg */}
+        <ellipse cx="500" cy="510" rx="430" ry="80" fill="rgba(0,0,0,0.5)" />
+
+        {/* the table itself — clearly visible oval */}
         <ellipse
           cx="500"
-          cy="540"
-          rx="600"
-          ry="320"
-          fill="url(#tableFill)"
-          mask="url(#archFade)"
+          cy="430"
+          rx="420"
+          ry="180"
+          fill="url(#tableSurface)"
         />
-        {/* far-rim catch-light — the load-bearing curve */}
+
+        {/* highlight on the top half of the rim — depth */}
         <path
-          d="M -20 250 Q 500 130 1020 250"
+          d="M 80 430 A 420 180 0 0 1 920 430"
           fill="none"
-          stroke="url(#rimLight)"
+          stroke="url(#rimLightTop)"
           strokeWidth="3"
-          mask="url(#archFade)"
+        />
+
+        {/* shadow on bottom half of rim — depth */}
+        <path
+          d="M 80 430 A 420 180 0 0 0 920 430"
+          fill="none"
+          stroke="url(#rimShadowBottom)"
+          strokeWidth="2"
         />
       </svg>
     </div>
