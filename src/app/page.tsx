@@ -34,7 +34,7 @@ function Header({ signedIn }: { signedIn: boolean }) {
         {signedIn ? (
           <a
             href="/profile"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors px-5 py-2.5 text-sm font-semibold"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors px-6 py-3 text-base font-semibold"
           >
             Your profile
           </a>
@@ -42,13 +42,13 @@ function Header({ signedIn }: { signedIn: boolean }) {
           <>
             <a
               href="/login"
-              className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors px-5 py-2.5 text-sm font-semibold"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors px-6 py-3 text-base font-semibold"
             >
               Sign in
             </a>
             <a
               href="#waitlist"
-              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-5 py-2.5 text-sm font-semibold text-black"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-6 py-3 text-base font-semibold text-black"
             >
               Get early access
             </a>
@@ -61,13 +61,13 @@ function Header({ signedIn }: { signedIn: boolean }) {
 
 function Logo() {
   return (
-    <div className="flex items-center gap-2.5">
-      <div className="size-9 rounded-xl bg-[var(--brand-red)] grid place-items-center font-black text-white text-lg shadow-[0_0_24px_rgba(239,43,43,0.45)]">
+    <div className="flex items-center gap-3">
+      <div className="size-11 rounded-xl bg-[var(--brand-red)] grid place-items-center font-black text-white text-xl shadow-[0_0_24px_rgba(239,43,43,0.45)]">
         S
       </div>
       <div className="flex flex-col leading-none">
-        <span className="text-xl font-black tracking-tight">SWEATS</span>
-        <span className="text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
+        <span className="text-2xl font-black tracking-tight">SWEATS</span>
+        <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
           live poker markets
         </span>
       </div>
@@ -78,16 +78,16 @@ function Logo() {
 function Hero() {
   return (
     <section className="w-full max-w-6xl mx-auto px-6 pt-8 pb-20 md:pt-16 md:pb-32 grid md:grid-cols-12 gap-10 items-center">
-      <div className="md:col-span-6 flex flex-col gap-7">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80">
-          <span className="size-1.5 rounded-full bg-[var(--brand-red)] live-dot" />
+      <div className="md:col-span-6 flex flex-col gap-8">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80">
+          <span className="size-2 rounded-full bg-[var(--brand-red)] live-dot" />
           Now partnering with select poker rooms
         </div>
-        <h1 className="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight">
+        <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-black leading-[1.0] tracking-tight">
           Trade shares of poker players{" "}
           <span className="text-[var(--brand-red)]">live.</span>
         </h1>
-        <p className="text-lg md:text-xl text-white/70 max-w-xl leading-relaxed">
+        <p className="text-xl md:text-2xl text-white/75 max-w-xl leading-relaxed">
           Buy shares of players when they sit down. Trade their swings in real
           time. Cash out when they do. The first market built for the poker
           stream era.
@@ -95,9 +95,9 @@ function Hero() {
         <div id="waitlist" className="pt-2">
           <WaitlistForm />
         </div>
-        <div className="flex items-center gap-6 text-xs text-white/50">
+        <div className="flex items-center gap-6 text-sm text-white/55">
           <div className="flex items-center gap-2">
-            <span className="size-1.5 rounded-full bg-[var(--brand-green)]" />
+            <span className="size-2 rounded-full bg-[var(--brand-green)]" />
             Free to play. Gold Coins, no cash redemption.
           </div>
         </div>
@@ -158,24 +158,24 @@ function HowItWorks() {
     },
   ];
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-16 md:py-24">
+    <section className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28">
       <SectionHeading
         kicker="How it works"
         title="A real market on every session."
       />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-14">
         {steps.map((s) => (
           <div
             key={s.n}
-            className="rounded-2xl border border-white/8 bg-[var(--surface)]/60 p-6 backdrop-blur-sm"
+            className="rounded-2xl border border-white/8 bg-[var(--surface)]/60 p-7 backdrop-blur-sm"
           >
-            <div className="text-[var(--brand-red)] font-black text-3xl tracking-tight">
+            <div className="text-[var(--brand-red)] font-black text-4xl tracking-tight">
               0{s.n}
             </div>
-            <div className="mt-4 font-semibold text-lg leading-tight">
+            <div className="mt-5 font-semibold text-xl leading-tight">
               {s.title}
             </div>
-            <div className="mt-2 text-sm text-white/60 leading-relaxed">
+            <div className="mt-3 text-base text-white/65 leading-relaxed">
               {s.body}
             </div>
           </div>
@@ -187,21 +187,21 @@ function HowItWorks() {
 
 function ProductDeepDive() {
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-16 md:py-24">
+    <section className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28">
       <SectionHeading
         kicker="The product"
         title="A real order book. A real settlement."
       />
 
-      <div className="mt-12 grid md:grid-cols-2 gap-10 items-center">
+      <div className="mt-14 grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <div className="text-xs uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
+          <div className="text-sm uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
             Live order book
           </div>
-          <h3 className="mt-3 text-3xl md:text-4xl font-black tracking-tight leading-tight">
+          <h3 className="mt-4 text-4xl md:text-5xl font-black tracking-tight leading-tight">
             Watch the spread move with every all-in.
           </h3>
-          <p className="mt-4 text-white/70 leading-relaxed">
+          <p className="mt-5 text-lg text-white/75 leading-relaxed">
             Bids and asks update in real time as the table plays. No bonding
             curves, no AMMs — peer-to-peer trading, the way real markets
             work. Watch the depth, post your limit, take the market when the
@@ -213,15 +213,15 @@ function ProductDeepDive() {
         </div>
       </div>
 
-      <div className="mt-20 grid md:grid-cols-2 gap-10 items-center">
+      <div className="mt-24 grid md:grid-cols-2 gap-12 items-center">
         <div className="md:order-2">
-          <div className="text-xs uppercase tracking-[0.18em] text-[var(--brand-green)] font-semibold">
+          <div className="text-sm uppercase tracking-[0.18em] text-[var(--brand-green)] font-semibold">
             Settlement at cashout
           </div>
-          <h3 className="mt-3 text-3xl md:text-4xl font-black tracking-tight leading-tight">
+          <h3 className="mt-4 text-4xl md:text-5xl font-black tracking-tight leading-tight">
             When they rack up, you get paid.
           </h3>
-          <p className="mt-4 text-white/70 leading-relaxed">
+          <p className="mt-5 text-lg text-white/75 leading-relaxed">
             No abstract settlement line. No oracle disputes. When the player
             cashes out, the pool pays every shareholder proportionally based
             on the final stack. The market closes the way it opened — at the
@@ -252,18 +252,18 @@ function WhyNow() {
     },
   ];
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-16 md:py-24">
+    <section className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28">
       <SectionHeading kicker="Why now" title="The audience showed up. Nobody built the floor." />
-      <div className="grid md:grid-cols-3 gap-5 mt-12">
+      <div className="grid md:grid-cols-3 gap-6 mt-14">
         {points.map((p) => (
           <div
             key={p.title}
-            className="rounded-2xl border border-white/8 bg-gradient-to-b from-[var(--surface)]/80 to-[var(--surface-2)]/40 p-7"
+            className="rounded-2xl border border-white/8 bg-gradient-to-b from-[var(--surface)]/80 to-[var(--surface-2)]/40 p-8"
           >
-            <div className="font-semibold text-lg leading-tight">
+            <div className="font-semibold text-xl leading-tight">
               {p.title}
             </div>
-            <div className="mt-3 text-sm text-white/60 leading-relaxed">
+            <div className="mt-4 text-base text-white/65 leading-relaxed">
               {p.body}
             </div>
           </div>
@@ -275,17 +275,17 @@ function WhyNow() {
 
 function Partner() {
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-12 md:py-16">
+    <section className="w-full max-w-6xl mx-auto px-6 py-16 md:py-20">
       <div className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 px-8 py-10 md:px-12 md:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
-          <div className="text-xs uppercase tracking-[0.18em] text-white/50 font-semibold">
+          <div className="text-sm uppercase tracking-[0.18em] text-white/55 font-semibold">
             Partner rooms
           </div>
-          <div className="mt-2 text-2xl md:text-3xl font-black tracking-tight">
+          <div className="mt-3 text-3xl md:text-4xl font-black tracking-tight">
             Powered by{" "}
             <span className="text-[var(--brand-red)]">your room</span>.
           </div>
-          <p className="mt-3 text-white/60 max-w-xl text-sm leading-relaxed">
+          <p className="mt-4 text-white/70 max-w-xl text-base leading-relaxed">
             Sweats partners with one poker room per market. You bring the
             stream and the players. We bring the audience and the trading
             layer. A new revenue line on every session — and a reason for
@@ -294,7 +294,7 @@ function Partner() {
         </div>
         <a
           href="mailto:partners@sweats.poker"
-          className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 px-5 py-3 text-sm font-semibold whitespace-nowrap transition-colors"
+          className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 px-6 py-3.5 text-base font-semibold whitespace-nowrap transition-colors"
         >
           Talk to us →
         </a>
@@ -305,16 +305,16 @@ function Partner() {
 
 function FooterCTA() {
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28">
-      <div className="rounded-3xl border border-[var(--brand-red)]/30 bg-gradient-to-br from-[var(--brand-red)]/20 via-transparent to-transparent px-8 py-12 md:px-14 md:py-20 text-center">
-        <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[0.95]">
+    <section className="w-full max-w-6xl mx-auto px-6 py-24 md:py-32">
+      <div className="rounded-3xl border border-[var(--brand-red)]/30 bg-gradient-to-br from-[var(--brand-red)]/20 via-transparent to-transparent px-8 py-14 md:px-14 md:py-24 text-center">
+        <h2 className="text-5xl md:text-7xl font-black tracking-tight leading-[0.95]">
           Get on the floor early.
         </h2>
-        <p className="mt-5 text-white/70 max-w-lg mx-auto leading-relaxed">
+        <p className="mt-6 text-lg md:text-xl text-white/75 max-w-lg mx-auto leading-relaxed">
           We&apos;re opening the waitlist before our first stream. Drop your
           email — first-day traders get a Gold Coin bonus on launch.
         </p>
-        <div className="mt-8 max-w-md mx-auto">
+        <div className="mt-10 max-w-md mx-auto">
           <WaitlistForm />
         </div>
       </div>
@@ -324,7 +324,7 @@ function FooterCTA() {
 
 function Footer() {
   return (
-    <footer className="w-full max-w-6xl mx-auto px-6 py-10 border-t border-white/8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-xs text-white/40">
+    <footer className="w-full max-w-6xl mx-auto px-6 py-12 border-t border-white/8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-sm text-white/45">
       <div className="flex items-center gap-3">
         <Logo />
       </div>
@@ -419,11 +419,11 @@ function SectionHeading({
   title: string;
 }) {
   return (
-    <div className="flex flex-col gap-3 max-w-2xl">
-      <div className="text-xs uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
+    <div className="flex flex-col gap-4 max-w-3xl">
+      <div className="text-sm uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
         {kicker}
       </div>
-      <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.05]">
+      <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.05]">
         {title}
       </h2>
     </div>
