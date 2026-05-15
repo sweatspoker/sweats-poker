@@ -78,8 +78,9 @@ function Logo() {
 
 function Hero() {
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 pt-8 pb-20 md:pt-16 md:pb-32 grid md:grid-cols-12 gap-10 items-center">
-      <div className="md:col-span-6 flex flex-col gap-8">
+    <section className="relative w-full max-w-6xl mx-auto px-6 pt-8 pb-20 md:pt-16 md:pb-32 grid md:grid-cols-12 gap-10 items-center">
+      <PokerTableArc />
+      <div className="md:col-span-6 flex flex-col gap-8 relative z-10">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80">
           <span className="size-2 rounded-full bg-[var(--brand-red)] live-dot" />
           Now partnering with select poker rooms
@@ -104,12 +105,7 @@ function Hero() {
         </div>
       </div>
 
-      <div className="md:col-span-6 relative h-[640px] md:h-[720px]">
-        {/* Charcoal table-arc behind the phones — surface of the game, not the venue.
-            Per council R2 convergence (poll 6070cbec): arc not ellipse, charcoal not red,
-            no rail / no chip shadows / no detailing. Just the curve. The phones (the
-            trading interface) sit on the table (the poker world). */}
-        <PokerTableArc />
+      <div className="md:col-span-6 relative h-[640px] md:h-[720px] z-10">
         <div className="absolute inset-0 grid place-items-center">
           <div
             className="absolute z-10"
@@ -346,27 +342,49 @@ function Footer() {
 }
 
 function PokerTableArc() {
-  // GPT-generated photoreal poker-table image, masked with a soft radial
-  // vignette so the edges fade into the page background instead of clipping
-  // as a hard rectangle. The mask keeps the table center fully visible and
-  // fades to transparent at all four sides.
-  const fadeMask =
-    "radial-gradient(ellipse 75% 70% at 50% 50%, black 35%, transparent 90%)";
+  // Full-hero atmospheric background. GPT redesign per quangholio feedback:
+  // the table extends from the right as a horizon-receding element rather
+  // than dominating as a slab; the atmosphere bleeds across the whole hero
+  // so the headline text on the left sits on top of the same continuous
+  // poker-room mood rather than against pure black. Two layered overlays
+  // keep the text legible:
+  //   - left-to-right linear darkener so the headline reads on dark felt
+  //   - bottom-fade so the section blends into the page below
+  //   - corner-fade vignette to soften the outer edges into the bg
   return (
-    <div
-      className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
-      style={{
-        maskImage: fadeMask,
-        WebkitMaskImage: fadeMask,
-      }}
-    >
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
       <Image
         src="/poker-table-hero.png"
         alt=""
         fill
         priority
-        className="object-cover object-center"
-        sizes="(min-width: 768px) 50vw, 100vw"
+        className="object-cover object-right"
+        sizes="100vw"
+      />
+      {/* legibility overlay: dark on the left where the headline sits,
+          fading toward the right where the table is */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 35%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%)",
+        }}
+      />
+      {/* bottom fade — section blends into page bg below the hero */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-1/3"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.75) 70%, rgba(10,10,10,1) 100%)",
+        }}
+      />
+      {/* top fade — headers area dissolves into bg */}
+      <div
+        className="absolute inset-x-0 top-0 h-1/4"
+        style={{
+          background:
+            "linear-gradient(0deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.6) 70%, rgba(10,10,10,1) 100%)",
+        }}
       />
     </div>
   );
