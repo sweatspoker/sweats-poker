@@ -46,6 +46,7 @@ for fn in ('ipo_place_bid','ipo_raise_bid','ipo_cancel_bid','ipo_clear_offering'
 cur.execute("""INSERT INTO players.players (player_id, display_name, sport, status)
  VALUES ('p_c5_auction','Card 5 Auction Test','poker','active')
  ON CONFLICT (player_id) DO UPDATE SET status='active'""")
+cur.execute("SELECT players.record_consent('p_c5_auction', 'v1.0', 'operator_attestation', NULL, NULL, NULL)")
 
 bidders = [str(uuid.uuid4()) for _ in range(3)]
 treasury_uid = '00000000-0000-0000-0000-000000000000'
@@ -186,6 +187,7 @@ atrue("ledger.no_drift", cur.fetchone()[0])
 cur.execute("DELETE FROM ipo.portfolio WHERE offering_id IN (SELECT offering_id FROM ipo.offerings WHERE player_id='p_c5_auction')")
 cur.execute("DELETE FROM ipo.bids WHERE offering_id IN (SELECT offering_id FROM ipo.offerings WHERE player_id='p_c5_auction')")
 cur.execute("DELETE FROM ipo.offerings WHERE player_id='p_c5_auction'")
+cur.execute("DELETE FROM players.consent_releases WHERE player_id='p_c5_auction'")
 cur.execute("DELETE FROM players.players WHERE player_id='p_c5_auction'")
 for u in bidders + [extra_bidder]:
     cur.execute("DELETE FROM ledger.entries WHERE account_id IN (SELECT account_id FROM ledger.accounts WHERE user_id=%s)", (u,))

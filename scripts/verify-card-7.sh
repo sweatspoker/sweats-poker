@@ -83,6 +83,7 @@ try:
     cur.execute("""INSERT INTO players.players (player_id, display_name, sport, status)
                    VALUES ('CARD7-PLAYER','Test Card 7','poker','active')
                    ON CONFLICT (player_id) DO UPDATE SET status='active'""")
+    cur.execute("SELECT players.record_consent('CARD7-PLAYER', 'v1.0', 'operator_attestation', NULL, NULL, NULL)")
 
     # Seed an offering (just to anchor offering_id on orders, even though Card 7 doesn't require it).
     cur.execute("""INSERT INTO ipo.offerings (player_id, player_display_name, total_shares, shares_remaining, price_per_share_minor, opens_at, closes_at, created_by, clearing_status)
@@ -217,6 +218,7 @@ finally:
     cur.execute("DELETE FROM ledger.idempotency_keys WHERE key LIKE %s OR key LIKE %s", ('self-sell-%','self-buy-%'))
     cur.execute("DELETE FROM ipo.portfolio WHERE user_id IN (%s, %s)", (buyer_user, seller_user))
     cur.execute("DELETE FROM ipo.offerings WHERE player_id='CARD7-PLAYER'")
+    cur.execute("DELETE FROM players.consent_releases WHERE player_id='CARD7-PLAYER'")
     cur.execute("DELETE FROM players.players WHERE player_id='CARD7-PLAYER'")
     cur.execute("DELETE FROM ledger.transactions WHERE transaction_id NOT IN (SELECT DISTINCT transaction_id FROM ledger.entries)")
     cur.execute("DELETE FROM ledger.accounts WHERE user_id IN (%s, %s)", (buyer_user, seller_user))

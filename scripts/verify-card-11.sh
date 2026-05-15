@@ -44,6 +44,7 @@ try:
     # Seed a player + offering + portfolio row.
     pid='C11-PLAYER-'+str(uuid.uuid4())[:8]
     cur.execute("""INSERT INTO players.players (player_id, display_name, sport, status) VALUES (%s,'C11 Test','poker','active')""",(pid,))
+    cur.execute("SELECT players.record_consent(%s, 'v1.0', 'operator_attestation', NULL, NULL, NULL)",(pid,))
     cur.execute("""INSERT INTO ipo.offerings (player_id, player_display_name, total_shares, shares_remaining, price_per_share_minor, opens_at, closes_at, created_by, clearing_status)
                    VALUES (%s,'C11 Test',10,0,1000, now()-interval '1 day', now()-interval '1 hour', %s, 'closed') RETURNING offering_id""",(pid,u))
     offering_id=cur.fetchone()[0]
@@ -91,6 +92,7 @@ finally:
     cur.execute("DELETE FROM ledger.transactions WHERE transaction_type='settlement_payout'")
     cur.execute("DELETE FROM ipo.portfolio WHERE offering_id=%s",(offering_id,))
     cur.execute("DELETE FROM ipo.offerings WHERE offering_id=%s",(offering_id,))
+    cur.execute("DELETE FROM players.consent_releases WHERE player_id=%s",(pid,))
     cur.execute("DELETE FROM players.players WHERE player_id=%s",(pid,))
     cur.execute("DELETE FROM ledger.accounts WHERE user_id=%s",(u,))
     cur.execute("""UPDATE ledger.accounts SET balance_cached=coalesce((SELECT sum(delta_minor) FROM ledger.entries WHERE account_id=ledger.accounts.account_id),0), version=version+1, updated_at=now() WHERE user_id='00000000-0000-0000-0000-000000000000'::uuid""")

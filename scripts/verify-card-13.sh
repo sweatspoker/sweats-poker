@@ -63,6 +63,7 @@ aeq("trigger.sync_session_state_exists", cur.fetchone()[0], 1)
 cur.execute("""INSERT INTO players.players (player_id, display_name, sport, status)
  VALUES ('p_c13_test', 'Card 13 Test', 'poker', 'active')
  ON CONFLICT (player_id) DO UPDATE SET status='active'""")
+cur.execute("SELECT players.record_consent('p_c13_test', 'v1.0', 'operator_attestation', NULL, NULL, NULL)")
 
 cur.execute("""INSERT INTO ipo.offerings (
   player_id, player_display_name, total_shares, shares_remaining, price_per_share_minor,
@@ -142,6 +143,7 @@ atrue("audit.session_events_present", cur.fetchone()[0] >= 4)
 
 # --- cleanup ---
 cur.execute("DELETE FROM ipo.offerings WHERE offering_id IN (%s,%s)", (oid, oid2))
+cur.execute("DELETE FROM players.consent_releases WHERE player_id='p_c13_test'")
 cur.execute("DELETE FROM players.players WHERE player_id='p_c13_test'")
 
 print(f"\n=== Result: {len(PASS)} PASS / {len(FAIL)} FAIL ===")
