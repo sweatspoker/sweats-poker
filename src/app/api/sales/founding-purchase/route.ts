@@ -24,6 +24,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "campaign_id + tier_key required" }, { status: 400 });
   }
 
+  // Sweats Building Appendix Sec 3 + Sec 15: referrals out-of-scope for v1.
+  // Force-null the referral_code so the underlying RPC never applies bonus
+  // credit, even if a caller sends one. Lift this gate in v1.2.
+  if (body.referral_code) {
+    return NextResponse.json({ error: "referrals_deferred_to_v1_2" }, { status: 409 });
+  }
+
   const event_id = randomUUID();
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin.rpc("sales_complete_founding_purchase", {
@@ -32,7 +39,7 @@ export async function POST(request: NextRequest) {
     p_campaign_id: campaign_id,
     p_tier_key: tier_key,
     p_source: "synthetic",
-    p_referral_code: body.referral_code ?? null,
+    p_referral_code: null,
     p_initiated_by: user.id,
     p_extra_metadata: {},
   });
