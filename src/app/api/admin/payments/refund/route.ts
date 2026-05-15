@@ -87,6 +87,22 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     const msg = error.message ?? "unknown";
+    // Card 4: route-layer audit for RPC failures.
+    const auditCode = msg.includes("user_available_not_found") ? "no_prior_purchase"
+      : msg.includes("insufficient_funds") ? "insufficient_funds"
+      : msg.includes("unverified_identity") ? "unverified_identity"
+      : "rpc_failed";
+    await admin.rpc("audit_log_event", {
+      p_source: "admin",
+      p_action_type: `admin_refund_${auditCode}`,
+      p_message: `admin_refund blocked: ${msg}`,
+      p_severity: auditCode === "rpc_failed" ? "critical" : "warning",
+      p_actor_user_id: user_id,
+      p_subject_user_id: user_id,
+      p_metadata: { amount_minor, source, refund_event_id },
+      p_related_idempotency_key: `${source}:refund:${refund_event_id}`,
+    }).then(() => {}, (e) => console.error("[admin/payments/refund] audit write failed", e));
+
     if (msg.includes("user_available_not_found")) {
       return NextResponse.json({ error: "no_prior_purchase" }, { status: 404 });
     }

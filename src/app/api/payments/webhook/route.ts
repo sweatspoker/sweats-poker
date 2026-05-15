@@ -74,17 +74,24 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     const msg = error.message ?? "unknown";
-    if (msg.includes("unverified_identity")) {
-      console.warn("[payments/webhook] unverified_identity for user", event.user_id);
+    if (msg.includes("unverified_identity") || msg.includes("profile_missing")) {
+      const code = msg.includes("profile_missing") ? "profile_missing" : "unverified_identity";
+      console.warn(`[payments/webhook] ${code} for user`, event.user_id);
+      // Card 4: route-layer audit for failure cases (the RPC-internal audit
+      // call rolls back with the raised exception, so we write here in a
+      // fresh transaction).
+      await admin.rpc("audit_log_event", {
+        p_source: "payments",
+        p_action_type: `${code}_blocked`,
+        p_message: `${event.provider} webhook ${event.type} rejected: ${code}`,
+        p_severity: "warning",
+        p_actor_user_id: null,
+        p_subject_user_id: event.user_id,
+        p_metadata: { provider: event.provider, type: event.type, amount_minor: event.amount_minor },
+        p_related_idempotency_key: event.idempotency_key,
+      }).then(() => {}, (e) => console.error("[payments/webhook] audit write failed", e));
       return NextResponse.json(
-        { ok: true, note: "audit_only", error_code: "unverified_identity" },
-        { status: 200 }
-      );
-    }
-    if (msg.includes("profile_missing")) {
-      console.warn("[payments/webhook] profile_missing for user", event.user_id);
-      return NextResponse.json(
-        { ok: true, note: "audit_only", error_code: "profile_missing" },
+        { ok: true, note: "audit_only", error_code: code },
         { status: 200 }
       );
     }

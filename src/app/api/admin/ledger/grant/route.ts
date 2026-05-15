@@ -86,7 +86,25 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     const msg = error.message ?? "unknown";
-    // Map known Postgres exceptions to HTTP status.
+    // Card 4: route-layer audit for RPC failures (the RPC-internal audit
+    // call rolls back with the raised exception).
+    const auditCode = msg.includes("profile_missing") ? "profile_missing"
+      : msg.includes("unverified_identity") ? "unverified_identity"
+      : msg.includes("amount_must_be_positive") ? "invalid_amount"
+      : msg.includes("idempotency_key_required") ? "idempotency_key_required"
+      : msg.includes("entries_delta_magnitude") ? "amount_exceeds_per_entry_cap"
+      : "rpc_failed";
+    await admin.rpc("audit_log_event", {
+      p_source: "admin",
+      p_action_type: `admin_grant_${auditCode}`,
+      p_message: `admin_grant blocked: ${msg}`,
+      p_severity: auditCode === "rpc_failed" ? "critical" : "warning",
+      p_actor_user_id: initiated_by,
+      p_subject_user_id: user_id,
+      p_metadata: { amount_minor, idempotency_key },
+      p_related_idempotency_key: idempotency_key,
+    }).then(() => {}, (e) => console.error("[admin/ledger/grant] audit write failed", e));
+
     if (msg.includes("profile_missing")) {
       return NextResponse.json({ error: "profile_missing" }, { status: 404 });
     }
