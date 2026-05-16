@@ -1,0 +1,98 @@
+-- ============================================================================
+-- 0033: fix audit.log_event call inside ipo.sessions_create
+--
+-- Original 0032 passed audit args by position, but argument 8 of audit.log_event
+-- is `p_related_transaction_id uuid`, not the idempotency key (which is arg 9).
+-- Switch to named args.
+-- ============================================================================
+
+set search_path = public;
+
+create or replace function ipo.sessions_create(
+  p_player_id           text,
+  p_total_shares        bigint,
+  p_price_per_share_minor bigint,
+  p_opens_at            timestamptz,
+  p_closes_at           timestamptz,
+  p_admin_user_id       uuid,
+  p_metadata            jsonb default '{}'::jsonb
+) returns uuid
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_player_name text;
+  v_player_status text;
+  v_initial_state text;
+  v_offering_id uuid;
+begin
+  if p_player_id is null or length(trim(p_player_id)) = 0 then
+    raise exception 'player_id_required' using errcode = '22023';
+  end if;
+  if p_total_shares is null or p_total_shares <= 0 then
+    raise exception 'total_shares_must_be_positive' using errcode = '22023';
+  end if;
+  if p_price_per_share_minor is null or p_price_per_share_minor <= 0 then
+    raise exception 'price_per_share_must_be_positive' using errcode = '22023';
+  end if;
+  if p_opens_at is null or p_closes_at is null then
+    raise exception 'opens_at_and_closes_at_required' using errcode = '22023';
+  end if;
+  if p_closes_at <= p_opens_at then
+    raise exception 'closes_at_must_be_after_opens_at' using errcode = '22023';
+  end if;
+  if p_admin_user_id is null then
+    raise exception 'admin_user_id_required' using errcode = '22023';
+  end if;
+
+  select display_name, status into v_player_name, v_player_status
+    from players.players
+   where player_id = p_player_id;
+
+  if v_player_name is null then
+    raise exception 'player_not_found:%', p_player_id using errcode = '23503';
+  end if;
+  if v_player_status <> 'active' then
+    raise exception 'player_not_tradeable:status=%', v_player_status using errcode = '23514';
+  end if;
+
+  if p_opens_at <= now() then
+    v_initial_state := 'ipo_open';
+  else
+    v_initial_state := 'draft';
+  end if;
+
+  insert into ipo.offerings (
+    player_id, player_display_name, total_shares, shares_remaining,
+    price_per_share_minor, clearing_status, session_state,
+    opens_at, closes_at, created_by, metadata
+  ) values (
+    p_player_id, v_player_name, p_total_shares, p_total_shares,
+    p_price_per_share_minor, 'pending', v_initial_state,
+    p_opens_at, p_closes_at, p_admin_user_id,
+    coalesce(p_metadata, '{}'::jsonb) || jsonb_build_object('created_via', 'admin_console')
+  ) returning offering_id into v_offering_id;
+
+  perform audit.log_event(
+    p_source                  => 'sessions',
+    p_action_type             => 'session_created',
+    p_message                 => format('Admin created session for %s (%s shares @ %s minor)',
+                                        v_player_name, p_total_shares, p_price_per_share_minor),
+    p_severity                => 'info',
+    p_actor_user_id           => p_admin_user_id,
+    p_metadata                => jsonb_build_object(
+      'offering_id', v_offering_id,
+      'player_id', p_player_id,
+      'total_shares', p_total_shares,
+      'price_per_share_minor', p_price_per_share_minor,
+      'opens_at', p_opens_at,
+      'closes_at', p_closes_at,
+      'initial_state', v_initial_state
+    ),
+    p_related_idempotency_key => 'session_create:' || v_offering_id::text
+  );
+
+  return v_offering_id;
+end;
+$$;
