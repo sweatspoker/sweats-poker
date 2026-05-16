@@ -166,12 +166,20 @@ export function OrderForm({
   }
 
   if (sessionState !== "active") {
+    const isClosed = sessionState === "settled" || sessionState === "cancelled";
+    const tone = isClosed
+      ? "border-white/15 bg-white/5 text-white/60"
+      : "border-yellow-500/40 bg-yellow-500/10 text-yellow-300";
+    const msg =
+      sessionState === "halted"
+        ? "Trading is halted right now. Wait for the operator to resume."
+        : sessionState === "settled"
+        ? "This offering has settled. Trading is closed."
+        : sessionState === "cancelled"
+        ? "This offering was cancelled."
+        : "Trading isn't open on this offering yet.";
     return (
-      <section className="rounded-3xl border border-yellow-500/40 bg-yellow-500/10 p-5 text-base text-yellow-300">
-        {sessionState === "halted"
-          ? "Trading is halted right now. Wait for the operator to resume."
-          : "Trading isn't open on this offering yet."}
-      </section>
+      <section className={`rounded-3xl border p-5 text-base ${tone}`}>{msg}</section>
     );
   }
 
