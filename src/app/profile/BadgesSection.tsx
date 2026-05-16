@@ -89,10 +89,10 @@ export function BadgesSection({ unlocked, initialSelected, initialShowOnAvatar }
                 you move further in either direction.
               </p>
               <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs tabular-nums">
-                <span className="text-white/40">1M+ GC</span><span style={{ color: "#ef4444" }}>Shark</span>
-                <span className="text-white/40">100k+ GC</span><span style={{ color: "#f97316" }}>Crusher</span>
-                <span className="text-white/40">10k+ GC</span><span style={{ color: "#facc15" }}>Grinder</span>
                 <span className="text-white/40">0+ GC</span><span style={{ color: "#e5e5e5" }}>Nit</span>
+                <span className="text-white/40">10k+ GC</span><span style={{ color: "#facc15" }}>Grinder</span>
+                <span className="text-white/40">100k+ GC</span><span style={{ color: "#f97316" }}>Crusher</span>
+                <span className="text-white/40">1M+ GC</span><span style={{ color: "#ef4444" }}>Shark</span>
                 <span className="text-white/40">Any loss</span><span style={{ color: "#00d563" }}>Fish</span>
                 <span className="text-white/40">10k− GC</span><span style={{ color: "#2dd4bf" }}>Donkey</span>
                 <span className="text-white/40">100k− GC</span><span style={{ color: "#3b82f6" }}>Whale</span>

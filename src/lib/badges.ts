@@ -17,13 +17,14 @@ export type BadgeDef = {
   color: string;
 };
 
-// Order mirrors the ladder shown in Profile > Settings > Badges (best at top
-// of each side).
+// Grid order in Profile > Settings > Badges:
+//   Top row (profit-side, weakest → strongest): Nit, Grinder, Crusher, Shark
+//   Bottom row (loss-side, mildest → most extreme): Fish, Donkey, Whale, Maniac
 export const BADGES: BadgeDef[] = [
-  { id: "shark",   label: "Shark",   tagline: "1mil+ GC lifetime",   side: "profit", threshold_minor:  100_000_000, color: "#ef4444" },
-  { id: "crusher", label: "Crusher", tagline: "100k+ GC lifetime",   side: "profit", threshold_minor:   10_000_000, color: "#f97316" },
-  { id: "grinder", label: "Grinder", tagline: "10k+ GC lifetime",    side: "profit", threshold_minor:    1_000_000, color: "#facc15" },
   { id: "nit",     label: "Nit",     tagline: "Break-even or better",side: "profit", threshold_minor:            0, color: "#e5e5e5" },
+  { id: "grinder", label: "Grinder", tagline: "10k+ GC lifetime",    side: "profit", threshold_minor:    1_000_000, color: "#facc15" },
+  { id: "crusher", label: "Crusher", tagline: "100k+ GC lifetime",   side: "profit", threshold_minor:   10_000_000, color: "#f97316" },
+  { id: "shark",   label: "Shark",   tagline: "1mil+ GC lifetime",   side: "profit", threshold_minor:  100_000_000, color: "#ef4444" },
   { id: "fish",    label: "Fish",    tagline: "Any losing lifetime", side: "loss",   threshold_minor:         -100, color: "#00d563" },
   { id: "donkey",  label: "Donkey",  tagline: "10k- GC lifetime",    side: "loss",   threshold_minor:   -1_000_000, color: "#2dd4bf" },
   { id: "whale",   label: "Whale",   tagline: "100k- GC lifetime",   side: "loss",   threshold_minor:  -10_000_000, color: "#3b82f6" },
@@ -35,8 +36,9 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDef> = Object.fromEntries(
 ) as Record<BadgeId, BadgeDef>;
 
 export function unlockedBadges(lifetimePnlMinor: number): BadgeId[] {
-  const u: BadgeId[] = [];
-  if (lifetimePnlMinor >= 0) u.push("nit");
+  // Nit is the baseline tier — everyone starts at 0+ GC, so it's always
+  // available regardless of whether the user is currently in the red.
+  const u: BadgeId[] = ["nit"];
   if (lifetimePnlMinor >= 1_000_000) u.push("grinder");
   if (lifetimePnlMinor >= 10_000_000) u.push("crusher");
   if (lifetimePnlMinor >= 100_000_000) u.push("shark");
