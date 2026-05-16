@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
+  --background: #000000;
   --foreground: #ffffff;
   --brand-red: #ef2b2b;
   --brand-red-deep: #b91c1c;
@@ -34,11 +34,7 @@ html, body {
 }
 
 body {
-  background:
-    radial-gradient(ellipse at top right, rgba(239, 43, 43, 0.35) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom left, rgba(185, 28, 28, 0.18) 0%, transparent 60%),
-    var(--background);
-  background-attachment: fixed;
+  background: var(--background);
   /* Make room for the fixed bottom nav so it never covers content. */
   padding-bottom: 5.5rem;
 }

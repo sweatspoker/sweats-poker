@@ -70,25 +70,25 @@ function Header({
 
 function Logo() {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
       <Image
         src="/sweats-icon.png"
         alt=""
         width={251}
         height={237}
         priority
-        className="h-11 md:h-12 w-auto"
+        className="h-9 sm:h-11 md:h-12 w-auto shrink-0"
       />
-      <div className="flex flex-col items-start leading-none gap-1.5">
+      <div className="flex flex-col items-start leading-none gap-1.5 min-w-0">
         <Image
           src="/sweats-wordmark.png"
           alt="sweats.poker"
           width={641}
           height={122}
           priority
-          className="h-5 md:h-6 w-auto"
+          className="h-4 sm:h-5 md:h-6 w-auto"
         />
-        <span className="text-[10px] md:text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
+        <span className="hidden sm:inline text-[10px] md:text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
           Interactive Poker Stream Trading
         </span>
       </div>
@@ -132,12 +132,12 @@ function Hero() {
         {/* Headline copy overlays the left half of the image */}
         <div className="absolute inset-0">
           <div className="w-full max-w-6xl mx-auto h-full px-6 grid md:grid-cols-12 items-center">
-            <div className="md:col-span-6 flex flex-col gap-8 relative z-10">
-              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80">
+            <div className="md:col-span-6 flex flex-col gap-4 sm:gap-6 md:gap-8 relative z-10">
+              <div className="hidden sm:inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 whitespace-nowrap">
                 <span className="size-2 rounded-full bg-[var(--brand-red)] live-dot" />
                 Now partnering with select poker rooms
               </div>
-              <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-black leading-[1.0] tracking-tight">
+              <h1 className="text-4xl sm:text-6xl md:text-[5.5rem] font-black leading-[1.0] tracking-tight">
                 Trade shares of poker players{" "}
                 <span className="text-[var(--brand-red)]">live.</span>
               </h1>

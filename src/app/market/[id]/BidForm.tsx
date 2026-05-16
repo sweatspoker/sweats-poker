@@ -20,6 +20,8 @@ function gcFromMinor(minor: number): string {
 
 function prettyError(code: string, detail?: string): string {
   const text = `${code} ${detail ?? ""}`;
+  if (text.includes("bid_already_exists"))
+    return "You already have a bid on this IPO — submitting again raises it instead.";
   if (text.includes("insufficient_balance")) return "Not enough GC in your wallet.";
   if (text.includes("price_below_reserve")) return "Bid price is below the reserve.";
   if (text.includes("shares_must_be_positive")) return "Shares must be at least 1.";
@@ -30,7 +32,8 @@ function prettyError(code: string, detail?: string): string {
   if (text.includes("offering_not_found")) return "This offering no longer exists.";
   if (text.includes("tier_upgraded_required")) return "Upgrade your tier to bid.";
   if (text.includes("idempotency_key_required")) return "Please try again.";
-  // Fall through: prefer the SQL detail if present (more specific than 'rpc_failed').
+  if (text.includes("new_price_must_be_higher"))
+    return "A raised bid must be higher than your current bid.";
   return detail || code;
 }
 
@@ -80,20 +83,36 @@ export function BidForm({
     setMsg(null);
     setErr(null);
     try {
-      const res = await fetch("/api/ipo/place-bid", {
+      // If the user already has a bid on this offering, the place-bid RPC
+      // rejects with bid_already_exists_use_raise. Auto-route to raise-bid
+      // so submitting again means "update my bid" instead of erroring.
+      const newPriceMinor = Math.round(priceNum * 100);
+      const isRaise = !!existingBid;
+      const endpoint = isRaise ? "/api/ipo/raise-bid" : "/api/ipo/place-bid";
+      const payload = isRaise
+        ? {
+            bid_id: existingBid!.bid_id,
+            new_price_per_share_minor: newPriceMinor,
+          }
+        : {
+            offering_id: offeringId,
+            shares_requested: sharesNum,
+            bid_price_per_share_minor: newPriceMinor,
+          };
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          offering_id: offeringId,
-          shares_requested: sharesNum,
-          bid_price_per_share_minor: Math.round(priceNum * 100),
-        }),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (!res.ok) {
         setErr(prettyError(json.error ?? `HTTP ${res.status}`, json.detail));
       } else {
-        setMsg(`Bid placed: ${sharesNum} shares @ ${priceNum} GC each.`);
+        setMsg(
+          isRaise
+            ? `Bid raised to ${priceNum} GC per share.`
+            : `Bid placed: ${sharesNum} shares @ ${priceNum} GC each.`,
+        );
         router.refresh();
       }
     } catch (e) {
@@ -108,6 +127,10 @@ export function BidForm({
   function startHold(e: React.PointerEvent<HTMLButtonElement>) {
     if (!formValid) return;
     e.preventDefault();
+    // Dismiss any visible keyboard so the user can see the progress bar.
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
     } catch {}
@@ -175,6 +198,8 @@ export function BidForm({
           <span className="text-sm text-white/50">Shares</span>
           <input
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={MIN_SHARES}
             max={sharesRemaining}
             step={1}
@@ -189,6 +214,7 @@ export function BidForm({
           <span className="text-sm text-white/50">Price per share</span>
           <input
             type="number"
+            inputMode="decimal"
             min={pricePerShareGc}
             step={0.01}
             value={price}
@@ -239,7 +265,7 @@ export function BidForm({
         />
         <span className="relative z-10 pointer-events-none">
           {busy
-            ? "Placing…"
+            ? existingBid ? "Raising…" : "Placing…"
             : insufficient
             ? "Insufficient GC"
             : !sharesValid
@@ -250,6 +276,8 @@ export function BidForm({
             ? "Confirmed"
             : isHolding
             ? "Hold to confirm…"
+            : existingBid
+            ? `Tap and hold to raise to ${priceNum} GC`
             : "Tap and hold to buy"}
         </span>
       </button>

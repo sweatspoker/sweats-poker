@@ -14,17 +14,6 @@ export default async function ProfilePage({
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-2xl flex flex-col gap-10">
-        <div className="flex items-center justify-end">
-          <form action="/auth/sign-out" method="post">
-            <button
-              type="submit"
-              className="text-sm uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
-            >
-              Sign out
-            </button>
-          </form>
-        </div>
-
         <div className="flex flex-col gap-2">
           <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
             Your profile
@@ -81,6 +70,15 @@ export default async function ProfilePage({
             tone="muted"
           />
         </section>
+
+        <form action="/auth/sign-out" method="post" className="flex justify-center">
+          <button
+            type="submit"
+            className="text-sm uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
+          >
+            Sign out
+          </button>
+        </form>
       </div>
     </main>
   );

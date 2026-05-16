@@ -65,6 +65,29 @@ function resultDot(r: Session["result"]): string {
   }
 }
 
+function StatePill({ state }: { state: string }) {
+  const tone =
+    state === "active"
+      ? "bg-[var(--brand-green)]/20 text-[var(--brand-green)] border-[var(--brand-green)]/40"
+      : state === "ipo_open"
+      ? "bg-[var(--brand-green)]/15 text-[var(--brand-green)] border-[var(--brand-green)]/30"
+      : state === "ipo_closing" || state === "settling"
+      ? "bg-yellow-500/15 text-yellow-300 border-yellow-500/30"
+      : state === "halted"
+      ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40"
+      : state === "cancelled"
+      ? "bg-[var(--brand-red)]/15 text-[var(--brand-red)] border-[var(--brand-red)]/30"
+      : "bg-white/10 text-white/60 border-white/20";
+  const label = state.replace(/_/g, " ");
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.08em] whitespace-nowrap ${tone}`}
+    >
+      {label}
+    </span>
+  );
+}
+
 // Compact result icon for the session history row.
 function ResultIcon({ r }: { r: Session["result"] }) {
   if (r === "win") {
@@ -286,7 +309,7 @@ export function PlayerStats({ playerId }: { playerId: string; playerName?: strin
                       {fmtDate(date)} · {(s.shares_filled ?? 0).toLocaleString()} / {s.total_shares.toLocaleString()} at{" "}
                       {s.ipo_clearing_price_minor != null
                         ? `${gc(s.ipo_clearing_price_minor, 2)} GC`
-                        : `${facePriceGc.toFixed(2)} GC face`}
+                        : `${facePriceGc.toFixed(2)} GC`}
                     </div>
                   </div>
                   <div className="text-right shrink-0 tabular-nums">
@@ -305,7 +328,7 @@ export function PlayerStats({ playerId }: { playerId: string; playerName?: strin
                         )}
                       </>
                     ) : (
-                      <div className="text-sm text-white/40">{s.session_state}</div>
+                      <StatePill state={s.session_state} />
                     )}
                   </div>
                 </li>
