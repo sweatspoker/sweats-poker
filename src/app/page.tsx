@@ -35,7 +35,7 @@ function Header({ signedIn }: { signedIn: boolean }) {
         {signedIn ? (
           <a
             href="/profile"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors px-6 py-3 text-base font-semibold"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] transition-colors px-6 py-3 text-base font-semibold text-white"
           >
             Your profile
           </a>

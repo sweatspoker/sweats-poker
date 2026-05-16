@@ -16,14 +16,14 @@ export default async function ProfilePage({
         <div className="flex items-center justify-between">
           <a
             href="/"
-            className="text-lg uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
+            className="text-sm uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
           >
             ← Sweats
           </a>
           <form action="/auth/sign-out" method="post">
             <button
               type="submit"
-              className="text-lg uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
+              className="text-sm uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
             >
               Sign out
             </button>
@@ -31,7 +31,7 @@ export default async function ProfilePage({
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="text-xl uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
+          <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
             Your profile
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
@@ -45,7 +45,7 @@ export default async function ProfilePage({
             <div className="text-xl uppercase tracking-[0.15em] text-white/50 font-semibold">
               Display name
             </div>
-            <div className="text-white/60 text-lg">
+            <div className="text-white/60 text-base">
               Shown on leaderboards and your trades.
             </div>
           </div>
@@ -56,19 +56,19 @@ export default async function ProfilePage({
               defaultValue={profile.display_name ?? ""}
               placeholder="pick a handle"
               maxLength={32}
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-lg placeholder:text-white/30 focus:outline-none focus:border-[var(--brand-red)]/60"
+              className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-base placeholder:text-white/30 focus:outline-none focus:border-[var(--brand-red)]/60"
             />
             <button
               type="submit"
-              className="self-start rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-6 py-2.5 text-lg font-semibold text-black"
+              className="self-start rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em] text-black"
             >
               Save
             </button>
             {saved === "1" && (
-              <div className="text-lg text-[var(--brand-green)]">Saved.</div>
+              <div className="text-base text-[var(--brand-green)]">Saved.</div>
             )}
             {error === "save_failed" && (
-              <div className="text-lg text-[var(--brand-red)]">
+              <div className="text-base text-[var(--brand-red)]">
                 Couldn&apos;t save. Try again.
               </div>
             )}
@@ -87,7 +87,7 @@ export default async function ProfilePage({
           />
           <a
             href="/wallet"
-            className="mt-2 self-start rounded-full bg-white/10 hover:bg-white/15 transition-colors px-5 py-2 text-lg font-semibold uppercase tracking-[0.15em]"
+            className="mt-2 self-start rounded-full bg-white/10 hover:bg-white/15 transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em]"
           >
             View wallet →
           </a>
@@ -107,7 +107,7 @@ function Row({
   tone: "green" | "muted";
 }) {
   return (
-    <div className="flex items-center justify-between text-lg border-t border-white/5 pt-3 first:border-0 first:pt-0">
+    <div className="flex items-center justify-between text-base border-t border-white/5 pt-3 first:border-0 first:pt-0">
       <span className="text-white/50">{label}</span>
       <span
         className={
