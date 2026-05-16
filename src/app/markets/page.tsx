@@ -3,6 +3,7 @@ import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { TabBar } from "@/components/TabBar";
+import { SettlementReceiptCard, type Receipt } from "@/components/SettlementReceiptCard";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,7 @@ export default async function MarketsPage({
   const admin = createSupabaseAdminClient();
   const { tab = "live" } = await searchParams;
   const isMineTab = tab === "mine";
+  const isClosedTab = tab === "closed";
 
   const { data: offerings } = await admin
     .schema("ipo")
@@ -105,11 +107,15 @@ export default async function MarketsPage({
     }
   }
 
-  // User's portfolio for My Trades tab.
-  const { data: portfolioRaw } = await supabase.rpc("get_my_portfolio");
+  // User's portfolio for My Trades tab + settled receipts for Closed tab.
+  const [{ data: portfolioRaw }, { data: settledRaw }] = await Promise.all([
+    supabase.rpc("get_my_portfolio"),
+    supabase.rpc("get_my_settled_positions", { p_limit: 50 }),
+  ]);
   const portfolio = ((portfolioRaw as PortfolioRow[] | null) ?? []).filter(
     (p) => p.shares_held > 0 && (p.session_state === "active" || p.session_state === "halted"),
   );
+  const settled = (settledRaw as Receipt[] | null) ?? [];
   const myPlayerIds = Array.from(new Set(portfolio.map((p) => p.player_id)));
   if (myPlayerIds.length > 0) {
     const missing = myPlayerIds.filter((id) => !photoByPlayer.has(id));
@@ -124,8 +130,9 @@ export default async function MarketsPage({
   }
 
   const tabs = [
-    { key: "live", label: "Live Trading", href: "/markets" },
+    { key: "live", label: "Live", href: "/markets" },
     { key: "mine", label: `My Trades${portfolio.length ? ` (${portfolio.length})` : ""}`, href: "/markets?tab=mine" },
+    { key: "closed", label: `Closed${settled.length ? ` (${settled.length})` : ""}`, href: "/markets?tab=closed" },
   ];
 
   return (
@@ -136,17 +143,34 @@ export default async function MarketsPage({
             Markets · live
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
-            {isMineTab ? "My trades" : "Live trading"}
+            {isClosedTab ? "Closed sessions" : isMineTab ? "My trades" : "Live trading"}
           </h1>
           <p className="text-white/50 text-base max-w-md">
-            {isMineTab
+            {isClosedTab
+              ? "Players who've cashed out. Tap any card to review the receipt."
+              : isMineTab
               ? "Your open positions on players currently at the table."
               : "Players currently at the table. Buy and sell their shares while the stream is live."}
           </p>
           <TabBar tabs={tabs} active={tab} />
         </div>
 
-        {isMineTab ? (
+        {isClosedTab ? (
+          settled.length === 0 ? (
+            <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-10 text-center">
+              <div className="text-base text-white/60">No settled positions yet.</div>
+              <div className="text-base text-white/40 mt-1">
+                Closed receipts appear here once a player you held shares in cashes out.
+              </div>
+            </section>
+          ) : (
+            <section className="flex flex-col gap-4">
+              {settled.map((r) => (
+                <SettlementReceiptCard key={r.offering_id} r={r} />
+              ))}
+            </section>
+          )
+        ) : isMineTab ? (
           portfolio.length === 0 ? (
             <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-10 text-center">
               <div className="text-base text-white/60">You don&apos;t hold any active shares.</div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/BottomNav";
+import { SettlementCelebration } from "@/components/SettlementCelebration";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const geistSans = Geist({
@@ -45,6 +46,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <BottomNav signedIn={!!user} />
+        <SettlementCelebration signedIn={!!user} />
       </body>
     </html>
   );
