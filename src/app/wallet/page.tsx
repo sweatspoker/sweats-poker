@@ -83,11 +83,12 @@ export default async function WalletPage() {
             Your wallet
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
-            Sweats Coins
+            Gold Coins
           </h1>
           <p className="text-white/50 text-base max-w-md">
-            GC is sweepstakes currency — promotional, redeemable to prizes via
-            the catalog. Never purchased with real money for cash value.
+            GC is your in-app currency for trading and redemptions. Buy with
+            cash, win in IPOs and trades, then cash out for prizes in the
+            catalog.
           </p>
         </div>
 
