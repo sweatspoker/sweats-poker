@@ -14,8 +14,8 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
   return (
-    <main className="flex flex-col w-full">
-      <Header signedIn={!!user} />
+    <main className="relative flex flex-col w-full">
+      <Header signedIn={!!user} className="absolute top-0 left-0 right-0 z-50" />
       <Hero />
       <HowItWorks />
       <ProductDeepDive />
@@ -27,9 +27,17 @@ export default async function Home() {
   );
 }
 
-function Header({ signedIn }: { signedIn: boolean }) {
+function Header({
+  signedIn,
+  className = "",
+}: {
+  signedIn: boolean;
+  className?: string;
+}) {
   return (
-    <header className="relative z-30 w-full max-w-6xl mx-auto flex items-center justify-between px-6 py-6 md:py-8">
+    <header
+      className={`${className} w-full max-w-6xl mx-auto flex items-center justify-between px-6 py-6 md:py-8`}
+    >
       <Logo />
       <div className="flex items-center gap-3">
         {signedIn ? (
@@ -123,12 +131,12 @@ function Hero() {
 
         {/* Left phone (lobby) — tilted slightly counter-clockwise */}
         <div
-          className="absolute overflow-hidden rounded-[28px]"
+          className="absolute overflow-hidden rounded-[14px]"
           style={{
-            left: "37%",
-            top: "20%",
-            width: "23%",
-            height: "70%",
+            left: "39%",
+            top: "26%",
+            width: "13.5%",
+            height: "53%",
             transform: "rotate(-3deg)",
             transformOrigin: "center",
           }}
@@ -137,12 +145,12 @@ function Hero() {
         </div>
         {/* Right phone (buy/sell) — tilted slightly clockwise */}
         <div
-          className="absolute overflow-hidden rounded-[28px]"
+          className="absolute overflow-hidden rounded-[14px]"
           style={{
-            left: "57.5%",
-            top: "13%",
-            width: "26%",
-            height: "82%",
+            left: "60.8%",
+            top: "20%",
+            width: "16%",
+            height: "66%",
             transform: "rotate(2.5deg)",
             transformOrigin: "center",
           }}
