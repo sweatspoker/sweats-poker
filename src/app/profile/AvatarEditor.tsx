@@ -31,7 +31,10 @@ export function AvatarEditor({
   selectedBadge,
   showBadgeOnAvatar,
 }: Props) {
-  const badge = selectedBadge && showBadgeOnAvatar ? BADGE_BY_ID[selectedBadge] : null;
+  // Ring + initials color follow the selected badge unconditionally.
+  // showBadgeOnAvatar only controls whether the corner pip is drawn.
+  const ringBadge = selectedBadge ? BADGE_BY_ID[selectedBadge] : null;
+  const pipBadge = ringBadge && showBadgeOnAvatar ? ringBadge : null;
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
@@ -92,12 +95,12 @@ export function AvatarEditor({
           aria-label="Upload avatar"
           className="relative h-full w-full rounded-full overflow-hidden border-2 hover:opacity-90 transition-opacity grid place-items-center disabled:opacity-60"
           style={{
-            borderColor: badge ? badge.color : "rgba(255,255,255,0.15)",
+            borderColor: ringBadge ? ringBadge.color : "rgba(255,255,255,0.15)",
             backgroundColor:
-              !avatarUrl && badge
-                ? `${badge.color}30`
+              !avatarUrl && ringBadge
+                ? `${ringBadge.color}30`
                 : "rgba(255,255,255,0.05)",
-            boxShadow: badge ? `0 0 0 2px ${badge.color}40` : undefined,
+            boxShadow: ringBadge ? `0 0 0 2px ${ringBadge.color}40` : undefined,
           }}
         >
           {avatarUrl ? (
@@ -106,7 +109,7 @@ export function AvatarEditor({
           ) : (
             <span
               className="text-2xl font-black tracking-tight"
-              style={{ color: badge ? badge.color : "rgba(255,255,255,0.7)" }}
+              style={{ color: ringBadge ? ringBadge.color : "rgba(255,255,255,0.7)" }}
             >
               {initials(label)}
             </span>
@@ -115,11 +118,11 @@ export function AvatarEditor({
             {busy ? "Uploading…" : "Change"}
           </span>
         </button>
-        {badge && (
+        {pipBadge && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={badgeAsset(badge.id)}
-            alt={badge.label}
+            src={badgeAsset(pipBadge.id)}
+            alt={pipBadge.label}
             className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-7 w-7 rounded-md object-cover ring-2 ring-black pointer-events-none"
           />
         )}

@@ -122,10 +122,10 @@ export function BadgesSection({ unlocked, initialSelected, initialShowOnAvatar }
         }`}
       >
         <div className="flex flex-col">
-          <span className="text-base font-semibold">Show on avatar</span>
+          <span className="text-base font-semibold">Show badge on avatar</span>
           <span className="text-sm text-white/40">
             {selected
-              ? "Ring color + corner pip across the app."
+              ? "Adds the corner pip. Ring color always follows your badge."
               : "Pick a badge above to enable."}
           </span>
         </div>
