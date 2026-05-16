@@ -172,23 +172,36 @@ function HowItWorks() {
         kicker="How it works"
         title="A real market on every session."
       />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-14">
-        {steps.map((s) => (
-          <div
-            key={s.n}
-            className="rounded-2xl border border-white/8 bg-[var(--surface)]/60 p-7 backdrop-blur-sm"
-          >
-            <div className="text-[var(--brand-red)] font-black text-4xl tracking-tight">
-              0{s.n}
+      <div className="mt-14 grid lg:grid-cols-[1fr_minmax(0,420px)] gap-10 lg:gap-14 items-center">
+        <div className="flex flex-col gap-4">
+          {steps.map((s) => (
+            <div
+              key={s.n}
+              className="rounded-2xl border border-white/8 bg-[var(--surface)]/60 p-6 md:p-7 backdrop-blur-sm flex items-start gap-5"
+            >
+              <div className="shrink-0 size-12 md:size-14 rounded-full bg-[var(--brand-red)] grid place-items-center font-black text-2xl md:text-3xl text-white shadow-[0_0_24px_rgba(239,43,43,0.35)]">
+                {s.n}
+              </div>
+              <div className="flex flex-col gap-2 pt-1">
+                <div className="font-semibold text-xl md:text-2xl leading-tight">
+                  {s.title}
+                </div>
+                <div className="text-base text-white/65 leading-relaxed">
+                  {s.body}
+                </div>
+              </div>
             </div>
-            <div className="mt-5 font-semibold text-xl leading-tight min-h-[2lh]">
-              {s.title}
-            </div>
-            <div className="mt-3 text-base text-white/65 leading-relaxed">
-              {s.body}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="flex justify-center lg:justify-end">
+          <Image
+            src="/sweats-hooded.png"
+            alt=""
+            width={1402}
+            height={1122}
+            className="w-full max-w-[420px] h-auto"
+          />
+        </div>
       </div>
     </section>
   );
