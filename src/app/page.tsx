@@ -112,9 +112,15 @@ function Hero() {
           sizes="100vw"
           className="object-cover"
         />
-        {/* Headline legibility scrim — darkens the left side where copy sits */}
+        {/* Headline legibility scrim — opaque on mobile so the phone mockup
+            in the image doesn't bleed through behind the body copy; on
+            md+ it fades to the right so the in-image phones are visible. */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none md:hidden"
+          style={{ background: "rgba(0,0,0,0.78)" }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none hidden md:block"
           style={{
             background:
               "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.55) 30%, rgba(10,10,10,0.15) 55%, transparent 70%)",

@@ -127,6 +127,15 @@ export default async function MarketPage({
     .order("placed_at", { ascending: false });
   const myBids = (myBidsRaw ?? []) as Bid[];
   const pendingOfferingIds = new Set<string>(myBids.map((b) => b.offering_id));
+  // Sum the user's bid shares per offering so the Open IPOs card can show
+  // "you bid X shares" instead of the misleading "X / total" supply line.
+  const myBidSharesByOffering = new Map<string, number>();
+  for (const b of myBids) {
+    myBidSharesByOffering.set(
+      b.offering_id,
+      (myBidSharesByOffering.get(b.offering_id) ?? 0) + b.shares_requested,
+    );
+  }
 
   // For Mine tab: we may need offering data for bids on offerings not in the
   // current ipo_open list (e.g. closed). Fetch any missing offerings.
@@ -192,6 +201,7 @@ export default async function MarketPage({
             venueByStream={venueByStream}
             photoByPlayer={photoByPlayer}
             pendingOfferingIds={pendingOfferingIds}
+            myBidSharesByOffering={myBidSharesByOffering}
           />
         )}
       </div>
@@ -205,12 +215,14 @@ function OpenIPOs({
   venueByStream,
   photoByPlayer,
   pendingOfferingIds,
+  myBidSharesByOffering,
 }: {
   list: Offering[];
   streamById: Map<string, Stream>;
   venueByStream: Map<string, Venue>;
   photoByPlayer: Map<string, string | null>;
   pendingOfferingIds: Set<string>;
+  myBidSharesByOffering: Map<string, number>;
 }) {
   const groups = new Map<string | "no-stream", { stream: Stream | null; venue: Venue | null; offerings: Offering[] }>();
   for (const o of list) {
@@ -266,6 +278,7 @@ function OpenIPOs({
           <div className="flex flex-col gap-3">
             {g.offerings.map((o) => {
               const hasPendingBid = pendingOfferingIds.has(o.offering_id);
+              const myShares = myBidSharesByOffering.get(o.offering_id) ?? 0;
               return (
                 <Link
                   key={o.offering_id}
@@ -283,8 +296,13 @@ function OpenIPOs({
                         {o.player_display_name}
                       </div>
                       <div className="text-base text-white/50 mt-0.5">
-                        {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares
+                        {o.total_shares.toLocaleString()} shares · Sealed-bid auction
                       </div>
+                      {myShares > 0 && (
+                        <div className="text-sm text-[var(--brand-green)] mt-0.5 font-semibold">
+                          You bid {myShares.toLocaleString()} share{myShares === 1 ? "" : "s"}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center justify-between gap-3">
