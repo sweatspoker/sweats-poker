@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { LobbyPhone } from "@/components/LobbyPhone";
-import { BuySellPhone } from "@/components/BuySellPhone";
+import { LobbyPhone, LobbyScreen } from "@/components/LobbyPhone";
+import { BuySellPhone, BuySellScreen } from "@/components/BuySellPhone";
 import { TradingViewMock } from "@/components/TradingViewMock";
 import { SettlementReceipt } from "@/components/SettlementReceipt";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -91,7 +91,6 @@ function Logo() {
 function Hero() {
   return (
     <section className="relative w-full max-w-6xl mx-auto px-6 pt-8 pb-20 md:pt-16 md:pb-32 grid md:grid-cols-12 gap-10 items-center">
-      <PokerTableArc />
       <div className="md:col-span-6 flex flex-col gap-8 relative z-10">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80">
           <span className="size-2 rounded-full bg-[var(--brand-red)] live-dot" />
@@ -117,29 +116,63 @@ function Hero() {
         </div>
       </div>
 
-      <div className="md:col-span-6 relative h-[640px] md:h-[720px] z-10">
-        <div className="absolute inset-0 grid place-items-center">
-          <div
-            className="absolute z-10"
-            style={{
-              transform: "translate(-32%, 6%) rotate(-9deg) scale(0.92)",
-              filter: "drop-shadow(0 30px 60px rgba(0,0,0,0.55))",
-            }}
-          >
-            <LobbyPhone />
-          </div>
-          <div
-            className="absolute z-20"
-            style={{
-              transform: "translate(22%, -4%) rotate(7deg)",
-              filter: "drop-shadow(0 35px 70px rgba(0,0,0,0.6))",
-            }}
-          >
-            <BuySellPhone />
-          </div>
-        </div>
+      <div className="md:col-span-6 relative z-10">
+        <PokerSceneWithScreens />
       </div>
     </section>
+  );
+}
+
+function PokerSceneWithScreens() {
+  // Image is shown in entirety (object-contain). The two phone screens are
+  // positioned as percentages of the image bounding box so they scale with the
+  // image. Coords/rotations match the in-image phone screen rectangles. Left
+  // edge of the image fades into the page bg via mask-image.
+  return (
+    <div className="relative w-full aspect-[3/2]">
+      <Image
+        src="/poker-room-hero.png"
+        alt=""
+        fill
+        priority
+        sizes="(min-width: 768px) 50vw, 100vw"
+        className="object-contain"
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.5) 12%, black 28%)",
+          maskImage:
+            "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.5) 12%, black 28%)",
+        }}
+      />
+      {/* Left phone (lobby) — tilted slightly counter-clockwise */}
+      <div
+        className="absolute overflow-hidden rounded-[22px]"
+        style={{
+          left: "37%",
+          top: "20%",
+          width: "23%",
+          height: "70%",
+          transform: "rotate(-3deg)",
+          transformOrigin: "center",
+        }}
+      >
+        <LobbyScreen />
+      </div>
+      {/* Right phone (buy/sell) — tilted slightly clockwise */}
+      <div
+        className="absolute overflow-hidden rounded-[22px]"
+        style={{
+          left: "57.5%",
+          top: "13%",
+          width: "26%",
+          height: "82%",
+          transform: "rotate(2.5deg)",
+          transformOrigin: "center",
+        }}
+      >
+        <BuySellScreen />
+      </div>
+    </div>
   );
 }
 

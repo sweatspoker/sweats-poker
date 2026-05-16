@@ -7,7 +7,14 @@ import { PhoneFrame } from "./PhoneFrame";
 export function BuySellPhone() {
   return (
     <PhoneFrame>
-      <div className="size-full relative bg-[#070707] text-white">
+      <BuySellScreen />
+    </PhoneFrame>
+  );
+}
+
+export function BuySellScreen() {
+  return (
+    <div className="size-full relative bg-[#070707] text-white overflow-hidden">
         {/* Faded trading-view background */}
         <div className="absolute inset-0 opacity-40">
           <div className="pt-9 pb-2 px-4 flex items-center gap-2">
@@ -159,12 +166,6 @@ export function BuySellPhone() {
           </div>
         </div>
 
-        {/* notch must layer above everything else */}
-        <div
-          className="absolute top-2 left-1/2 -translate-x-1/2 z-30 h-[22px] w-[88px] rounded-full bg-black"
-          aria-hidden
-        />
-      </div>
-    </PhoneFrame>
+    </div>
   );
 }

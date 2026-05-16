@@ -74,7 +74,14 @@ const players: Player[] = [
 export function LobbyPhone() {
   return (
     <PhoneFrame>
-      <div className="size-full flex flex-col bg-[#070707] text-white">
+      <LobbyScreen />
+    </PhoneFrame>
+  );
+}
+
+export function LobbyScreen() {
+  return (
+    <div className="size-full flex flex-col bg-[#070707] text-white overflow-hidden">
         <div className="pt-9 pb-3 px-4 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Image
@@ -119,14 +126,13 @@ export function LobbyPhone() {
           </div>
         </div>
 
-        <div className="h-12 border-t border-white/8 bg-[#0c0c0c] flex items-center justify-around text-[9px] uppercase tracking-wider text-white/40">
-          <div className="text-white font-bold">Lobby</div>
-          <div>Portfolio</div>
-          <div>Activity</div>
-          <div>Account</div>
-        </div>
+      <div className="h-12 border-t border-white/8 bg-[#0c0c0c] flex items-center justify-around text-[9px] uppercase tracking-wider text-white/40">
+        <div className="text-white font-bold">Lobby</div>
+        <div>Portfolio</div>
+        <div>Activity</div>
+        <div>Account</div>
       </div>
-    </PhoneFrame>
+    </div>
   );
 }
 
