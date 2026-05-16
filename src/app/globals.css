@@ -25,14 +25,6 @@
   --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-
-  /* Bumped lower end of the type scale for readability. */
-  /* 2xl and larger stay at Tailwind defaults. */
-  --text-xs:   1.5rem;    /* 24px (was 12px) */
-  --text-sm:   1.625rem;  /* 26px (was 14px) */
-  --text-base: 1.75rem;   /* 28px (was 16px) */
-  --text-lg:   2rem;      /* 32px (was 18px) */
-  --text-xl:   2.25rem;   /* 36px (was 20px) */
 }
 
 html, body {
