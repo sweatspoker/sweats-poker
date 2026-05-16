@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { Countdown } from "./Countdown";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,7 @@ type Offering = {
   opens_at: string;
   closes_at: string;
   stream_id: string | null;
+  photo_url?: string | null;
 };
 
 type Stream = {
@@ -48,6 +50,16 @@ export default async function MarketPage() {
     )
     .eq("session_state", "ipo_open")
     .order("closes_at", { ascending: true });
+  const playerIds = Array.from(new Set((offerings ?? []).map((o) => o.player_id)));
+  const photoByPlayer = new Map<string, string | null>();
+  if (playerIds.length > 0) {
+    const { data: ps } = await admin
+      .schema("players")
+      .from("players")
+      .select("player_id, photo_url")
+      .in("player_id", playerIds);
+    for (const p of ps ?? []) photoByPlayer.set(p.player_id, p.photo_url ?? null);
+  }
 
   if (error) {
     return (
@@ -174,12 +186,19 @@ export default async function MarketPage() {
                     className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5"
                   >
                     <div className="flex flex-col gap-3">
-                      <div>
-                        <div className="text-xl font-bold leading-tight">
-                          {o.player_display_name}
-                        </div>
-                        <div className="text-base text-white/50 mt-0.5">
-                          {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares
+                      <div className="flex items-center gap-3">
+                        <PlayerAvatar
+                          src={photoByPlayer.get(o.player_id) ?? null}
+                          name={o.player_display_name}
+                          size={56}
+                        />
+                        <div className="min-w-0">
+                          <div className="text-xl font-bold leading-tight truncate">
+                            {o.player_display_name}
+                          </div>
+                          <div className="text-base text-white/50 mt-0.5">
+                            {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center justify-between gap-3">

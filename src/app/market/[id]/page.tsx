@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { BidForm } from "./BidForm";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,14 @@ export default async function IpoDetailPage({
   if (!offering) notFound();
   const o = offering as Offering;
 
+  const { data: playerRow } = await admin
+    .schema("players")
+    .from("players")
+    .select("photo_url")
+    .eq("player_id", o.player_id)
+    .maybeSingle();
+  const playerPhoto = (playerRow as { photo_url: string | null } | null)?.photo_url ?? null;
+
   // Top bids (price desc, then time asc — Card 5 auction sort).
   const { data: bidsRaw } = await admin
     .schema("ipo")
@@ -94,18 +103,21 @@ export default async function IpoDetailPage({
           </Link>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
-            IPO {isReserve ? "· reserve" : "· open"}
+        <div className="flex items-center gap-4">
+          <PlayerAvatar src={playerPhoto} name={o.player_display_name} size={88} />
+          <div className="flex flex-col gap-2 min-w-0">
+            <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
+              IPO {isReserve ? "· reserve" : "· open"}
+            </div>
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.05]">
+              {o.player_display_name}
+            </h1>
+            <p className="text-white/50 text-base">
+              {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares · reserve{" "}
+              {gcFromMinor(o.price_per_share_minor)} GC per share · closes{" "}
+              {new Date(o.closes_at).toLocaleString()}
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
-            {o.player_display_name}
-          </h1>
-          <p className="text-white/50 text-base">
-            {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares · reserve{" "}
-            {gcFromMinor(o.price_per_share_minor)} GC per share · closes{" "}
-            {new Date(o.closes_at).toLocaleString()}
-          </p>
         </div>
 
         {isReserve ? (
