@@ -79,7 +79,7 @@ export default async function WalletPage() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="text-2xl uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
+          <div className="text-xl uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
             Your wallet
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
@@ -97,7 +97,7 @@ export default async function WalletPage() {
             className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[var(--brand-green)]/10 blur-3xl"
           />
           <div className="relative flex flex-col gap-2">
-            <div className="text-2xl uppercase tracking-[0.18em] text-white/50 font-semibold">
+            <div className="text-xl uppercase tracking-[0.18em] text-white/50 font-semibold">
               Available balance
             </div>
             <div className="flex items-baseline gap-3">
@@ -125,7 +125,7 @@ export default async function WalletPage() {
 
         <section className="flex flex-col gap-4">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-2xl uppercase tracking-[0.18em] text-white/50 font-semibold">
+            <h2 className="text-xl uppercase tracking-[0.18em] text-white/50 font-semibold">
               Recent activity
             </h2>
             {available && available.recent_entries.length > 0 && (

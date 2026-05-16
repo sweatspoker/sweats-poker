@@ -31,18 +31,18 @@ export default async function ProfilePage({
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="text-2xl uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
+          <div className="text-xl uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
             Your profile
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
             {profile.display_name || user.email?.split("@")[0] || "Trader"}
           </h1>
-          <p className="text-white/50 text-2xl">{user.email}</p>
+          <p className="text-white/50 text-xl">{user.email}</p>
         </div>
 
         <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <div className="text-2xl uppercase tracking-[0.15em] text-white/50 font-semibold">
+            <div className="text-xl uppercase tracking-[0.15em] text-white/50 font-semibold">
               Display name
             </div>
             <div className="text-white/60 text-lg">
@@ -76,7 +76,7 @@ export default async function ProfilePage({
         </section>
 
         <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-3">
-          <div className="text-2xl uppercase tracking-[0.15em] text-white/50 font-semibold">
+          <div className="text-xl uppercase tracking-[0.15em] text-white/50 font-semibold">
             Account
           </div>
           <Row label="Age verified" value="Yes, 18+" tone="green" />
