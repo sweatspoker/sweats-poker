@@ -11,7 +11,7 @@ export default async function ProfilePage({
   const { saved, error } = await searchParams;
 
   return (
-    <main className="min-h-screen px-6 py-12 md:py-20 flex justify-center">
+    <main className="dashboard-scope min-h-screen px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-2xl flex flex-col gap-10">
         <div className="flex items-center justify-between">
           <a

@@ -56,3 +56,13 @@ body {
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+/* Dashboard pages (profile, wallet, future signed-in surfaces) use a larger */
+/* type scale anchored at text-xs = 24px. Marketing pages keep Tailwind defaults. */
+.dashboard-scope {
+  --text-xs:   1.5rem;    /* 24px */
+  --text-sm:   1.625rem;  /* 26px */
+  --text-base: 1.75rem;   /* 28px */
+  --text-lg:   2rem;      /* 32px */
+  --text-xl:   2.25rem;   /* 36px */
+}
