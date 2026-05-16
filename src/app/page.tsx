@@ -129,9 +129,11 @@ function Hero() {
   return (
     <section className="relative w-full">
       {/* Mobile: stacked layout — copy first, then hero image below it
-          (matching the HowItWorks / ProductDeepDive text-then-image pattern). */}
+          (matching the HowItWorks / ProductDeepDive text-then-image pattern).
+          pt-24 clears the absolute-positioned header (72px tall) so the
+          headline doesn't sit behind the Your-profile button. */}
       <div className="md:hidden">
-        <div className="w-full max-w-6xl mx-auto px-6 pt-6 pb-10">
+        <div className="w-full max-w-6xl mx-auto px-6 pt-24 pb-10">
           <HeroCopy />
         </div>
         <div className="relative w-screen aspect-[3/2] left-1/2 -translate-x-1/2">

@@ -22,8 +22,12 @@ type ActivityRow = {
 };
 
 function fmtGc(minor: number): string {
-  const gc = Math.round(minor / 100);
-  return gc.toLocaleString("en-US");
+  // Always show 2 decimals so rounding doesn't make a 10 @ 1.55 bid show
+  // "15" GC out and "16" GC refunded when the actual amount is 15.50.
+  return (minor / 100).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 function fmtDate(iso: string): string {
@@ -44,8 +48,8 @@ function prettyType(t: string): string {
     case "ipo_bid_cancelled": return "IPO bid cancelled";
     case "ipo_bid_cleared": return "IPO cleared";
     case "ipo_bid_refunded": return "IPO bid refunded";
-    case "order_placed": return "Order placed";
-    case "order_cancelled": return "Order cancelled";
+    case "order_placed": return "Market order placed";
+    case "order_cancelled": return "Market order cancelled";
     case "trade_executed": return "Trade executed";
     case "redemption": return "Redemption";
     case "redemption_cancelled": return "Redemption cancelled";
@@ -275,7 +279,7 @@ export default async function WalletPage({
                             {e.shares != null && e.price_per_share_minor != null && " @ "}
                             {e.price_per_share_minor != null &&
                               `${(e.price_per_share_minor / 100).toLocaleString(undefined, {
-                                minimumFractionDigits: 0,
+                                minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
                               })} GC`}
                           </div>
