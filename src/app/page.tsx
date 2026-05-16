@@ -302,7 +302,7 @@ function Partner() {
           </p>
         </div>
         <a
-          href="mailto:partners@sweats.poker"
+          href="mailto:support@sweats.poker"
           className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 px-6 py-3.5 text-base font-semibold whitespace-nowrap transition-colors"
         >
           Talk to us →
@@ -339,11 +339,11 @@ function Footer() {
           <Logo />
         </div>
         <div className="flex items-center gap-6">
-          <a href="mailto:hello@sweats.poker" className="hover:text-white/70">
-            hello@sweats.poker
+          <a href="mailto:support@sweats.poker" className="hover:text-white/70">
+            support@sweats.poker
           </a>
           <a
-            href="mailto:partners@sweats.poker"
+            href="mailto:support@sweats.poker"
             className="hover:text-white/70"
           >
             partnerships
