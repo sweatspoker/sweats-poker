@@ -292,7 +292,7 @@ export default async function MarketsPage({
                       <div className="text-xl font-bold leading-tight truncate">
                         {off.player_display_name}
                       </div>
-                      <div className="text-sm text-white/50 mt-0.5 truncate">
+                      <div className="text-sm text-white/50 mt-0.5 break-words">
                         {s ? (
                           <>
                             {s.name}
@@ -374,7 +374,7 @@ export default async function MarketsPage({
                     <div className="text-xl font-bold leading-tight truncate">
                       {o.player_display_name}
                     </div>
-                    <div className="text-base text-white/50 mt-0.5 truncate">
+                    <div className="text-base text-white/50 mt-0.5 break-words">
                       {s ? (
                         <>
                           {s.name}
