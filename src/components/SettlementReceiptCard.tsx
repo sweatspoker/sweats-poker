@@ -104,8 +104,14 @@ export function SettlementReceiptCard({ r }: { r: Receipt }) {
         <Cell label="Buy-in" value={gc(r.declared_buyin_minor)} />
         <Cell
           label="Final stack"
-          value={`${gc(r.final_chip_stack_minor)} GC`}
-          highlight
+          value={gc(r.final_chip_stack_minor)}
+          tone={
+            r.final_chip_stack_minor > r.declared_buyin_minor
+              ? "green"
+              : r.final_chip_stack_minor < r.declared_buyin_minor
+              ? "red"
+              : undefined
+          }
         />
         <Cell label="Total shares" value={r.total_shares.toLocaleString()} />
         <Cell
@@ -159,22 +165,24 @@ export function SettlementReceiptCard({ r }: { r: Receipt }) {
 function Cell({
   label,
   value,
-  highlight,
+  tone,
 }: {
   label: string;
   value: string;
-  highlight?: boolean;
+  tone?: "green" | "red";
 }) {
+  const toneClass =
+    tone === "green"
+      ? "text-[var(--brand-green)] text-lg"
+      : tone === "red"
+      ? "text-[var(--brand-red)] text-lg"
+      : "text-base";
   return (
     <div>
       <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
         {label}
       </div>
-      <div
-        className={`mt-0.5 font-bold ${
-          highlight ? "text-[var(--brand-green)] text-lg" : "text-base"
-        }`}
-      >
+      <div className={`mt-0.5 font-bold ${toneClass}`}>
         {value}
       </div>
     </div>
