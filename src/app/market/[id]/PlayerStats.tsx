@@ -28,6 +28,8 @@ type Session = {
   created_at: string | null;
   declared_buyin_minor: number;
   total_shares: number;
+  shares_remaining: number;
+  shares_filled: number;
   price_per_share_minor: number;
   ipo_clearing_price_minor: number | null;
   final_chip_stack_minor: number | null;
@@ -63,14 +65,60 @@ function resultDot(r: Session["result"]): string {
   }
 }
 
-export function PlayerStats({ playerId, playerName }: { playerId: string; playerName: string }) {
+// Compact result icon for the session history row.
+function ResultIcon({ r }: { r: Session["result"] }) {
+  if (r === "win") {
+    return (
+      <span
+        className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-[var(--brand-green)]/20 text-[var(--brand-green)]"
+        title="Win"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="h-3.5 w-3.5">
+          <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    );
+  }
+  if (r === "loss") {
+    return (
+      <span
+        className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-[var(--brand-red)]/20 text-[var(--brand-red)]"
+        title="Loss"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="h-3.5 w-3.5">
+          <path d="M6 6l12 12M6 18L18 6" strokeLinecap="round" />
+        </svg>
+      </span>
+    );
+  }
+  if (r === "breakeven") {
+    return (
+      <span
+        className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-white/15 text-white/70"
+        title="Breakeven"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="h-3.5 w-3.5">
+          <path d="M5 12h14" strokeLinecap="round" />
+        </svg>
+      </span>
+    );
+  }
+  return (
+    <span
+      className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-white/10 text-white/40"
+      title="Open"
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-current" />
+    </span>
+  );
+}
+
+export function PlayerStats({ playerId }: { playerId: string; playerName?: string }) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [fetching, setFetching] = useState(false);
   const [expandedAll, setExpandedAll] = useState(false);
 
   const load = useCallback(async () => {
-    setFetching(true);
     try {
       const res = await fetch(`/api/players/${encodeURIComponent(playerId)}/stats`);
       const json = await res.json();
@@ -78,8 +126,6 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
       else { setStats(json.stats as Stats); setErr(null); }
     } catch (e) {
       setErr(String(e));
-    } finally {
-      setFetching(false);
     }
   }, [playerId]);
 
@@ -92,7 +138,6 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
   if (err) {
     return (
       <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5">
-        <div className="text-xl font-semibold text-white/50 mb-2">Player stats</div>
         <div className="text-base text-[var(--brand-red)]">{err}</div>
       </section>
     );
@@ -101,14 +146,17 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
   if (!stats) {
     return (
       <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5">
-        <div className="text-xl font-semibold text-white/50 mb-2">Player stats</div>
-        <div className="text-base text-white/40">Loading…</div>
+        <div className="text-base text-white/40">Loading stats…</div>
       </section>
     );
   }
 
   const t = stats.totals;
   const sessions = expandedAll ? stats.sessions : stats.sessions.slice(0, 5);
+  // Streak dots: last 10 settled sessions, newest first.
+  const streak = stats.sessions
+    .filter((s) => s.result === "win" || s.result === "loss" || s.result === "breakeven")
+    .slice(0, 10);
 
   const rows: { label: string; value: string; tone?: "green" | "red" | "muted"; dot?: string }[] = [
     { label: "Sessions", value: t.sessions_total.toLocaleString() },
@@ -142,42 +190,57 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
   ];
 
   return (
-    <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5 flex flex-col gap-5">
-      <div className="flex items-baseline justify-between gap-3">
-        <div className="text-xl font-semibold text-white/50">Player stats — {playerName}</div>
-        <span className="text-sm text-white/30">
-          {fetching ? "refreshing…" : "polls every 10s"}
-        </span>
-      </div>
-
-      <ul className="flex flex-col">
-        {rows.map((r, i) => {
-          const toneClass =
-            r.tone === "green"
-              ? "text-[var(--brand-green)]"
-              : r.tone === "red"
-              ? "text-[var(--brand-red)]"
-              : r.tone === "muted"
-              ? "text-white/60"
-              : "text-white";
-          return (
-            <li
-              key={r.label}
-              className={`flex items-center justify-between gap-3 py-2.5 ${
-                i > 0 ? "border-t border-white/5" : ""
-              }`}
-            >
-              <span className="flex items-center gap-2 text-base text-white/55">
-                {r.dot && <span className={`h-2 w-2 rounded-full ${r.dot}`} />}
-                {r.label}
+    <>
+      <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5 flex flex-col gap-4">
+        {/* Streak dots row — last 10 sessions, newest first. */}
+        <div className="flex items-center gap-2">
+          {streak.length > 0 ? (
+            <>
+              <span className="text-sm text-white/40 uppercase tracking-[0.12em] font-semibold mr-1">
+                Last {streak.length}
               </span>
-              <span className={`text-lg font-bold tabular-nums ${toneClass}`}>{r.value}</span>
-            </li>
-          );
-        })}
-      </ul>
+              {streak.map((s) => (
+                <span
+                  key={s.offering_id}
+                  className={`h-3 w-3 rounded-full ${resultDot(s.result)}`}
+                  title={`${s.result ?? "—"} · ${fmtDate(s.settled_at ?? s.started_at ?? s.created_at)}`}
+                />
+              ))}
+            </>
+          ) : (
+            <span className="text-sm text-white/40">No settled sessions yet.</span>
+          )}
+        </div>
 
-      <div className="flex flex-col gap-2">
+        <ul className="flex flex-col">
+          {rows.map((r, i) => {
+            const toneClass =
+              r.tone === "green"
+                ? "text-[var(--brand-green)]"
+                : r.tone === "red"
+                ? "text-[var(--brand-red)]"
+                : r.tone === "muted"
+                ? "text-white/60"
+                : "text-white";
+            return (
+              <li
+                key={r.label}
+                className={`flex items-center justify-between gap-3 py-2.5 ${
+                  i > 0 ? "border-t border-white/5" : ""
+                }`}
+              >
+                <span className="flex items-center gap-2 text-base text-white/55">
+                  {r.dot && <span className={`h-2 w-2 rounded-full ${r.dot}`} />}
+                  {r.label}
+                </span>
+                <span className={`text-lg font-bold tabular-nums ${toneClass}`}>{r.value}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5 flex flex-col gap-3">
         <div className="flex items-baseline justify-between gap-3">
           <div className="text-base font-semibold text-white/50 uppercase tracking-[0.1em]">
             Session history
@@ -205,18 +268,25 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
                 finalPriceGc != null && facePriceGc > 0
                   ? ((finalPriceGc - facePriceGc) / facePriceGc) * 100
                   : null;
+              // X / Y at [avg IPO price]: X = shares actually sold in IPO (total - remaining),
+              // Y = total shares minted, price = IPO clearing.
+              // For now we don't have shares_sold here; using total_shares as X since pre-clearing
+              // we don't know yet. Once we have per-session breakdown this becomes accurate.
               return (
                 <li
                   key={s.offering_id}
-                  className={`flex items-center gap-3 py-2.5 ${i > 0 ? "border-t border-white/5" : ""}`}
+                  className={`flex items-start gap-3 py-3 ${i > 0 ? "border-t border-white/5" : ""}`}
                 >
-                  <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${resultDot(s.result)}`} />
+                  <ResultIcon r={s.result} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-base font-semibold truncate">
+                    <div className="text-base font-semibold break-words">
                       {s.stream_name ?? "(stream deleted)"}
                     </div>
                     <div className="text-sm text-white/40 tabular-nums">
-                      {fmtDate(date)} · {s.total_shares.toLocaleString()} shares · buy-in {gc(s.declared_buyin_minor)} GC
+                      {fmtDate(date)} · {(s.shares_filled ?? 0).toLocaleString()} / {s.total_shares.toLocaleString()} at{" "}
+                      {s.ipo_clearing_price_minor != null
+                        ? `${gc(s.ipo_clearing_price_minor, 2)} GC`
+                        : `${facePriceGc.toFixed(2)} GC face`}
                     </div>
                   </div>
                   <div className="text-right shrink-0 tabular-nums">
@@ -243,7 +313,7 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
             })}
           </ul>
         )}
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

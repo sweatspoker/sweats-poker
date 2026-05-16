@@ -39,6 +39,14 @@ body {
     radial-gradient(ellipse at bottom left, rgba(185, 28, 28, 0.18) 0%, transparent 60%),
     var(--background);
   background-attachment: fixed;
+  /* Make room for the fixed bottom nav so it never covers content. */
+  padding-bottom: 5.5rem;
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 6rem;
+  }
 }
 
 @keyframes pulse-dot {

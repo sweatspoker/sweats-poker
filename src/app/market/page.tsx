@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Countdown } from "./Countdown";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 
@@ -39,7 +40,7 @@ function dollarsFromMinor(minor: number): string {
 
 export default async function MarketPage() {
   const { user, profile } = await requireVerifiedUser();
-  void user;
+  const supabase = await createSupabaseServerClient();
   const admin = createSupabaseAdminClient();
 
   const { data: offerings, error } = await admin
@@ -59,6 +60,22 @@ export default async function MarketPage() {
       .select("player_id, photo_url")
       .in("player_id", playerIds);
     for (const p of ps ?? []) photoByPlayer.set(p.player_id, p.photo_url ?? null);
+  }
+
+  // Find current user's active bids across these offerings — used to swap the
+  // CTA on cards where they already have a pending bid.
+  void supabase;
+  const offeringIds = (offerings ?? []).map((o) => o.offering_id);
+  const pendingOfferingIds = new Set<string>();
+  if (offeringIds.length > 0) {
+    const { data: myBids } = await admin
+      .schema("ipo")
+      .from("bids")
+      .select("offering_id")
+      .in("offering_id", offeringIds)
+      .in("status", ["pending", "raised"])
+      .eq("user_id", user.id);
+    for (const b of myBids ?? []) pendingOfferingIds.add(b.offering_id);
   }
 
   if (error) {
@@ -122,21 +139,6 @@ export default async function MarketPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-3xl flex flex-col gap-10">
-        <div className="flex items-center justify-between">
-          <a
-            href="/profile"
-            className="text-sm uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
-          >
-            ← Profile
-          </a>
-          <a
-            href="/wallet"
-            className="text-sm uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
-          >
-            Wallet →
-          </a>
-        </div>
-
         <div className="flex flex-col gap-2">
           <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
             Market · {profile.tier === "upgraded" ? "Upgraded" : "Free tier"}
@@ -180,12 +182,14 @@ export default async function MarketPage() {
                 )}
               </header>
               <div className="flex flex-col gap-3">
-                {g.offerings.map((o) => (
-                  <div
-                    key={o.offering_id}
-                    className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5"
-                  >
-                    <div className="flex flex-col gap-3">
+                {g.offerings.map((o) => {
+                  const hasPendingBid = pendingOfferingIds.has(o.offering_id);
+                  return (
+                    <Link
+                      key={o.offering_id}
+                      href={`/market/${o.offering_id}`}
+                      className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 hover:bg-[var(--surface)]/60 transition-colors p-5 flex flex-col gap-3"
+                    >
                       <div className="flex items-center gap-3">
                         <PlayerAvatar
                           src={photoByPlayer.get(o.player_id) ?? null}
@@ -203,16 +207,15 @@ export default async function MarketPage() {
                       </div>
                       <div className="flex items-center justify-between gap-3">
                         <Countdown target={o.closes_at} />
-                        <Link
-                          href={`/market/${o.offering_id}`}
-                          className="rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] transition-colors px-5 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white whitespace-nowrap"
-                        >
-                          Bid
-                        </Link>
+                        {hasPendingBid && (
+                          <span className="rounded-full bg-[var(--brand-green)]/15 text-[var(--brand-green)] border border-[var(--brand-green)]/30 px-3 py-1 text-sm font-semibold uppercase tracking-[0.12em] whitespace-nowrap">
+                            Pending bid
+                          </span>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             </section>
           ))

@@ -12,20 +12,26 @@ type Props = {
   existingBid: { bid_id: string; shares: number; price_per_share_minor: number } | null;
 };
 
+const MIN_SHARES = 1;
+
 function gcFromMinor(minor: number): string {
   return (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
-function prettyError(code: string): string {
-  if (code.includes("insufficient_balance")) return "Not enough GC in your wallet.";
-  if (code.includes("price_below_reserve")) return "Bid price is below the reserve.";
-  if (code.includes("shares_must_be_positive")) return "Shares must be at least 1.";
-  if (code.includes("price_must_be_positive")) return "Price must be greater than 0.";
-  if (code.includes("offering_outside_window")) return "Bidding window is closed.";
-  if (code.includes("offering_not_open")) return "This IPO isn't accepting bids right now.";
-  if (code.includes("offering_not_found")) return "This offering no longer exists.";
-  if (code.includes("tier_upgraded_required")) return "Upgrade your tier to bid.";
-  return code;
+function prettyError(code: string, detail?: string): string {
+  const text = `${code} ${detail ?? ""}`;
+  if (text.includes("insufficient_balance")) return "Not enough GC in your wallet.";
+  if (text.includes("price_below_reserve")) return "Bid price is below the reserve.";
+  if (text.includes("shares_must_be_positive")) return "Shares must be at least 1.";
+  if (text.includes("price_must_be_positive")) return "Price must be greater than 0.";
+  if (text.includes("offering_outside_window")) return "Bidding window is closed.";
+  if (text.includes("offering_not_open") || text.includes("offering_not_accepting_bids"))
+    return "This IPO isn't accepting bids right now.";
+  if (text.includes("offering_not_found")) return "This offering no longer exists.";
+  if (text.includes("tier_upgraded_required")) return "Upgrade your tier to bid.";
+  if (text.includes("idempotency_key_required")) return "Please try again.";
+  // Fall through: prefer the SQL detail if present (more specific than 'rpc_failed').
+  return detail || code;
 }
 
 const HOLD_MS = 3000;
@@ -39,7 +45,7 @@ export function BidForm({
   existingBid,
 }: Props) {
   const router = useRouter();
-  const [shares, setShares] = useState("10");
+  const [shares, setShares] = useState(String(MIN_SHARES));
   const [price, setPrice] = useState(pricePerShareGc.toString());
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -49,14 +55,12 @@ export function BidForm({
   const priceNum = Math.max(0, Number(price) || 0);
   const totalGc = sharesNum * priceNum;
 
-  // Validity per-field — used to color borders green/red.
-  const sharesValid = sharesNum >= 1 && sharesNum <= sharesRemaining;
+  const sharesValid = sharesNum >= MIN_SHARES && sharesNum <= sharesRemaining;
   const priceValid = priceNum >= pricePerShareGc;
   const insufficient = totalGc > availableGc;
   const formValid = sharesValid && priceValid && !insufficient && !busy;
 
-  // Tap-and-hold confirm state.
-  const [holdProgress, setHoldProgress] = useState(0); // 0..1
+  const [holdProgress, setHoldProgress] = useState(0);
   const holdRafRef = useRef<number | null>(null);
   const holdStartRef = useRef<number | null>(null);
   const holdSubmittedRef = useRef(false);
@@ -87,7 +91,7 @@ export function BidForm({
       });
       const json = await res.json();
       if (!res.ok) {
-        setErr(prettyError(json.error ?? `HTTP ${res.status}`));
+        setErr(prettyError(json.error ?? `HTTP ${res.status}`, json.detail));
       } else {
         setMsg(`Bid placed: ${sharesNum} shares @ ${priceNum} GC each.`);
         router.refresh();
@@ -104,7 +108,9 @@ export function BidForm({
   function startHold(e: React.PointerEvent<HTMLButtonElement>) {
     if (!formValid) return;
     e.preventDefault();
-    e.currentTarget.setPointerCapture(e.pointerId);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
     holdSubmittedRef.current = false;
     holdStartRef.current = performance.now();
 
@@ -138,8 +144,6 @@ export function BidForm({
     );
   }
 
-  // Per-field border classes — green when valid + has content, red when invalid + has content,
-  // neutral otherwise.
   const sharesBorder =
     shares === "" || shares === "0"
       ? "border-white/10"
@@ -152,6 +156,8 @@ export function BidForm({
       : priceValid
       ? "border-[var(--brand-green)]/60"
       : "border-[var(--brand-red)]/60";
+
+  const isHolding = holdProgress > 0;
 
   return (
     <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 flex flex-col gap-4">
@@ -169,7 +175,7 @@ export function BidForm({
           <span className="text-sm text-white/50">Shares</span>
           <input
             type="number"
-            min={1}
+            min={MIN_SHARES}
             max={sharesRemaining}
             step={1}
             value={shares}
@@ -177,7 +183,7 @@ export function BidForm({
             disabled={busy}
             className={`w-full rounded-2xl border ${sharesBorder} bg-white/5 px-4 py-3 text-base tabular-nums focus:outline-none transition-colors`}
           />
-          <span className="text-sm text-white/30">{sharesRemaining.toLocaleString()} remaining</span>
+          <span className="text-sm text-white/30 tabular-nums">Min = {MIN_SHARES.toLocaleString()}</span>
         </label>
         <label className="flex flex-col gap-1">
           <span className="text-sm text-white/50">Price per share</span>
@@ -190,7 +196,7 @@ export function BidForm({
             disabled={busy}
             className={`w-full rounded-2xl border ${priceBorder} bg-white/5 px-4 py-3 text-base tabular-nums focus:outline-none transition-colors`}
           />
-          <span className="text-sm text-white/30">reserve {pricePerShareGc} GC</span>
+          <span className="text-sm text-white/30 tabular-nums">Min = {pricePerShareGc} GC</span>
         </label>
       </div>
 
@@ -211,32 +217,38 @@ export function BidForm({
         onPointerUp={endHold}
         onPointerCancel={endHold}
         onPointerLeave={endHold}
+        onContextMenu={(e) => e.preventDefault()}
         disabled={!formValid}
         aria-label="Tap and hold to confirm bid"
-        className={`relative overflow-hidden w-full rounded-full border border-[var(--brand-red)] ${
-          holdProgress > 0 ? "bg-white" : "bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)]"
+        className={`relative overflow-hidden w-full rounded-full ${
+          isHolding ? "bg-white text-[var(--brand-red)]" : "bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] text-white"
         } disabled:opacity-40 disabled:cursor-not-allowed transition-all px-4 py-4 text-base font-bold uppercase tracking-[0.12em] select-none ${
           holdProgress >= 1 ? "scale-[1.02]" : "scale-100"
-        } ${holdProgress > 0 ? "text-black" : "text-white"}`}
-        style={{ touchAction: "none" }}
+        }`}
+        style={{
+          touchAction: "none",
+          WebkitTouchCallout: "none",
+          WebkitUserSelect: "none",
+          userSelect: "none",
+        }}
       >
         <span
           aria-hidden
-          className="absolute inset-y-0 left-0 bg-[var(--brand-red)]/85 transition-[width] duration-75"
+          className="absolute inset-y-0 left-0 bg-[var(--brand-red)] transition-[width] duration-75"
           style={{ width: `${holdProgress * 100}%` }}
         />
-        <span className="relative z-10">
+        <span className="relative z-10 pointer-events-none">
           {busy
             ? "Placing…"
             : insufficient
             ? "Insufficient GC"
             : !sharesValid
-            ? "Enter valid shares"
+            ? `Min ${MIN_SHARES} share${MIN_SHARES === 1 ? "" : "s"}`
             : !priceValid
-            ? "Price below reserve"
+            ? `Price below ${pricePerShareGc} GC`
             : holdProgress >= 1
             ? "Confirmed"
-            : holdProgress > 0
+            : isHolding
             ? "Hold to confirm…"
             : "Tap and hold to buy"}
         </span>

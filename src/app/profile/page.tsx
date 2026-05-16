@@ -14,13 +14,7 @@ export default async function ProfilePage({
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-2xl flex flex-col gap-10">
-        <div className="flex items-center justify-between">
-          <a
-            href="/"
-            className="text-sm uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
-          >
-            ← Sweats
-          </a>
+        <div className="flex items-center justify-end">
           <form action="/auth/sign-out" method="post">
             <button
               type="submit"
@@ -86,20 +80,6 @@ export default async function ProfilePage({
             value={new Date(profile.created_at).toLocaleDateString()}
             tone="muted"
           />
-          <div className="mt-2 flex gap-2">
-            <a
-              href="/market"
-              className="self-start rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em] text-white"
-            >
-              Market →
-            </a>
-            <a
-              href="/wallet"
-              className="self-start rounded-full bg-white/10 hover:bg-white/15 transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em]"
-            >
-              Wallet →
-            </a>
-          </div>
         </section>
       </div>
     </main>

@@ -5,6 +5,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { BidForm } from "./BidForm";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PlayerStats } from "./PlayerStats";
+import { Countdown } from "../Countdown";
 
 export const dynamic = "force-dynamic";
 
@@ -89,21 +90,6 @@ export default async function IpoDetailPage({
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-3xl flex flex-col gap-8">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/market"
-            className="text-sm uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
-          >
-            ← Market
-          </Link>
-          <Link
-            href="/wallet"
-            className="text-sm uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
-          >
-            Wallet · {availableGc.toLocaleString()} GC
-          </Link>
-        </div>
-
         <div className="flex items-center gap-4">
           <PlayerAvatar src={playerPhoto} name={o.player_display_name} size={88} />
           <div className="flex flex-col gap-2 min-w-0">
@@ -113,11 +99,12 @@ export default async function IpoDetailPage({
             <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.05]">
               {o.player_display_name}
             </h1>
-            <p className="text-white/50 text-base">
-              {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares · reserve{" "}
-              {gcFromMinor(o.price_per_share_minor)} GC per share · closes{" "}
-              {new Date(o.closes_at).toLocaleString()}
-            </p>
+            <div className="text-base text-white/50">
+              {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares
+            </div>
+            <div className="text-base">
+              <Countdown target={o.closes_at} />
+            </div>
           </div>
         </div>
 

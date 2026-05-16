@@ -76,13 +76,10 @@ export function BottomNav({ signedIn }: { signedIn: boolean }) {
   if (!signedIn && pathname !== "/") return null;
 
   return (
-    <>
-      {/* Spacer so fixed nav doesn't cover content. */}
-      <div className="h-20" aria-hidden />
-      <nav
-        className="fixed bottom-0 inset-x-0 z-40 border-t border-white/10 bg-black/85 backdrop-blur-md"
-        aria-label="Primary"
-      >
+    <nav
+      className="fixed bottom-0 inset-x-0 z-40 border-t border-white/10 bg-black/85 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
+      aria-label="Primary"
+    >
         <ul className="flex items-stretch justify-between max-w-3xl mx-auto px-2">
           {ITEMS.map((it) => {
             const active = it.match(pathname);
@@ -102,8 +99,7 @@ export function BottomNav({ signedIn }: { signedIn: boolean }) {
               </li>
             );
           })}
-        </ul>
-      </nav>
-    </>
+      </ul>
+    </nav>
   );
 }

@@ -69,6 +69,7 @@ type PortfolioRow = {
 
 export default async function WalletPage() {
   const { supabase, user, profile } = await requireVerifiedUser();
+  void user;
 
   const [
     { data: ledgerData, error: ledgerErr },
@@ -94,23 +95,6 @@ export default async function WalletPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-2xl flex flex-col gap-10">
-        <div className="flex items-center justify-between">
-          <a
-            href="/profile"
-            className="text-sm uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
-          >
-            ← Profile
-          </a>
-          <form action="/auth/sign-out" method="post">
-            <button
-              type="submit"
-              className="text-sm uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
-            >
-              Sign out
-            </button>
-          </form>
-        </div>
-
         <div className="flex flex-col gap-2">
           <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
             Your wallet
@@ -150,8 +134,6 @@ export default async function WalletPage() {
                 <span className="h-1.5 w-1.5 rounded-full bg-current" />
                 {tier === "upgraded" ? "Upgraded" : "Free tier"}
               </span>
-              <span className="text-white/30 hidden sm:inline">·</span>
-              <span className="text-white/40 truncate min-w-0">{user.email}</span>
             </div>
           </div>
         </section>
@@ -209,6 +191,10 @@ export default async function WalletPage() {
           </section>
         )}
 
+        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-7 md:p-9">
+          <SimulateCheckoutButton />
+        </section>
+
         <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 overflow-hidden">
           <div className="flex items-baseline justify-between px-7 pt-7 md:px-9 md:pt-9 pb-4">
             <h2 className="text-xl font-semibold text-white/50">
@@ -249,14 +235,16 @@ export default async function WalletPage() {
                         {positive ? "+" : "−"}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-base font-semibold truncate">
+                        <div className="text-base font-semibold">
                           {prettyType(e.transaction_type)}
-                          {e.player_display_name && (
-                            <span className="text-white/60"> · {e.player_display_name}</span>
-                          )}
                         </div>
+                        {e.player_display_name && (
+                          <div className="text-base text-white/60 break-words">
+                            {e.player_display_name}
+                          </div>
+                        )}
                         {(e.shares != null || e.price_per_share_minor != null) && (
-                          <div className="text-base text-white/40 mt-0.5 tabular-nums truncate">
+                          <div className="text-base text-white/40 mt-0.5 tabular-nums">
                             {e.shares != null && `${e.shares.toLocaleString()} share${e.shares === 1 ? "" : "s"}`}
                             {e.shares != null && e.price_per_share_minor != null && " @ "}
                             {e.price_per_share_minor != null &&
@@ -267,7 +255,7 @@ export default async function WalletPage() {
                           </div>
                         )}
                         {!e.shares && !e.price_per_share_minor && e.note && (
-                          <div className="text-base text-white/40 mt-0.5 truncate">
+                          <div className="text-base text-white/40 mt-0.5">
                             {e.note}
                           </div>
                         )}
@@ -291,10 +279,6 @@ export default async function WalletPage() {
               })}
             </ul>
           )}
-        </section>
-
-        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-7 md:p-9">
-          <SimulateCheckoutButton />
         </section>
 
         <footer className="text-base uppercase tracking-[0.2em] text-white/25 text-center">
