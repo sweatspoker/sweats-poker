@@ -162,7 +162,7 @@ export default async function MarketsPage({
                 return (
                   <Link
                     key={p.offering_id}
-                    href={`/market/${p.offering_id}`}
+                    href={`/markets/${p.offering_id}`}
                     className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-colors p-5 flex items-center gap-4"
                   >
                     <PlayerAvatar
@@ -215,7 +215,7 @@ export default async function MarketsPage({
               return (
                 <Link
                   key={o.offering_id}
-                  href={`/market/${o.offering_id}`}
+                  href={`/markets/${o.offering_id}`}
                   className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-colors p-5 flex items-center gap-4"
                 >
                   <PlayerAvatar
