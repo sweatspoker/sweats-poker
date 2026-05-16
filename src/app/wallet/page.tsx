@@ -1,19 +1,23 @@
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { SimulateCheckoutButton } from "./SimulateCheckoutButton";
 
-type LedgerEntry = {
+export const dynamic = "force-dynamic";
+
+type LedgerSummaryRow = {
+  account_type: string;
+  balance_minor: number;
+};
+
+type ActivityRow = {
   entry_id: number;
   transaction_id: string;
   transaction_type: string;
   delta_minor: number;
   created_at: string;
   note: string | null;
-};
-
-type LedgerSummaryRow = {
-  account_type: string;
-  balance_minor: number;
-  recent_entries: LedgerEntry[];
+  player_display_name: string | null;
+  shares: number | null;
+  price_per_share_minor: number | null;
 };
 
 function fmtGc(minor: number): string {
@@ -66,23 +70,29 @@ type PortfolioRow = {
 export default async function WalletPage() {
   const { supabase, user, profile } = await requireVerifiedUser();
 
-  const [{ data: ledgerData, error: ledgerErr }, { data: portfolioData, error: portfolioErr }] =
-    await Promise.all([
-      supabase.rpc("get_my_ledger_summary"),
-      supabase.rpc("get_my_portfolio"),
-    ]);
+  const [
+    { data: ledgerData, error: ledgerErr },
+    { data: portfolioData, error: portfolioErr },
+    { data: activityData, error: activityErr },
+  ] = await Promise.all([
+    supabase.rpc("get_my_ledger_summary"),
+    supabase.rpc("get_my_portfolio"),
+    supabase.rpc("get_my_recent_activity", { p_limit: 25 }),
+  ]);
   if (ledgerErr) console.error("[wallet] get_my_ledger_summary failed:", ledgerErr);
   if (portfolioErr) console.error("[wallet] get_my_portfolio failed:", portfolioErr);
+  if (activityErr) console.error("[wallet] get_my_recent_activity failed:", activityErr);
 
   const rows = ((ledgerData as LedgerSummaryRow[] | null) ?? []).filter(
     (r) => r.account_type === "available"
   );
   const available = rows[0];
   const portfolio = (portfolioData as PortfolioRow[] | null) ?? [];
+  const activity = (activityData as ActivityRow[] | null) ?? [];
   const tier = profile.tier ?? "free";
 
   return (
-    <main className="min-h-screen px-6 py-12 md:py-20 flex justify-center">
+    <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-2xl flex flex-col gap-10">
         <div className="flex items-center justify-between">
           <a
@@ -129,9 +139,9 @@ export default async function WalletPage() {
               </div>
               <div className="text-2xl text-white/40 font-semibold">GC</div>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-base">
+            <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-base">
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold uppercase tracking-[0.12em] ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold uppercase tracking-[0.12em] whitespace-nowrap ${
                   tier === "upgraded"
                     ? "bg-[var(--brand-green)]/15 text-[var(--brand-green)]"
                     : "bg-white/10 text-white/60"
@@ -140,8 +150,8 @@ export default async function WalletPage() {
                 <span className="h-1.5 w-1.5 rounded-full bg-current" />
                 {tier === "upgraded" ? "Upgraded" : "Free tier"}
               </span>
-              <span className="text-white/30">·</span>
-              <span className="text-white/40">{user.email}</span>
+              <span className="text-white/30 hidden sm:inline">·</span>
+              <span className="text-white/40 truncate min-w-0">{user.email}</span>
             </div>
           </div>
         </section>
@@ -204,15 +214,15 @@ export default async function WalletPage() {
             <h2 className="text-xl font-semibold text-white/50">
               Recent activity
             </h2>
-            {available && available.recent_entries.length > 0 && (
+            {activity.length > 0 && (
               <span className="text-base text-white/30">
-                {available.recent_entries.length} entr
-                {available.recent_entries.length === 1 ? "y" : "ies"}
+                {activity.length} entr
+                {activity.length === 1 ? "y" : "ies"}
               </span>
             )}
           </div>
 
-          {!available || available.recent_entries.length === 0 ? (
+          {activity.length === 0 ? (
             <div className="px-7 pb-8 md:px-9 md:pb-9 text-center">
               <div className="text-base text-white/60">No activity yet.</div>
               <div className="text-base text-white/40 mt-1">
@@ -221,7 +231,7 @@ export default async function WalletPage() {
             </div>
           ) : (
             <ul className="border-t border-white/5 divide-y divide-white/5">
-              {available.recent_entries.map((e) => {
+              {activity.map((e) => {
                 const positive = e.delta_minor >= 0;
                 return (
                   <li
@@ -241,8 +251,22 @@ export default async function WalletPage() {
                       <div className="min-w-0">
                         <div className="text-base font-semibold truncate">
                           {prettyType(e.transaction_type)}
+                          {e.player_display_name && (
+                            <span className="text-white/60"> · {e.player_display_name}</span>
+                          )}
                         </div>
-                        {e.note && (
+                        {(e.shares != null || e.price_per_share_minor != null) && (
+                          <div className="text-base text-white/40 mt-0.5 tabular-nums truncate">
+                            {e.shares != null && `${e.shares.toLocaleString()} share${e.shares === 1 ? "" : "s"}`}
+                            {e.shares != null && e.price_per_share_minor != null && " @ "}
+                            {e.price_per_share_minor != null &&
+                              `${(e.price_per_share_minor / 100).toLocaleString(undefined, {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2,
+                              })} GC`}
+                          </div>
+                        )}
+                        {!e.shares && !e.price_per_share_minor && e.note && (
                           <div className="text-base text-white/40 mt-0.5 truncate">
                             {e.note}
                           </div>

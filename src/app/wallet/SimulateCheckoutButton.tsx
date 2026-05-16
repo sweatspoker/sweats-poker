@@ -48,9 +48,6 @@ export function BuyGoldCoinsPanel() {
     <div className="flex flex-col gap-6">
       <div>
         <div className="text-xl font-semibold text-white/50">Buy Gold Coins</div>
-        <p className="text-base text-white/40 mt-1">
-          $1 = 10 GC. Credits land instantly in your available balance.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

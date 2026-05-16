@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { Countdown } from "./Countdown";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ type Offering = {
 
 type Stream = {
   stream_id: string;
+  name: string;
   venue_id: string;
   status: string;
   start_time: string;
@@ -28,10 +30,6 @@ type Stream = {
 };
 
 type Venue = { venue_id: string; name: string; city: string | null; state: string | null };
-
-function gcFromMinor(minor: number): string {
-  return (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-}
 
 function dollarsFromMinor(minor: number): string {
   return (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -42,8 +40,6 @@ export default async function MarketPage() {
   void user;
   const admin = createSupabaseAdminClient();
 
-  // Open IPOs the player can bid on. Reserve role offerings stay in 'draft'
-  // until promotion; we surface only 'ipo_open'.
   const { data: offerings, error } = await admin
     .schema("ipo")
     .from("offerings")
@@ -55,7 +51,7 @@ export default async function MarketPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen px-6 py-12 md:py-20 max-w-2xl mx-auto">
+      <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 max-w-2xl mx-auto">
         <div className="rounded-3xl border border-[var(--brand-red)]/40 bg-[var(--brand-red)]/10 p-6">
           <div className="text-xl font-semibold text-[var(--brand-red)]">Market unavailable</div>
           <pre className="text-base text-white/60 mt-2 whitespace-pre-wrap">{error.message}</pre>
@@ -73,7 +69,7 @@ export default async function MarketPage() {
     const { data: streams } = await admin
       .schema("streams")
       .from("streams")
-      .select("stream_id, venue_id, status, start_time, sb_minor, bb_minor")
+      .select("stream_id, name, venue_id, status, start_time, sb_minor, bb_minor")
       .in("stream_id", streamIds);
     for (const s of streams ?? []) streamById.set(s.stream_id, s as Stream);
 
@@ -92,8 +88,27 @@ export default async function MarketPage() {
     }
   }
 
+  // Group offerings by stream.
+  const groups = new Map<string | "no-stream", { stream: Stream | null; venue: Venue | null; offerings: Offering[] }>();
+  for (const o of list) {
+    const key = o.stream_id ?? "no-stream";
+    if (!groups.has(key)) {
+      groups.set(key, {
+        stream: o.stream_id ? streamById.get(o.stream_id) ?? null : null,
+        venue: o.stream_id ? venueByStream.get(o.stream_id) ?? null : null,
+        offerings: [],
+      });
+    }
+    groups.get(key)!.offerings.push(o);
+  }
+  const groupList = Array.from(groups.values()).sort((a, b) => {
+    const at = a.stream?.start_time ? new Date(a.stream.start_time).getTime() : Infinity;
+    const bt = b.stream?.start_time ? new Date(b.stream.start_time).getTime() : Infinity;
+    return at - bt;
+  });
+
   return (
-    <main className="min-h-screen px-6 py-12 md:py-20 flex justify-center">
+    <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-3xl flex flex-col gap-10">
         <div className="flex items-center justify-between">
           <a
@@ -117,21 +132,14 @@ export default async function MarketPage() {
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
             Open IPOs
           </h1>
-          <p className="text-white/50 text-base max-w-md">
-            Bid on shares of players before the stream starts. Final price clears at whatever the
-            book is willing to pay.
-            {profile.tier !== "upgraded" && (
-              <>
-                {" "}
-                <span className="text-[var(--brand-red)]/80">
-                  Upgraded tier required to bid — buy GC to upgrade.
-                </span>
-              </>
-            )}
-          </p>
+          {profile.tier !== "upgraded" && (
+            <p className="text-[var(--brand-red)]/80 text-base">
+              Upgraded tier required to bid — buy GC to upgrade.
+            </p>
+          )}
         </div>
 
-        {list.length === 0 ? (
+        {groupList.length === 0 ? (
           <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-10 text-center">
             <div className="text-base text-white/60">No open IPOs right now.</div>
             <div className="text-base text-white/40 mt-1">
@@ -139,51 +147,56 @@ export default async function MarketPage() {
             </div>
           </section>
         ) : (
-          <section className="flex flex-col gap-3">
-            {list.map((o) => {
-              const stream = o.stream_id ? streamById.get(o.stream_id) : null;
-              const venue = o.stream_id ? venueByStream.get(o.stream_id) : null;
-              const closesIn = new Date(o.closes_at).getTime() - Date.now();
-              const closesSoon = closesIn > 0 && closesIn < 30 * 60 * 1000;
-              return (
-                <Link
-                  key={o.offering_id}
-                  href={`/market/${o.offering_id}`}
-                  className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 hover:bg-[var(--surface)]/60 transition-colors p-6 flex items-center justify-between gap-4"
-                >
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <div className="text-xl font-semibold truncate">
-                      {o.player_display_name}
-                    </div>
-                    {venue && stream && (
-                      <div className="text-base text-white/50 truncate">
-                        {venue.name} · $
-                        {dollarsFromMinor(stream.sb_minor)}/${dollarsFromMinor(stream.bb_minor)}
+          groupList.map((g, idx) => (
+            <section key={g.stream?.stream_id ?? `no-stream-${idx}`} className="flex flex-col gap-3">
+              <header className="px-1">
+                <div className="text-2xl font-bold tracking-tight">
+                  {g.stream?.name ?? "Open offerings"}
+                </div>
+                {g.stream && (
+                  <div className="text-sm text-white/50 mt-0.5">
+                    {g.venue?.name ? `${g.venue.name} · ` : ""}
+                    ${dollarsFromMinor(g.stream.sb_minor)}/${dollarsFromMinor(g.stream.bb_minor)}
+                    {" · "}
+                    Starts {new Date(g.stream.start_time).toLocaleString([], {
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                )}
+              </header>
+              <div className="flex flex-col gap-3">
+                {g.offerings.map((o) => (
+                  <div
+                    key={o.offering_id}
+                    className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5"
+                  >
+                    <div className="flex flex-col gap-3">
+                      <div>
+                        <div className="text-xl font-bold leading-tight">
+                          {o.player_display_name}
+                        </div>
+                        <div className="text-base text-white/50 mt-0.5">
+                          {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares
+                        </div>
                       </div>
-                    )}
-                    <div className="text-base text-white/40">
-                      {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares ·{" "}
-                      {gcFromMinor(o.price_per_share_minor)} GC reserve
+                      <div className="flex items-center justify-between gap-3">
+                        <Countdown target={o.closes_at} />
+                        <Link
+                          href={`/market/${o.offering_id}`}
+                          className="rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] transition-colors px-5 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white whitespace-nowrap"
+                        >
+                          Bid
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    {closesIn > 0 ? (
-                      <span
-                        className={`text-sm font-semibold uppercase tracking-[0.12em] ${
-                          closesSoon ? "text-[var(--brand-red)]" : "text-[var(--brand-green)]"
-                        }`}
-                      >
-                        Closes {new Date(o.closes_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
-                      </span>
-                    ) : (
-                      <span className="text-sm uppercase tracking-[0.12em] text-white/40">Closed</span>
-                    )}
-                    <span className="text-base text-white/30">Bid →</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </section>
+                ))}
+              </div>
+            </section>
+          ))
         )}
       </div>
     </main>

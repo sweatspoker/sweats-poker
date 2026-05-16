@@ -44,7 +44,7 @@ export function WaitlistForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3 w-full max-w-md">
-      <div className="flex gap-2 rounded-full bg-white/8 border border-white/12 p-1.5 focus-within:border-[var(--brand-red)]/60 transition-colors">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 w-full sm:rounded-full sm:bg-white/8 sm:border sm:border-white/12 sm:p-1.5 sm:focus-within:border-[var(--brand-red)]/60 transition-colors">
         <input
           type="email"
           required
@@ -52,12 +52,12 @@ export function WaitlistForm() {
           placeholder="you@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 bg-transparent px-4 py-2 text-sm placeholder:text-white/35 outline-none"
+          className="flex-1 min-w-0 rounded-full sm:rounded-none bg-white/8 sm:bg-transparent border border-white/12 sm:border-0 px-4 py-3 sm:py-2 text-sm placeholder:text-white/35 outline-none"
         />
         <button
           type="submit"
           disabled={state === "loading"}
-          className="rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] disabled:opacity-60 transition-colors px-5 py-2.5 text-sm font-semibold text-black whitespace-nowrap"
+          className="rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] disabled:opacity-60 transition-colors px-5 py-3 sm:py-2.5 text-sm font-semibold text-black whitespace-nowrap"
         >
           {state === "loading" ? "…" : "Get early access"}
         </button>

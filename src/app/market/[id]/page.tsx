@@ -26,7 +26,7 @@ type Bid = {
   shares_requested: number;
   bid_price_per_share_minor: number;
   status: string;
-  created_at: string;
+  placed_at: string;
 };
 
 function gcFromMinor(minor: number): string {
@@ -57,11 +57,11 @@ export default async function IpoDetailPage({
   const { data: bidsRaw } = await admin
     .schema("ipo")
     .from("bids")
-    .select("bid_id, user_id, shares_requested, bid_price_per_share_minor, status, created_at")
+    .select("bid_id, user_id, shares_requested, bid_price_per_share_minor, status, placed_at")
     .eq("offering_id", o.offering_id)
-    .in("status", ["active"])
+    .in("status", ["pending", "raised"])
     .order("bid_price_per_share_minor", { ascending: false })
-    .order("created_at", { ascending: true })
+    .order("placed_at", { ascending: true })
     .limit(10);
   const bids = (bidsRaw ?? []) as Bid[];
   const myBid = bids.find((b) => b.user_id === user.id) ?? null;
@@ -77,7 +77,7 @@ export default async function IpoDetailPage({
   const isReserve = o.player_role === "reserve";
 
   return (
-    <main className="min-h-screen px-6 py-12 md:py-20 flex justify-center">
+    <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-3xl flex flex-col gap-8">
         <div className="flex items-center justify-between">
           <Link
@@ -149,7 +149,7 @@ export default async function IpoDetailPage({
                       {b.user_id === user.id ? "You" : `Bidder ${b.user_id.slice(0, 6)}…`}
                     </span>
                     <span className="text-sm text-white/40">
-                      {new Date(b.created_at).toLocaleTimeString([], {
+                      {new Date(b.placed_at).toLocaleTimeString([], {
                         hour: "numeric",
                         minute: "2-digit",
                       })}

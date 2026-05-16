@@ -1,4 +1,5 @@
 import { requireVerifiedUser } from "@/lib/auth/require-user";
+import { AvatarEditor } from "./AvatarEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export default async function ProfilePage({
   const { saved, error } = await searchParams;
 
   return (
-    <main className="min-h-screen px-6 py-12 md:py-20 flex justify-center">
+    <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-2xl flex flex-col gap-10">
         <div className="flex items-center justify-between">
           <a
@@ -37,18 +38,18 @@ export default async function ProfilePage({
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
             {profile.display_name || user.email?.split("@")[0] || "Trader"}
           </h1>
-          <p className="text-white/50 text-xl">{user.email}</p>
         </div>
 
         <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-5">
-          <div className="flex flex-col gap-1">
-            <div className="text-xl font-semibold text-white/50">
-              Display name
-            </div>
-            <div className="text-white/60 text-base">
-              Shown on leaderboards and your trades.
-            </div>
+          <div className="text-xl font-semibold text-white/50">
+            Display name
           </div>
+          <AvatarEditor
+            userId={user.id}
+            email={user.email ?? ""}
+            displayName={profile.display_name}
+            initialAvatarUrl={profile.avatar_url}
+          />
           <form action="/profile/save" method="post" className="flex flex-col gap-3">
             <input
               type="text"
