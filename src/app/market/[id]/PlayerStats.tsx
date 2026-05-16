@@ -13,6 +13,9 @@ type Totals = {
   total_trading_volume_minor: number;
   total_trades: number;
   avg_clearing_price_minor: number;
+  avg_final_share_value_minor: number;
+  avg_clearing_premium_minor: number;
+  win_rate_pct: number;
 };
 
 type Session = {
@@ -51,12 +54,12 @@ function fmtDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
-function resultTone(r: Session["result"]): string {
+function resultDot(r: Session["result"]): string {
   switch (r) {
-    case "win": return "bg-[var(--brand-green)]/15 text-[var(--brand-green)] border-[var(--brand-green)]/30";
-    case "loss": return "bg-[var(--brand-red)]/15 text-[var(--brand-red)] border-[var(--brand-red)]/30";
-    case "breakeven": return "bg-white/10 text-white/70 border-white/15";
-    default: return "bg-white/5 text-white/40 border-white/10";
+    case "win": return "bg-[var(--brand-green)]";
+    case "loss": return "bg-[var(--brand-red)]";
+    case "breakeven": return "bg-white/40";
+    default: return "bg-white/15";
   }
 }
 
@@ -106,7 +109,37 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
 
   const t = stats.totals;
   const sessions = expandedAll ? stats.sessions : stats.sessions.slice(0, 5);
-  const netPnlMinor = t.total_final_stack_minor - t.total_buyin_minor;
+
+  const rows: { label: string; value: string; tone?: "green" | "red" | "muted"; dot?: string }[] = [
+    { label: "Sessions", value: t.sessions_total.toLocaleString() },
+    { label: "Wins", value: t.wins.toLocaleString(), dot: "bg-[var(--brand-green)]" },
+    { label: "Losses", value: t.losses.toLocaleString(), dot: "bg-[var(--brand-red)]" },
+    ...(t.breakevens > 0
+      ? [{ label: "Breakeven", value: t.breakevens.toLocaleString(), dot: "bg-white/40" }]
+      : []),
+    {
+      label: "Win rate",
+      value: t.sessions_settled > 0 ? `${Number(t.win_rate_pct).toFixed(1)}%` : "—",
+      tone: t.win_rate_pct >= 50 ? "green" : t.win_rate_pct > 0 ? "red" : "muted",
+    },
+    {
+      label: "Avg final share value",
+      value: t.sessions_settled > 0 ? `${gc(t.avg_final_share_value_minor, 2)} GC` : "—",
+    },
+    {
+      label: "Avg IPO clearing premium",
+      value:
+        t.avg_clearing_price_minor > 0
+          ? `${t.avg_clearing_premium_minor >= 0 ? "+" : "−"}${gc(Math.abs(t.avg_clearing_premium_minor), 2)} GC`
+          : "—",
+      tone:
+        t.avg_clearing_premium_minor > 0
+          ? "green"
+          : t.avg_clearing_premium_minor < 0
+          ? "red"
+          : "muted",
+    },
+  ];
 
   return (
     <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5 flex flex-col gap-5">
@@ -117,27 +150,32 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
         </span>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Stat label="Sessions" value={t.sessions_total.toString()} />
-        <Stat label="Wins" value={t.wins.toString()} tone="green" />
-        <Stat label="Losses" value={t.losses.toString()} tone="red" />
-        <Stat
-          label="Breakeven"
-          value={t.breakevens.toString()}
-          tone="muted"
-        />
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Stat label="Avg IPO clearing" value={`${gc(t.avg_clearing_price_minor, 2)} GC`} />
-        <Stat label="Total trading vol" value={`${gc(t.total_trading_volume_minor)} GC`} />
-        <Stat label="Trades on books" value={t.total_trades.toLocaleString()} />
-        <Stat
-          label="Net stack vs buy-in"
-          value={`${netPnlMinor >= 0 ? "+" : "−"}${gc(Math.abs(netPnlMinor))} GC`}
-          tone={netPnlMinor > 0 ? "green" : netPnlMinor < 0 ? "red" : "muted"}
-        />
-      </div>
+      <ul className="flex flex-col">
+        {rows.map((r, i) => {
+          const toneClass =
+            r.tone === "green"
+              ? "text-[var(--brand-green)]"
+              : r.tone === "red"
+              ? "text-[var(--brand-red)]"
+              : r.tone === "muted"
+              ? "text-white/60"
+              : "text-white";
+          return (
+            <li
+              key={r.label}
+              className={`flex items-center justify-between gap-3 py-2.5 ${
+                i > 0 ? "border-t border-white/5" : ""
+              }`}
+            >
+              <span className="flex items-center gap-2 text-base text-white/55">
+                {r.dot && <span className={`h-2 w-2 rounded-full ${r.dot}`} />}
+                {r.label}
+              </span>
+              <span className={`text-lg font-bold tabular-nums ${toneClass}`}>{r.value}</span>
+            </li>
+          );
+        })}
+      </ul>
 
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between gap-3">
@@ -156,12 +194,10 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
         </div>
 
         {sessions.length === 0 ? (
-          <div className="rounded-2xl border border-white/8 bg-white/5 p-4 text-base text-white/40 text-center">
-            No sessions played yet.
-          </div>
+          <div className="text-base text-white/40 py-3">No sessions played yet.</div>
         ) : (
-          <ul className="flex flex-col gap-2">
-            {sessions.map((s) => {
+          <ul className="flex flex-col">
+            {sessions.map((s, i) => {
               const date = s.settled_at ?? s.started_at ?? s.created_at;
               const finalPriceGc = s.final_share_value_minor != null ? s.final_share_value_minor / 100 : null;
               const facePriceGc = s.price_per_share_minor / 100;
@@ -172,38 +208,34 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
               return (
                 <li
                   key={s.offering_id}
-                  className="rounded-2xl border border-white/8 bg-white/5 p-3 flex flex-col gap-1"
+                  className={`flex items-center gap-3 py-2.5 ${i > 0 ? "border-t border-white/5" : ""}`}
                 >
-                  <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                  <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${resultDot(s.result)}`} />
+                  <div className="flex-1 min-w-0">
                     <div className="text-base font-semibold truncate">
                       {s.stream_name ?? "(stream deleted)"}
                     </div>
-                    <span
-                      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.1em] ${resultTone(s.result)}`}
-                    >
-                      {s.result ?? s.session_state}
-                    </span>
+                    <div className="text-sm text-white/40 tabular-nums">
+                      {fmtDate(date)} · {s.total_shares.toLocaleString()} shares · buy-in {gc(s.declared_buyin_minor)} GC
+                    </div>
                   </div>
-                  <div className="text-sm text-white/50 tabular-nums">
-                    {fmtDate(date)} · {s.total_shares.toLocaleString()} shares · buy-in {gc(s.declared_buyin_minor)} GC
-                  </div>
-                  <div className="text-sm text-white/40 tabular-nums">
-                    {s.ipo_clearing_price_minor != null && (
-                      <>IPO cleared @ {gc(s.ipo_clearing_price_minor, 2)} GC · </>
-                    )}
+                  <div className="text-right shrink-0 tabular-nums">
                     {s.final_share_value_minor != null ? (
                       <>
-                        Final {gc(s.final_share_value_minor, 2)} GC/share
+                        <div className="text-base font-bold">{gc(s.final_share_value_minor, 2)} GC</div>
                         {swingPct != null && (
-                          <span className={swingPct >= 0 ? "text-[var(--brand-green)]" : "text-[var(--brand-red)]"}>
-                            {" "}
-                            ({swingPct >= 0 ? "+" : ""}
-                            {swingPct.toFixed(1)}%)
-                          </span>
+                          <div
+                            className={`text-sm font-semibold ${
+                              swingPct >= 0 ? "text-[var(--brand-green)]" : "text-[var(--brand-red)]"
+                            }`}
+                          >
+                            {swingPct >= 0 ? "+" : ""}
+                            {swingPct.toFixed(1)}%
+                          </div>
                         )}
                       </>
                     ) : (
-                      <>Trades: {s.trade_count.toLocaleString()} · Volume: {gc(s.trading_volume_minor)} GC</>
+                      <div className="text-sm text-white/40">{s.session_state}</div>
                     )}
                   </div>
                 </li>
@@ -213,34 +245,5 @@ export function PlayerStats({ playerId, playerName }: { playerId: string; player
         )}
       </div>
     </section>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone?: "green" | "red" | "muted";
-}) {
-  const toneClass =
-    tone === "green"
-      ? "text-[var(--brand-green)]"
-      : tone === "red"
-      ? "text-[var(--brand-red)]"
-      : tone === "muted"
-      ? "text-white/60"
-      : "";
-  return (
-    <div className="rounded-2xl border border-white/8 bg-white/5 p-3">
-      <div className="text-xs uppercase tracking-[0.12em] text-white/40 font-semibold">
-        {label}
-      </div>
-      <div className={`text-xl font-black tracking-tight mt-1 tabular-nums ${toneClass}`}>
-        {value}
-      </div>
-    </div>
   );
 }
