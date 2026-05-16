@@ -4,6 +4,7 @@ import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { BidForm } from "./BidForm";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { PlayerStats } from "./PlayerStats";
 
 export const dynamic = "force-dynamic";
 
@@ -181,6 +182,8 @@ export default async function IpoDetailPage({
             </ul>
           )}
         </section>
+
+        <PlayerStats playerId={o.player_id} playerName={o.player_display_name} />
       </div>
     </main>
   );
