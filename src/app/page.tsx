@@ -96,33 +96,82 @@ function Logo() {
   );
 }
 
+function HeroCopy() {
+  return (
+    <div className="flex flex-col gap-4 sm:gap-6 md:gap-8 relative z-10">
+      <div className="hidden sm:inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 whitespace-nowrap">
+        <span className="size-2 rounded-full bg-[var(--brand-red)] live-dot" />
+        Now partnering with select poker rooms
+      </div>
+      <h1 className="text-4xl sm:text-6xl md:text-[5.5rem] font-black leading-[1.0] tracking-tight">
+        Trade shares of poker players{" "}
+        <span className="text-[var(--brand-red)]">live.</span>
+      </h1>
+      <p className="text-xl md:text-2xl text-white/75 max-w-xl leading-relaxed">
+        Buy shares of players when they sit down. Trade their swings in real
+        time. Cash out when they do. The first market built for the poker
+        stream era.
+      </p>
+      <div id="waitlist" className="pt-2">
+        <WaitlistForm />
+      </div>
+      <div className="flex items-center gap-6 text-sm text-white/55">
+        <div className="flex items-center gap-2">
+          <span className="size-2 rounded-full bg-[var(--brand-green)]" />
+          Free to play. Gold Coins, no cash redemption.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Hero() {
   return (
     <section className="relative w-full">
-      {/* Full-bleed image at native aspect (3:2). Width matches viewport via
-          escape-container trick; height auto-derives so the whole image fits
-          without crop. Phone screens overlay as % of this box so they track the
-          in-image phones at every viewport size. */}
-      <div className="relative left-1/2 -translate-x-1/2 w-screen min-h-[calc(100vh-7rem)] md:min-h-0 md:aspect-[3/2]">
-        {/* Image hidden on mobile (the in-image phone mockups bled through
-            the body copy on narrow screens, 4× reported). Desktop keeps
-            the full hero. */}
+      {/* Mobile: stacked layout — copy first, then hero image below it
+          (matching the HowItWorks / ProductDeepDive text-then-image pattern). */}
+      <div className="md:hidden">
+        <div className="w-full max-w-6xl mx-auto px-6 pt-6 pb-10">
+          <HeroCopy />
+        </div>
+        <div className="relative w-screen aspect-[3/2] left-1/2 -translate-x-1/2">
+          <Image
+            src="/poker-room-hero.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          {/* Bottom fade so the image dissolves into the page bg */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent 0%, rgba(10,10,10,0.85) 55%, #000 100%)",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Desktop: full-bleed image with the headline overlay on the left half
+          (the original hero composition — unchanged). */}
+      <div className="hidden md:block relative left-1/2 -translate-x-1/2 w-screen aspect-[3/2]">
         <Image
           src="/poker-room-hero.png"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover hidden md:block"
+          className="object-cover"
         />
         <div
-          className="absolute inset-0 pointer-events-none hidden md:block"
+          className="absolute inset-0 pointer-events-none"
           style={{
             background:
               "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.55) 30%, rgba(10,10,10,0.15) 55%, transparent 70%)",
           }}
         />
-        {/* Bottom fade so the image dissolves into the page bg */}
         <div
           className="absolute inset-x-0 bottom-0 h-1/4 pointer-events-none"
           style={{
@@ -130,33 +179,10 @@ function Hero() {
               "linear-gradient(180deg, transparent 0%, rgba(10,10,10,0.85) 60%, #0a0a0a 100%)",
           }}
         />
-
-        {/* Headline copy overlays the left half of the image */}
         <div className="absolute inset-0">
-          <div className="w-full max-w-6xl mx-auto h-full px-6 py-10 md:py-0 grid md:grid-cols-12 items-center">
-            <div className="md:col-span-6 flex flex-col gap-4 sm:gap-6 md:gap-8 relative z-10">
-              <div className="hidden sm:inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 whitespace-nowrap">
-                <span className="size-2 rounded-full bg-[var(--brand-red)] live-dot" />
-                Now partnering with select poker rooms
-              </div>
-              <h1 className="text-4xl sm:text-6xl md:text-[5.5rem] font-black leading-[1.0] tracking-tight">
-                Trade shares of poker players{" "}
-                <span className="text-[var(--brand-red)]">live.</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-white/75 max-w-xl leading-relaxed">
-                Buy shares of players when they sit down. Trade their swings in
-                real time. Cash out when they do. The first market built for
-                the poker stream era.
-              </p>
-              <div id="waitlist" className="pt-2">
-                <WaitlistForm />
-              </div>
-              <div className="flex items-center gap-6 text-sm text-white/55">
-                <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-[var(--brand-green)]" />
-                  Free to play. Gold Coins, no cash redemption.
-                </div>
-              </div>
+          <div className="w-full max-w-6xl mx-auto h-full px-6 grid grid-cols-12 items-center">
+            <div className="col-span-6">
+              <HeroCopy />
             </div>
           </div>
         </div>

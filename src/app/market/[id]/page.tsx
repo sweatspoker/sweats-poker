@@ -100,7 +100,7 @@ export default async function IpoDetailPage({
               {o.player_display_name}
             </h1>
             <div className="text-base text-white/50">
-              {o.shares_remaining.toLocaleString()} of {o.total_shares.toLocaleString()} shares
+              {o.total_shares.toLocaleString()} shares
             </div>
             <div className="text-base">
               <Countdown target={o.closes_at} />
