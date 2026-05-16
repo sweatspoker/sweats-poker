@@ -43,18 +43,42 @@ function prettyType(t: string): string {
   }
 }
 
+type PortfolioRow = {
+  offering_id: string;
+  player_id: string;
+  player_display_name: string;
+  player_role: string | null;
+  shares_held: number;
+  total_shares: number;
+  weighted_avg_cost_minor: number;
+  current_price_minor: number;
+  first_acquired_at: string | null;
+  last_updated_at: string;
+  session_state: string;
+  session_status: string;
+  stream_id: string | null;
+  stream_status: string | null;
+  venue_name: string | null;
+  sb_minor: number | null;
+  bb_minor: number | null;
+};
+
 export default async function WalletPage() {
   const { supabase, user, profile } = await requireVerifiedUser();
 
-  const { data, error } = await supabase.rpc("get_my_ledger_summary");
-  if (error) {
-    console.error("[wallet] get_my_ledger_summary failed:", error);
-  }
+  const [{ data: ledgerData, error: ledgerErr }, { data: portfolioData, error: portfolioErr }] =
+    await Promise.all([
+      supabase.rpc("get_my_ledger_summary"),
+      supabase.rpc("get_my_portfolio"),
+    ]);
+  if (ledgerErr) console.error("[wallet] get_my_ledger_summary failed:", ledgerErr);
+  if (portfolioErr) console.error("[wallet] get_my_portfolio failed:", portfolioErr);
 
-  const rows = ((data as LedgerSummaryRow[] | null) ?? []).filter(
+  const rows = ((ledgerData as LedgerSummaryRow[] | null) ?? []).filter(
     (r) => r.account_type === "available"
   );
   const available = rows[0];
+  const portfolio = (portfolioData as PortfolioRow[] | null) ?? [];
   const tier = profile.tier ?? "free";
 
   return (
@@ -121,6 +145,59 @@ export default async function WalletPage() {
             </div>
           </div>
         </section>
+
+        {portfolio.length > 0 && (
+          <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 overflow-hidden">
+            <div className="flex items-baseline justify-between px-7 pt-7 md:px-9 md:pt-9 pb-4">
+              <h2 className="text-xl font-semibold text-white/50">Your shares</h2>
+              <span className="text-base text-white/30">
+                {portfolio.length} position{portfolio.length === 1 ? "" : "s"}
+              </span>
+            </div>
+            <ul className="border-t border-white/5 divide-y divide-white/5">
+              {portfolio.map((p) => {
+                const costGc = (p.shares_held * p.weighted_avg_cost_minor) / 100;
+                const settled = p.session_state === "settled" || p.session_status === "settled";
+                return (
+                  <li
+                    key={p.offering_id}
+                    className="flex items-center justify-between gap-4 px-5 py-4"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-base font-semibold truncate">
+                        {p.player_display_name}
+                      </div>
+                      <div className="text-base text-white/40 truncate">
+                        {p.venue_name ? `${p.venue_name} · ` : ""}
+                        {p.sb_minor != null && p.bb_minor != null
+                          ? `$${(p.sb_minor / 100).toFixed(0)}/$${(p.bb_minor / 100).toFixed(0)}`
+                          : ""}
+                      </div>
+                      <div className="text-base text-white/30">
+                        {settled
+                          ? "Settled"
+                          : p.stream_status
+                          ? `Stream ${p.stream_status}`
+                          : p.session_state}
+                      </div>
+                    </div>
+                    <div className="text-right tabular-nums">
+                      <div className="text-base font-semibold">
+                        {p.shares_held.toLocaleString()} shares
+                      </div>
+                      <div className="text-base text-white/40">
+                        avg {(p.weighted_avg_cost_minor / 100).toFixed(2)} GC
+                      </div>
+                      <div className="text-base text-white/30">
+                        cost {costGc.toFixed(0)} GC
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
 
         <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 overflow-hidden">
           <div className="flex items-baseline justify-between px-7 pt-7 md:px-9 md:pt-9 pb-4">
