@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Countdown } from "./Countdown";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { TabBar } from "@/components/TabBar";
@@ -42,6 +43,28 @@ type Bid = {
   placed_at: string;
 };
 
+type ClosedIPO = {
+  offering_id: string;
+  stream_id: string | null;
+  stream_name: string | null;
+  venue_name: string | null;
+  player_id: string;
+  player_display_name: string;
+  player_photo_url: string | null;
+  session_state: string;
+  cleared_at: string | null;
+  settled_at: string | null;
+  total_shares: number;
+  ipo_clearing_price_minor: number | null;
+  price_per_share_minor: number;
+  bid_count: number;
+  shares_requested_total: number;
+  shares_filled_total: number;
+  escrow_total_minor: number;
+  fill_cost_minor: number;
+  refund_total_minor: number;
+};
+
 function dollarsFromMinor(minor: number): string {
   return (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
@@ -56,9 +79,11 @@ export default async function MarketPage({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { user, profile } = await requireVerifiedUser();
+  const supabase = await createSupabaseServerClient();
   const admin = createSupabaseAdminClient();
   const { tab = "open" } = await searchParams;
   const isMineTab = tab === "mine";
+  const isClosedTab = tab === "closed";
 
   const { data: offerings, error } = await admin
     .schema("ipo")
@@ -164,9 +189,14 @@ export default async function MarketPage({
     }
   }
 
+  // Closed IPOs — fetch for the badge count + the Closed tab list.
+  const { data: closedRaw } = await supabase.rpc("get_my_closed_ipos", { p_limit: 50 });
+  const closed = (closedRaw as ClosedIPO[] | null) ?? [];
+
   const tabs = [
     { key: "open", label: "Open IPOs", href: "/market" },
     { key: "mine", label: `My IPOs${myBids.length ? ` (${myBids.length})` : ""}`, href: "/market?tab=mine" },
+    { key: "closed", label: `Closed${closed.length ? ` (${closed.length})` : ""}`, href: "/market?tab=closed" },
   ];
 
   return (
@@ -177,9 +207,9 @@ export default async function MarketPage({
             Market · {profile.tier === "upgraded" ? "Upgraded" : "Free tier"}
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
-            {isMineTab ? "My IPOs" : "Open IPOs"}
+            {isClosedTab ? "Closed IPOs" : isMineTab ? "My IPOs" : "Open IPOs"}
           </h1>
-          {profile.tier !== "upgraded" && !isMineTab && (
+          {profile.tier !== "upgraded" && !isMineTab && !isClosedTab && (
             <p className="text-[var(--brand-red)]/80 text-base">
               Upgraded tier required to bid — buy GC to upgrade.
             </p>
@@ -187,7 +217,9 @@ export default async function MarketPage({
           <TabBar tabs={tabs} active={tab} />
         </div>
 
-        {isMineTab ? (
+        {isClosedTab ? (
+          <ClosedIPOs closed={closed} />
+        ) : isMineTab ? (
           <MyBids
             bids={myBids}
             offeringById={offeringById}
@@ -412,6 +444,95 @@ function MyBids({
                 {totalShares.toLocaleString()} shares · {gcFromMinor(totalCostMinor)} GC
               </span>
             </div>
+          </Link>
+        );
+      })}
+    </section>
+  );
+}
+
+function ClosedIPOs({ closed }: { closed: ClosedIPO[] }) {
+  if (closed.length === 0) {
+    return (
+      <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-10 text-center">
+        <div className="text-base text-white/60">No closed IPOs yet.</div>
+        <div className="text-base text-white/40 mt-1">
+          Once you bid on an IPO and it clears, the receipt lands here.
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="flex flex-col gap-3">
+      {closed.map((c) => {
+        const cleared = c.ipo_clearing_price_minor != null;
+        const filledShares = c.shares_filled_total;
+        const allocated = filledShares > 0;
+        const refunded = c.refund_total_minor > 0;
+        const statePill =
+          c.session_state === "cancelled"
+            ? "bg-[var(--brand-red)]/15 text-[var(--brand-red)] border-[var(--brand-red)]/30"
+            : c.session_state === "settled"
+            ? "bg-blue-500/15 text-blue-300 border-blue-500/30"
+            : "bg-[var(--brand-green)]/15 text-[var(--brand-green)] border-[var(--brand-green)]/30";
+        return (
+          <Link
+            key={c.offering_id}
+            href={`/market/${c.offering_id}`}
+            className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-colors p-5 flex flex-col gap-3"
+          >
+            <div className="flex items-center gap-3">
+              <PlayerAvatar
+                src={c.player_photo_url}
+                name={c.player_display_name}
+                size={56}
+              />
+              <div className="min-w-0 flex-1">
+                <div className="text-xl font-bold leading-tight truncate">
+                  {c.player_display_name}
+                </div>
+                <div className="text-sm text-white/50 mt-0.5 truncate">
+                  {c.stream_name ?? "(stream)"}
+                  {c.venue_name ? ` · ${c.venue_name}` : ""}
+                </div>
+              </div>
+              <span
+                className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] whitespace-nowrap ${statePill}`}
+              >
+                {c.session_state.replace(/_/g, " ")}
+              </span>
+            </div>
+            <ul className="flex flex-col text-sm tabular-nums">
+              <li className="flex items-center justify-between gap-3 py-1">
+                <span className="text-white/55">Your bid</span>
+                <span className="font-semibold">
+                  {c.shares_requested_total.toLocaleString()} shares · {gcFromMinor(c.escrow_total_minor)} GC
+                </span>
+              </li>
+              <li className="flex items-center justify-between gap-3 py-1 border-t border-white/5">
+                <span className="text-white/55">IPO cleared at</span>
+                <span className="font-semibold">
+                  {cleared ? `${gcFromMinor(c.ipo_clearing_price_minor!)} GC` : "—"}
+                </span>
+              </li>
+              {allocated && (
+                <li className="flex items-center justify-between gap-3 py-1 border-t border-white/5">
+                  <span className="text-white/55">Shares allocated</span>
+                  <span className="font-semibold text-[var(--brand-green)]">
+                    {filledShares.toLocaleString()} · {gcFromMinor(c.fill_cost_minor)} GC
+                  </span>
+                </li>
+              )}
+              {refunded && (
+                <li className="flex items-center justify-between gap-3 py-1 border-t border-white/5">
+                  <span className="text-white/55">Refunded</span>
+                  <span className="font-semibold text-[var(--brand-red)]">
+                    {gcFromMinor(c.refund_total_minor)} GC
+                  </span>
+                </li>
+              )}
+            </ul>
           </Link>
         );
       })}

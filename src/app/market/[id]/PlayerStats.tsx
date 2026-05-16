@@ -15,6 +15,8 @@ type Totals = {
   avg_clearing_price_minor: number;
   avg_final_share_value_minor: number;
   avg_clearing_premium_minor: number;
+  total_sold_volume_minor: number;
+  avg_sold_volume_minor: number;
   win_rate_pct: number;
 };
 
@@ -198,17 +200,25 @@ export function PlayerStats({ playerId }: { playerId: string; playerName?: strin
       value: t.sessions_settled > 0 ? `${gc(t.avg_final_share_value_minor, 2)} GC` : "—",
     },
     {
-      label: "Avg IPO clearing premium",
+      label: "Avg IPO price",
       value:
         t.avg_clearing_price_minor > 0
-          ? `${t.avg_clearing_premium_minor >= 0 ? "+" : "−"}${gc(Math.abs(t.avg_clearing_premium_minor), 2)} GC`
+          ? `${gc(t.avg_clearing_price_minor, 2)} GC`
           : "—",
-      tone:
-        t.avg_clearing_premium_minor > 0
-          ? "green"
-          : t.avg_clearing_premium_minor < 0
-          ? "red"
-          : "muted",
+    },
+    {
+      label: "Total sold volume",
+      value:
+        t.total_sold_volume_minor > 0
+          ? `${gc(t.total_sold_volume_minor, 0)} GC`
+          : "—",
+    },
+    {
+      label: "Avg sold volume",
+      value:
+        t.avg_sold_volume_minor > 0
+          ? `${gc(t.avg_sold_volume_minor, 0)} GC`
+          : "—",
     },
   ];
 
