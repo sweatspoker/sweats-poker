@@ -50,3 +50,20 @@ export function unlockedBadges(lifetimePnlMinor: number): BadgeId[] {
 export function badgeAsset(id: BadgeId): string {
   return `/badges/${id}.png`;
 }
+
+/**
+ * The single most-applicable tier for a given lifetime P&L. Used on the
+ * Profile > Performance card to print the user's current rank.
+ *   pnl ≥ 0 → highest profit-side tier reached (Nit → Shark)
+ *   pnl < 0 → most extreme loss-side tier reached (Fish → Maniac)
+ */
+export function currentTierBadge(lifetimePnlMinor: number): BadgeId {
+  if (lifetimePnlMinor >= 100_000_000) return "shark";
+  if (lifetimePnlMinor >= 10_000_000) return "crusher";
+  if (lifetimePnlMinor >= 1_000_000) return "grinder";
+  if (lifetimePnlMinor >= 0) return "nit";
+  if (lifetimePnlMinor <= -100_000_000) return "maniac";
+  if (lifetimePnlMinor <= -10_000_000) return "whale";
+  if (lifetimePnlMinor <= -1_000_000) return "donkey";
+  return "fish";
+}

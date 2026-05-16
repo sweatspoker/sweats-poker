@@ -1,6 +1,6 @@
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { AvatarEditor } from "./AvatarEditor";
-import { ResultsTab, type Results } from "./Results";
+import { PerformanceTab, type Results, type PerformanceSeries } from "./Performance";
 import { BadgesSection } from "./BadgesSection";
 import { TabBar } from "@/components/TabBar";
 import { unlockedBadges } from "@/lib/badges";
@@ -14,10 +14,11 @@ export default async function ProfilePage({
 }) {
   const { supabase, user, profile } = await requireVerifiedUser();
   const { tab = "settings", saved, error } = await searchParams;
-  const isResults = tab === "results";
+  // Accept legacy "results" links too, but the active tab key + label is now
+  // "performance".
+  const isPerformance = tab === "performance" || tab === "results";
 
-  // We need lifetime_pnl_minor on Settings (for badge unlock state) AND on
-  // Results — fetch unconditionally so badges render correctly on either tab.
+  // Lifetime P&L is needed on Settings (badge unlock state) AND on Performance.
   let results: Results | null = null;
   {
     const { data, error: rpcErr } = await supabase.rpc("get_my_results");
@@ -29,6 +30,18 @@ export default async function ProfilePage({
   }
   const lifetimePnlMinor = results?.performance?.lifetime_pnl_minor ?? 0;
   const unlocked = unlockedBadges(lifetimePnlMinor);
+
+  let performanceSeries: PerformanceSeries | null = null;
+  if (isPerformance) {
+    const { data, error: rpcErr } = await supabase.rpc("get_my_performance_series", {
+      p_range: "all",
+    });
+    if (rpcErr) {
+      console.error("[profile/performance] series rpc error:", rpcErr.message);
+    } else {
+      performanceSeries = data as PerformanceSeries;
+    }
+  }
 
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
@@ -43,14 +56,14 @@ export default async function ProfilePage({
           <TabBar
             tabs={[
               { key: "settings", label: "Settings", href: "/profile" },
-              { key: "results", label: "Results", href: "/profile?tab=results" },
+              { key: "performance", label: "Performance", href: "/profile?tab=performance" },
             ]}
-            active={tab}
+            active={isPerformance ? "performance" : "settings"}
           />
         </div>
 
-        {isResults ? (
-          <ResultsTab results={results} />
+        {isPerformance ? (
+          <PerformanceTab results={results} series={performanceSeries} />
         ) : (
           <>
             <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-5">

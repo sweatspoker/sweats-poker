@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { PerformanceChart } from "./PerformanceChart";
+import { BADGE_BY_ID, badgeAsset, currentTierBadge } from "@/lib/badges";
 
 type BestWorst = {
   offering_id: string;
@@ -36,6 +38,12 @@ export type Results = {
   snapshot_at: string;
 };
 
+export type PerformanceSeries = {
+  range: "1w" | "1m" | "6m" | "1y" | "all";
+  total_pnl_minor: number;
+  points: { t: string; pnl_cum_minor: number }[];
+};
+
 function gc(minor: number | null | undefined, digits = 2): string {
   if (minor == null) return "—";
   return (minor / 100).toLocaleString(undefined, {
@@ -57,11 +65,17 @@ function pnlSign(minor: number, pct?: number | null): string {
   return v >= 0 ? "+" : "";
 }
 
-export function ResultsTab({ results }: { results: Results | null }) {
+export function PerformanceTab({
+  results,
+  series,
+}: {
+  results: Results | null;
+  series: PerformanceSeries | null;
+}) {
   if (!results) {
     return (
       <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-10 text-center">
-        <div className="text-base text-white/60">Loading results…</div>
+        <div className="text-base text-white/60">Loading performance…</div>
       </section>
     );
   }
@@ -69,57 +83,47 @@ export function ResultsTab({ results }: { results: Results | null }) {
   const p = results.performance;
   const o = results.open;
   const a = results.activity;
-  const hasSettled = p.settled_sessions > 0;
-  const lifeToneClass = pnlToneClass(p.lifetime_pnl_minor);
-  const openToneClass = pnlToneClass(o.unrealised_minor);
+  const tierId = currentTierBadge(p.lifetime_pnl_minor);
+  const tier = BADGE_BY_ID[tierId];
+
+  const seedSeries: PerformanceSeries = series ?? {
+    range: "all",
+    total_pnl_minor: p.lifetime_pnl_minor,
+    points: [],
+  };
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Lifetime P&L hero card */}
-      <section className="relative overflow-hidden rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-6">
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full blur-3xl ${
-            p.lifetime_pnl_minor >= 0
-              ? "bg-[var(--brand-green)]/10"
-              : "bg-[var(--brand-red)]/10"
-          }`}
-        />
-        <div className="relative flex flex-col gap-2">
-          <div className="text-xs uppercase tracking-[0.16em] text-white/40 font-bold">
-            Lifetime P&amp;L
-          </div>
-          {hasSettled ? (
-            <>
-              <div className={`text-5xl md:text-6xl font-black tabular-nums ${lifeToneClass}`}>
-                {pnlSign(p.lifetime_pnl_minor)}
-                {gc(p.lifetime_pnl_minor)} GC
-              </div>
-              {p.lifetime_pnl_pct != null && (
-                <div className={`text-lg font-bold tabular-nums ${lifeToneClass}`}>
-                  {pnlSign(0, p.lifetime_pnl_pct)}
-                  {p.lifetime_pnl_pct.toFixed(1)}%
-                </div>
-              )}
-              <div className="text-sm text-white/40 tabular-nums mt-1">
-                Realized on {gc(p.settled_cost_basis_minor)} GC cost basis
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="text-4xl font-black text-white/60">—</div>
-              <div className="text-sm text-white/40 mt-1">
-                No settled sessions yet. Win an IPO clearing and ride a session to settle.
-              </div>
-            </>
-          )}
-        </div>
-      </section>
+      <PerformanceChart initial={seedSeries} />
 
-      {/* Performance breakdown */}
+      {/* Performance breakdown — tier badge in the header. */}
       <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-5 flex flex-col gap-3">
-        <div className="text-base font-semibold text-white/50 uppercase tracking-[0.1em]">
-          Performance
+        <div className="flex items-center justify-between gap-3 pb-1">
+          <div className="text-base font-semibold text-white/50 uppercase tracking-[0.1em]">
+            Performance
+          </div>
+          {p.settled_sessions > 0 && (
+            <div className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={badgeAsset(tier.id)}
+                alt={tier.label}
+                className="h-9 w-9 rounded-lg object-cover ring-2"
+                style={{ boxShadow: `0 0 0 2px ${tier.color}` }}
+              />
+              <div className="flex flex-col leading-tight">
+                <span
+                  className="text-base font-black uppercase tracking-[0.08em]"
+                  style={{ color: tier.color }}
+                >
+                  {tier.label}
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.12em] text-white/35">
+                  Current tier
+                </span>
+              </div>
+            </div>
+          )}
         </div>
         <Row label="Sessions settled" value={p.settled_sessions.toString()} />
         <Row
@@ -164,6 +168,11 @@ export function ResultsTab({ results }: { results: Results | null }) {
             tone="red"
           />
         )}
+        <Row
+          label="Cost basis"
+          value={`${gc(p.settled_cost_basis_minor)} GC`}
+          tone="muted"
+        />
       </section>
 
       {/* Open exposure card */}
@@ -215,7 +224,6 @@ export function ResultsTab({ results }: { results: Results | null }) {
             <div className="text-xs text-white/30 pt-1">
               Marked at the most recent trade price, or IPO clearing if no trades yet.
             </div>
-            {void openToneClass}
           </>
         )}
       </section>
