@@ -391,34 +391,41 @@ function Footer() {
 }
 
 function PokerTableArc() {
-  // Gemini reviewer verdict (iteration 5, image-blend council intervention):
-  // overlay-on-rect approach plateaus because gradients darken pixels but
-  // the image's rectangular alpha is still there. Switch to alpha-blending
-  // the image itself: radial mask-image dissolves the image's actual alpha
-  // at all four edges, and mix-blend-mode: lighten makes any pixel darker
-  // than the page bg #0a0a0a literally disappear, killing the chromatic cliff.
-  // One subtle linear mask added for headline legibility on the left.
+  // Soft radial mask dissolves the image's alpha at every edge so the
+  // rectangle never appears. The mask is centered slightly right of
+  // image-center so the LEFT side fades earliest — required by spec.
+  // Mix-blend-mode: lighten makes any pixel darker than the page bg
+  // (#0a0a0a) disappear, eliminating the chromatic cliff.
+  // Headline legibility is handled by the separate scrim div below
+  // (NOT by the mask) so the room scene stays visible behind the copy.
   const maskImage =
-    "radial-gradient(ellipse 75% 70% at 70% 55%, black 25%, rgba(0,0,0,0.85) 50%, transparent 90%), linear-gradient(90deg, transparent 0%, transparent 35%, black 70%)";
+    "radial-gradient(ellipse 95% 90% at 60% 50%, black 30%, rgba(0,0,0,0.85) 60%, transparent 95%)";
   return (
     <div
       className="absolute left-1/2 w-screen -translate-x-1/2 bottom-0 z-0 pointer-events-none"
       style={{ top: "-160px" }}
     >
       <Image
-        src="/poker-table-hero.png"
+        src="/poker-room-hero.png"
         alt=""
         fill
         priority
         sizes="100vw"
-        className="object-cover object-right mix-blend-lighten"
+        className="object-cover object-center mix-blend-lighten"
         style={{
           WebkitMaskImage: maskImage,
           maskImage,
-          WebkitMaskComposite: "source-in",
-          maskComposite: "intersect",
           WebkitMaskRepeat: "no-repeat",
           maskRepeat: "no-repeat",
+        }}
+      />
+      {/* Headline legibility scrim — dark on left where copy lives, fades to
+          transparent at center so the room scene is visible behind the phones. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.55) 25%, rgba(10,10,10,0.15) 50%, transparent 70%)",
         }}
       />
     </div>

@@ -46,7 +46,7 @@ export function BuySellPhone() {
             viewBox="0 0 240 80"
             className="w-full px-2 h-20"
             fill="none"
-            stroke="#00d563"
+            stroke="#ef2b2b"
             strokeWidth="2"
           >
             <path
@@ -149,7 +149,7 @@ export function BuySellPhone() {
               </div>
             </div>
 
-            <button className="w-full rounded-2xl bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] py-3.5 font-black text-black text-sm tracking-wide">
+            <button className="w-full rounded-2xl bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] py-3.5 font-black text-white text-sm tracking-wide">
               Tap and hold to buy
             </button>
 
