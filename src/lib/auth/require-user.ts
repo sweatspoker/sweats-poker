@@ -13,6 +13,11 @@ export type Profile = {
   welcome_bonus_granted: boolean;
   tier_upgraded_at: string | null;
   avatar_url: string | null;
+  selected_badge:
+    | "shark" | "crusher" | "grinder" | "nit"
+    | "fish" | "donkey" | "whale" | "maniac"
+    | null;
+  show_badge_on_avatar: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -31,7 +36,7 @@ export async function loadProfile(userId: string) {
   const { data } = await supabase
     .from("profiles")
     .select(
-      "user_id, display_name, dob, age_verified, kyc_status, tos_accepted_at, privacy_accepted_at, tier, welcome_bonus_granted, tier_upgraded_at, avatar_url, created_at, updated_at"
+      "user_id, display_name, dob, age_verified, kyc_status, tos_accepted_at, privacy_accepted_at, tier, welcome_bonus_granted, tier_upgraded_at, avatar_url, selected_badge, show_badge_on_avatar, created_at, updated_at"
     )
     .eq("user_id", userId)
     .maybeSingle();

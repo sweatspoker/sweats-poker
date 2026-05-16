@@ -3,12 +3,15 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { BADGE_BY_ID, badgeAsset, type BadgeId } from "@/lib/badges";
 
 type Props = {
   userId: string;
   email: string;
   displayName: string | null;
   initialAvatarUrl: string | null;
+  selectedBadge: BadgeId | null;
+  showBadgeOnAvatar: boolean;
 };
 
 function initials(input: string | null | undefined): string {
@@ -20,7 +23,15 @@ function initials(input: string | null | undefined): string {
   return trimmed.slice(0, 2).toUpperCase();
 }
 
-export function AvatarEditor({ userId, email, displayName, initialAvatarUrl }: Props) {
+export function AvatarEditor({
+  userId,
+  email,
+  displayName,
+  initialAvatarUrl,
+  selectedBadge,
+  showBadgeOnAvatar,
+}: Props) {
+  const badge = selectedBadge && showBadgeOnAvatar ? BADGE_BY_ID[selectedBadge] : null;
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
@@ -73,23 +84,46 @@ export function AvatarEditor({ userId, email, displayName, initialAvatarUrl }: P
 
   return (
     <div className="flex items-center gap-4">
-      <button
-        type="button"
-        onClick={() => fileRef.current?.click()}
-        disabled={busy}
-        aria-label="Upload avatar"
-        className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-white/15 hover:border-[var(--brand-red)]/60 transition-colors bg-white/5 grid place-items-center disabled:opacity-60"
-      >
-        {avatarUrl ? (
+      <div className="relative h-20 w-20">
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={busy}
+          aria-label="Upload avatar"
+          className="relative h-full w-full rounded-full overflow-hidden border-2 hover:opacity-90 transition-opacity grid place-items-center disabled:opacity-60"
+          style={{
+            borderColor: badge ? badge.color : "rgba(255,255,255,0.15)",
+            backgroundColor:
+              !avatarUrl && badge
+                ? `${badge.color}30`
+                : "rgba(255,255,255,0.05)",
+            boxShadow: badge ? `0 0 0 2px ${badge.color}40` : undefined,
+          }}
+        >
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span
+              className="text-2xl font-black tracking-tight"
+              style={{ color: badge ? badge.color : "rgba(255,255,255,0.7)" }}
+            >
+              {initials(label)}
+            </span>
+          )}
+          <span className="absolute inset-0 grid place-items-center bg-black/55 opacity-0 hover:opacity-100 transition-opacity text-xs uppercase tracking-[0.15em] font-semibold rounded-full">
+            {busy ? "Uploading…" : "Change"}
+          </span>
+        </button>
+        {badge && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <span className="text-2xl font-black tracking-tight text-white/70">{initials(label)}</span>
+          <img
+            src={badgeAsset(badge.id)}
+            alt={badge.label}
+            className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-7 w-7 rounded-md object-cover ring-2 ring-black pointer-events-none"
+          />
         )}
-        <span className="absolute inset-0 grid place-items-center bg-black/55 opacity-0 hover:opacity-100 transition-opacity text-xs uppercase tracking-[0.15em] font-semibold">
-          {busy ? "Uploading…" : "Change"}
-        </span>
-      </button>
+      </div>
       <div className="flex flex-col gap-1 min-w-0">
         <div className="text-lg font-bold truncate">{label}</div>
         <div className="text-sm text-white/40 truncate">{email}</div>

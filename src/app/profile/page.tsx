@@ -1,7 +1,9 @@
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { AvatarEditor } from "./AvatarEditor";
 import { ResultsTab, type Results } from "./Results";
+import { BadgesSection } from "./BadgesSection";
 import { TabBar } from "@/components/TabBar";
+import { unlockedBadges } from "@/lib/badges";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +16,10 @@ export default async function ProfilePage({
   const { tab = "settings", saved, error } = await searchParams;
   const isResults = tab === "results";
 
+  // We need lifetime_pnl_minor on Settings (for badge unlock state) AND on
+  // Results — fetch unconditionally so badges render correctly on either tab.
   let results: Results | null = null;
-  if (isResults) {
+  {
     const { data, error: rpcErr } = await supabase.rpc("get_my_results");
     if (rpcErr) {
       console.error("[profile/results] rpc error:", rpcErr.message);
@@ -23,6 +27,8 @@ export default async function ProfilePage({
       results = data as Results;
     }
   }
+  const lifetimePnlMinor = results?.performance?.lifetime_pnl_minor ?? 0;
+  const unlocked = unlockedBadges(lifetimePnlMinor);
 
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
@@ -54,6 +60,8 @@ export default async function ProfilePage({
                 email={user.email ?? ""}
                 displayName={profile.display_name}
                 initialAvatarUrl={profile.avatar_url}
+                selectedBadge={profile.selected_badge}
+                showBadgeOnAvatar={profile.show_badge_on_avatar}
               />
               <form action="/profile/save" method="post" className="flex flex-col gap-3">
                 <input
@@ -80,6 +88,12 @@ export default async function ProfilePage({
                 )}
               </form>
             </section>
+
+            <BadgesSection
+              unlocked={unlocked}
+              initialSelected={profile.selected_badge}
+              initialShowOnAvatar={profile.show_badge_on_avatar}
+            />
 
             <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-3">
               <div className="text-xl font-semibold text-white/50">Account</div>
