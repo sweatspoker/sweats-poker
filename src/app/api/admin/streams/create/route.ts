@@ -15,19 +15,20 @@ export async function POST(request: NextRequest) {
   if (!body) return NextResponse.json({ error: "invalid_json" }, { status: 400 });
 
   const {
-    venue_id, start_time, end_time,
+    name, venue_id, start_time, end_time,
     sb_minor, bb_minor, ante_minor, straddle_minor, stakes_extras,
     ipo_lead_open_minutes, ipo_lead_close_minutes, notes, admin_user_id,
   } = body as Record<string, unknown>;
-  if (!venue_id || !start_time || !sb_minor || !bb_minor || !admin_user_id) {
+  if (!name || !venue_id || !start_time || !sb_minor || !bb_minor || !admin_user_id) {
     return NextResponse.json(
-      { error: "venue_id + start_time + sb_minor + bb_minor + admin_user_id required" },
+      { error: "name + venue_id + start_time + sb_minor + bb_minor + admin_user_id required" },
       { status: 400 }
     );
   }
 
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin.rpc("streams_create", {
+    p_name: name,
     p_venue_id: venue_id,
     p_start_time: start_time,
     p_end_time: end_time ?? null,

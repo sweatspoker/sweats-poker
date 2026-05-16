@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     .schema("streams")
     .from("streams")
     .select(
-      "stream_id, venue_id, status, start_time, end_time, sb_minor, bb_minor, ante_minor, straddle_minor, ipo_lead_open_minutes, ipo_lead_close_minutes, notes, created_at, updated_at"
+      "stream_id, name, venue_id, status, start_time, end_time, sb_minor, bb_minor, ante_minor, straddle_minor, ipo_lead_open_minutes, ipo_lead_close_minutes, notes, created_at, updated_at"
     )
     .order("start_time", { ascending: false })
     .limit(limit);
