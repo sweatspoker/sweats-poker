@@ -17,7 +17,6 @@ type LedgerSummaryRow = {
 };
 
 function fmtGc(minor: number): string {
-  // 100 minor units = 1 GC. Display as integer GC (no fractional GC in v1).
   const gc = Math.round(minor / 100);
   return gc.toLocaleString("en-US");
 }
@@ -31,9 +30,21 @@ function fmtDate(iso: string): string {
   });
 }
 
+function prettyType(t: string): string {
+  switch (t) {
+    case "signup_bonus": return "Welcome bonus";
+    case "admin_grant": return "Sweats grant";
+    case "purchase_settled": return "Coin purchase";
+    case "ipo_bid_placed": return "IPO bid placed";
+    case "ipo_bid_cancelled": return "IPO bid cancelled";
+    case "ipo_bid_cleared": return "IPO cleared";
+    case "redemption": return "Redemption";
+    default: return t.replace(/_/g, " ");
+  }
+}
+
 export default async function WalletPage() {
   const { supabase, user, profile } = await requireVerifiedUser();
-  void profile;
   const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
 
   const { data, error } = await supabase.rpc("get_my_ledger_summary");
@@ -45,80 +56,151 @@ export default async function WalletPage() {
     (r) => r.account_type === "available"
   );
   const available = rows[0];
+  const tier = profile.tier ?? "free";
 
   return (
-    <main className="min-h-screen bg-black text-white px-6 py-12">
-      <div className="max-w-2xl mx-auto">
-        <header className="mb-10">
-          <h1 className="text-4xl font-bold tracking-tight">Your Wallet</h1>
-          <p className="text-zinc-400 mt-2 text-sm">
-            Sweats Coins (GC) are your sweepstakes currency. They are
-            promotional; redeem to cash via the catalog (coming soon).
-          </p>
-        </header>
+    <main className="min-h-screen px-6 py-12 md:py-20 flex justify-center">
+      <div className="w-full max-w-2xl flex flex-col gap-10">
+        <div className="flex items-center justify-between">
+          <a
+            href="/profile"
+            className="text-xs uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
+          >
+            ← Profile
+          </a>
+          <form action="/auth/sign-out" method="post">
+            <button
+              type="submit"
+              className="text-xs uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
 
-        <section className="mb-12 rounded-xl border border-zinc-800 bg-zinc-900/50 p-8">
-          <div className="text-sm uppercase tracking-wider text-zinc-500 mb-2">
-            Available balance
+        <div className="flex flex-col gap-2">
+          <div className="text-xs uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
+            Your wallet
           </div>
-          <div className="text-6xl font-bold tracking-tight">
-            {available ? fmtGc(available.balance_minor) : "0"}{" "}
-            <span className="text-2xl text-zinc-400 font-normal">GC</span>
-          </div>
-          <div className="text-xs text-zinc-500 mt-4">
-            User: {user.email}
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
+            Sweats Coins
+          </h1>
+          <p className="text-white/50 text-sm max-w-md">
+            GC is sweepstakes currency — promotional, redeemable to prizes via
+            the catalog. Never purchased with real money for cash value.
+          </p>
+        </div>
+
+        <section className="relative overflow-hidden rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-7 md:p-9">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[var(--brand-green)]/10 blur-3xl"
+          />
+          <div className="relative flex flex-col gap-2">
+            <div className="text-xs uppercase tracking-[0.18em] text-white/50 font-semibold">
+              Available balance
+            </div>
+            <div className="flex items-baseline gap-3">
+              <div className="text-6xl md:text-7xl font-black tracking-tight tabular-nums">
+                {available ? fmtGc(available.balance_minor) : "0"}
+              </div>
+              <div className="text-2xl text-white/40 font-semibold">GC</div>
+            </div>
+            <div className="mt-4 flex items-center gap-2 text-xs">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold uppercase tracking-[0.12em] ${
+                  tier === "upgraded"
+                    ? "bg-[var(--brand-green)]/15 text-[var(--brand-green)]"
+                    : "bg-white/10 text-white/60"
+                }`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                {tier === "upgraded" ? "Upgraded" : "Free tier"}
+              </span>
+              <span className="text-white/30">·</span>
+              <span className="text-white/40">{user.email}</span>
+            </div>
           </div>
         </section>
 
-        <section>
-          <h2 className="text-lg font-semibold mb-4">Recent activity</h2>
+        <section className="flex flex-col gap-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-xs uppercase tracking-[0.18em] text-white/50 font-semibold">
+              Recent activity
+            </h2>
+            {available && available.recent_entries.length > 0 && (
+              <span className="text-xs text-white/30">
+                {available.recent_entries.length} entr
+                {available.recent_entries.length === 1 ? "y" : "ies"}
+              </span>
+            )}
+          </div>
+
           {!available || available.recent_entries.length === 0 ? (
-            <p className="text-zinc-500 text-sm">
-              No activity yet. Your starter bonus arrives the moment you finish
-              age verification.
-            </p>
+            <div className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-8 text-center">
+              <div className="text-sm text-white/60">No activity yet.</div>
+              <div className="text-xs text-white/40 mt-1">
+                Your welcome bonus arrives the moment you finish age verification.
+              </div>
+            </div>
           ) : (
-            <ul className="space-y-3">
-              {available.recent_entries.map((e) => (
-                <li
-                  key={e.entry_id}
-                  className="flex items-center justify-between border-b border-zinc-800 pb-3"
-                >
-                  <div>
-                    <div className="text-sm">
-                      {e.transaction_type === "signup_bonus"
-                        ? "Welcome bonus"
-                        : e.transaction_type === "admin_grant"
-                        ? "Sweats grant"
-                        : e.transaction_type}
-                    </div>
-                    {e.note && (
-                      <div className="text-xs text-zinc-500 mt-0.5">
-                        {e.note}
-                      </div>
-                    )}
-                    <div className="text-xs text-zinc-600 mt-0.5">
-                      {fmtDate(e.created_at)}
-                    </div>
-                  </div>
-                  <div
-                    className={`text-sm font-mono ${
-                      e.delta_minor >= 0 ? "text-emerald-400" : "text-rose-400"
-                    }`}
+            <ul className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 divide-y divide-white/5 overflow-hidden">
+              {available.recent_entries.map((e) => {
+                const positive = e.delta_minor >= 0;
+                return (
+                  <li
+                    key={e.entry_id}
+                    className="flex items-center justify-between gap-4 px-5 py-4"
                   >
-                    {e.delta_minor >= 0 ? "+" : ""}
-                    {fmtGc(e.delta_minor)} GC
-                  </div>
-                </li>
-              ))}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className={`h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold ${
+                          positive
+                            ? "bg-[var(--brand-green)]/15 text-[var(--brand-green)]"
+                            : "bg-[var(--brand-red)]/15 text-[var(--brand-red)]"
+                        }`}
+                      >
+                        {positive ? "+" : "−"}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold truncate">
+                          {prettyType(e.transaction_type)}
+                        </div>
+                        {e.note && (
+                          <div className="text-xs text-white/40 mt-0.5 truncate">
+                            {e.note}
+                          </div>
+                        )}
+                        <div className="text-xs text-white/30 mt-0.5">
+                          {fmtDate(e.created_at)}
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className={`text-sm font-mono font-semibold tabular-nums shrink-0 ${
+                        positive
+                          ? "text-[var(--brand-green)]"
+                          : "text-[var(--brand-red)]"
+                      }`}
+                    >
+                      {positive ? "+" : ""}
+                      {fmtGc(e.delta_minor)} GC
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
 
-        {demoMode && <SimulateCheckoutButton />}
+        {demoMode && (
+          <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6">
+            <SimulateCheckoutButton />
+          </section>
+        )}
 
-        <footer className="mt-16 text-xs text-zinc-600">
-          Append-only ledger. Drift-checked. SECURITY DEFINER writes only.
+        <footer className="text-[10px] uppercase tracking-[0.2em] text-white/25 text-center">
+          Append-only ledger · Drift-checked · SECURITY DEFINER writes only
         </footer>
       </div>
     </main>
