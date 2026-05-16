@@ -86,9 +86,8 @@ export default async function WalletPage() {
             Gold Coins
           </h1>
           <p className="text-white/50 text-base max-w-md">
-            GC is your in-app currency for trading and redemptions. Buy with
-            cash, win in IPOs and trades, then cash out for prizes in the
-            catalog.
+            GC is your in-app play currency for trading and redemptions.
+            Redeemable for prizes in the catalog. No cash value.
           </p>
         </div>
 
@@ -124,8 +123,8 @@ export default async function WalletPage() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between">
+        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 overflow-hidden">
+          <div className="flex items-baseline justify-between px-7 pt-7 md:px-9 md:pt-9 pb-4">
             <h2 className="text-xl font-semibold text-white/50">
               Recent activity
             </h2>
@@ -138,14 +137,14 @@ export default async function WalletPage() {
           </div>
 
           {!available || available.recent_entries.length === 0 ? (
-            <div className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-8 text-center">
+            <div className="px-7 pb-8 md:px-9 md:pb-9 text-center">
               <div className="text-base text-white/60">No activity yet.</div>
               <div className="text-base text-white/40 mt-1">
                 Your welcome bonus arrives the moment you finish age verification.
               </div>
             </div>
           ) : (
-            <ul className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 divide-y divide-white/5 overflow-hidden">
+            <ul className="border-t border-white/5 divide-y divide-white/5">
               {available.recent_entries.map((e) => {
                 const positive = e.delta_minor >= 0;
                 return (
