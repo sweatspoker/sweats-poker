@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { LobbyPhone, LobbyScreen } from "@/components/LobbyPhone";
-import { BuySellPhone, BuySellScreen } from "@/components/BuySellPhone";
+import { LobbyPhone } from "@/components/LobbyPhone";
+import { BuySellPhone } from "@/components/BuySellPhone";
 import { TradingViewMock } from "@/components/TradingViewMock";
 import { SettlementReceipt } from "@/components/SettlementReceipt";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -128,35 +128,6 @@ function Hero() {
               "linear-gradient(180deg, transparent 0%, rgba(10,10,10,0.85) 60%, #0a0a0a 100%)",
           }}
         />
-
-        {/* Left phone (lobby) — tilted slightly counter-clockwise */}
-        <div
-          className="absolute overflow-hidden rounded-[14px]"
-          style={{
-            left: "39%",
-            top: "26%",
-            width: "13.5%",
-            height: "53%",
-            transform: "rotate(-3deg)",
-            transformOrigin: "center",
-          }}
-        >
-          <LobbyScreen />
-        </div>
-        {/* Right phone (buy/sell) — tilted slightly clockwise */}
-        <div
-          className="absolute overflow-hidden rounded-[14px]"
-          style={{
-            left: "60.8%",
-            top: "20%",
-            width: "16%",
-            height: "66%",
-            transform: "rotate(2.5deg)",
-            transformOrigin: "center",
-          }}
-        >
-          <BuySellScreen />
-        </div>
 
         {/* Headline copy overlays the left half of the image */}
         <div className="absolute inset-0">
