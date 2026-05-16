@@ -85,12 +85,20 @@ export default async function ProfilePage({
             value={new Date(profile.created_at).toLocaleDateString()}
             tone="muted"
           />
-          <a
-            href="/wallet"
-            className="mt-2 self-start rounded-full bg-white/10 hover:bg-white/15 transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em]"
-          >
-            View wallet →
-          </a>
+          <div className="mt-2 flex gap-2">
+            <a
+              href="/market"
+              className="self-start rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em] text-white"
+            >
+              Market →
+            </a>
+            <a
+              href="/wallet"
+              className="self-start rounded-full bg-white/10 hover:bg-white/15 transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em]"
+            >
+              Wallet →
+            </a>
+          </div>
         </section>
       </div>
     </main>
