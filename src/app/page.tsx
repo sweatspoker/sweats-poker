@@ -172,8 +172,19 @@ function HowItWorks() {
         kicker="How it works"
         title="A real market on every session."
       />
-      <div className="mt-14 grid lg:grid-cols-[1fr_minmax(0,420px)] gap-10 lg:gap-14 items-center">
-        <div className="flex flex-col gap-4">
+      <div className="mt-14 grid lg:grid-cols-[minmax(0,360px)_1fr] gap-10 lg:gap-14 items-center">
+        <div className="order-2 lg:order-1 flex justify-center lg:justify-start relative">
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 blur-3xl opacity-50"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(239,43,43,0.35), transparent 65%)",
+            }}
+          />
+          <BuySellPhone />
+        </div>
+        <div className="order-1 lg:order-2 flex flex-col gap-4">
           {steps.map((s) => (
             <div
               key={s.n}
@@ -192,15 +203,6 @@ function HowItWorks() {
               </div>
             </div>
           ))}
-        </div>
-        <div className="flex justify-center lg:justify-end">
-          <Image
-            src="/sweats-hooded.png"
-            alt=""
-            width={1402}
-            height={1122}
-            className="w-full max-w-[420px] h-auto"
-          />
         </div>
       </div>
     </section>
