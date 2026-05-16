@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type TierKey = "starter" | "standard" | "founder";
 
@@ -11,6 +12,7 @@ const TIERS: Record<TierKey, { gc: number; usd: number; label: string; note?: st
 };
 
 export function BuyGoldCoinsPanel() {
+  const router = useRouter();
   const [tier, setTier] = useState<TierKey>("standard");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -30,7 +32,10 @@ export function BuyGoldCoinsPanel() {
       if (!res.ok) {
         setErr(json.error ?? `HTTP ${res.status}`);
       } else {
-        setMsg(`+${json.gc_credited} GC credited. Refresh to see balance.`);
+        setMsg(`+${json.gc_credited} GC credited`);
+        // Re-run the server component so balance + activity update without
+        // a manual page reload.
+        router.refresh();
       }
     } catch (e) {
       setErr(String(e));
