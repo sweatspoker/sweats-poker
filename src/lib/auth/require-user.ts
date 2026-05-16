@@ -9,6 +9,9 @@ export type Profile = {
   kyc_status: "none" | "pending" | "verified" | "rejected";
   tos_accepted_at: string | null;
   privacy_accepted_at: string | null;
+  tier: "free" | "upgraded";
+  welcome_bonus_granted: boolean;
+  tier_upgraded_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -27,7 +30,7 @@ export async function loadProfile(userId: string) {
   const { data } = await supabase
     .from("profiles")
     .select(
-      "user_id, display_name, dob, age_verified, kyc_status, tos_accepted_at, privacy_accepted_at, created_at, updated_at"
+      "user_id, display_name, dob, age_verified, kyc_status, tos_accepted_at, privacy_accepted_at, tier, welcome_bonus_granted, tier_upgraded_at, created_at, updated_at"
     )
     .eq("user_id", userId)
     .maybeSingle();
