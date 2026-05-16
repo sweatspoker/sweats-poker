@@ -101,7 +101,7 @@ export function SettlementReceiptCard({ r }: { r: Receipt }) {
       </div>
 
       <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm tabular-nums">
-        <Cell label="Buy-in" value={`${gc(r.declared_buyin_minor)} GC`} />
+        <Cell label="Buy-in" value={gc(r.declared_buyin_minor)} />
         <Cell
           label="Final stack"
           value={`${gc(r.final_chip_stack_minor)} GC`}
@@ -124,7 +124,10 @@ export function SettlementReceiptCard({ r }: { r: Receipt }) {
             {gc(r.payout_minor)} GC
           </div>
           <div className="text-xs text-white/40 mt-1 tabular-nums">
-            Cost basis {gc(r.cost_basis_minor)} GC · P&amp;L{" "}
+            Cost basis {gc(r.cost_basis_minor)} GC
+          </div>
+          <div className="text-xs mt-0.5 tabular-nums">
+            <span className="text-white/40">P&amp;L </span>
             <span className={payoutClass}>
               {r.pnl_minor >= 0 ? "+" : ""}
               {gc(r.pnl_minor)} GC
