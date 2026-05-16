@@ -11,7 +11,7 @@ export function TabBar({ tabs, active }: { tabs: Tab[]; active: string }) {
           <Link
             key={t.key}
             href={t.href}
-            className={`flex-1 text-center rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] transition-colors whitespace-nowrap ${
+            className={`flex-1 min-w-0 text-center rounded-full px-2 sm:px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-[0.06em] sm:tracking-[0.1em] transition-colors whitespace-nowrap truncate ${
               isActive
                 ? "bg-[var(--brand-red)] text-white"
                 : "text-white/55 hover:text-white"
