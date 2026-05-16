@@ -104,20 +104,16 @@ function Hero() {
           without crop. Phone screens overlay as % of this box so they track the
           in-image phones at every viewport size. */}
       <div className="relative left-1/2 -translate-x-1/2 w-screen min-h-[calc(100vh-7rem)] md:min-h-0 md:aspect-[3/2]">
+        {/* Image hidden on mobile (the in-image phone mockups bled through
+            the body copy on narrow screens, 4× reported). Desktop keeps
+            the full hero. */}
         <Image
           src="/poker-room-hero.png"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover"
-        />
-        {/* Headline legibility scrim — opaque on mobile so the phone mockup
-            in the image doesn't bleed through behind the body copy; on
-            md+ it fades to the right so the in-image phones are visible. */}
-        <div
-          className="absolute inset-0 pointer-events-none md:hidden"
-          style={{ background: "rgba(0,0,0,0.78)" }}
+          className="object-cover hidden md:block"
         />
         <div
           className="absolute inset-0 pointer-events-none hidden md:block"
