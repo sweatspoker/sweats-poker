@@ -45,7 +45,6 @@ function prettyType(t: string): string {
 
 export default async function WalletPage() {
   const { supabase, user, profile } = await requireVerifiedUser();
-  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
 
   const { data, error } = await supabase.rpc("get_my_ledger_summary");
   if (error) {
@@ -193,11 +192,9 @@ export default async function WalletPage() {
           )}
         </section>
 
-        {demoMode && (
-          <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6">
-            <SimulateCheckoutButton />
-          </section>
-        )}
+        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-7 md:p-9">
+          <SimulateCheckoutButton />
+        </section>
 
         <footer className="text-base uppercase tracking-[0.2em] text-white/25 text-center">
           Append-only ledger · Drift-checked · SECURITY DEFINER writes only

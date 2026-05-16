@@ -4,19 +4,19 @@ import { useState } from "react";
 
 type TierKey = "starter" | "standard" | "founder";
 
-const TIER_LABELS: Record<TierKey, { gc: number; usd: number; label: string }> = {
-  starter:  { gc: 50,   usd: 5,   label: "Starter (50 GC for $5)" },
-  standard: { gc: 200,  usd: 20,  label: "Standard (200 GC for $20)" },
-  founder:  { gc: 1000, usd: 100, label: "Founder (1,000 GC for $100)" },
+const TIERS: Record<TierKey, { gc: number; usd: number; label: string; note?: string }> = {
+  starter:  { gc: 50,   usd: 5,   label: "50 GC"      },
+  standard: { gc: 200,  usd: 20,  label: "200 GC"     },
+  founder:  { gc: 1000, usd: 100, label: "1,000 GC", note: "Best value" },
 };
 
-export function SimulateCheckoutButton() {
-  const [tier, setTier] = useState<TierKey>("starter");
+export function BuyGoldCoinsPanel() {
+  const [tier, setTier] = useState<TierKey>("standard");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  async function simulate() {
+  async function buy() {
     setBusy(true);
     setMsg(null);
     setErr(null);
@@ -30,7 +30,7 @@ export function SimulateCheckoutButton() {
       if (!res.ok) {
         setErr(json.error ?? `HTTP ${res.status}`);
       } else {
-        setMsg(`Synthetic checkout credited ${json.gc_credited} GC. Refresh to see balance.`);
+        setMsg(`+${json.gc_credited} GC credited. Refresh to see balance.`);
       }
     } catch (e) {
       setErr(String(e));
@@ -40,52 +40,68 @@ export function SimulateCheckoutButton() {
   }
 
   return (
-    <section className="mt-12 rounded-xl border border-amber-700/40 bg-amber-950/20 p-6">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-xs uppercase tracking-wider text-amber-400 font-mono">
-          Demo mode · synthetic checkout
-        </span>
-      </div>
-      <p className="text-xs text-zinc-400 mb-4">
-        Real Stripe integration is deferred. This button simulates a completed
-        Stripe payment and credits Founder Credits (Beta Balance) at the
-        locked $1 = 10 GC rate. Credits are tagged{" "}
-        <code className="text-amber-300">purchase_source=&quot;synthetic&quot;</code>{" "}
-        in the ledger and can be wiped on real-Stripe cutover.
-      </p>
-      <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-        <select
-          aria-label="Choose tier"
-          value={tier}
-          onChange={(e) => setTier(e.target.value as TierKey)}
-          disabled={busy}
-          className="bg-zinc-900 text-sm border border-zinc-700 rounded px-3 py-2"
-        >
-          {(Object.keys(TIER_LABELS) as TierKey[]).map((k) => (
-            <option key={k} value={k}>
-              {TIER_LABELS[k].label}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={simulate}
-          disabled={busy}
-          className="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-sm font-semibold rounded px-4 py-2"
-        >
-          {busy ? "Simulating…" : "Simulate Stripe checkout"}
-        </button>
-      </div>
-      {msg && (
-        <p className="text-xs text-emerald-400 mt-3" role="status">
-          {msg}
+    <div className="flex flex-col gap-6">
+      <div>
+        <div className="text-xl font-semibold text-white/50">Buy Gold Coins</div>
+        <p className="text-base text-white/40 mt-1">
+          $1 = 10 GC. Credits land instantly in your available balance.
         </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {(Object.keys(TIERS) as TierKey[]).map((k) => {
+          const t = TIERS[k];
+          const selected = tier === k;
+          return (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setTier(k)}
+              disabled={busy}
+              className={`relative text-left rounded-2xl border px-4 py-4 transition-colors ${
+                selected
+                  ? "border-[var(--brand-green)] bg-[var(--brand-green)]/10"
+                  : "border-white/10 bg-white/5 hover:bg-white/10"
+              }`}
+            >
+              {t.note && (
+                <span className="absolute -top-2 right-3 rounded-full bg-[var(--brand-red)] px-2 py-0.5 text-xs uppercase tracking-wider text-white font-semibold">
+                  {t.note}
+                </span>
+              )}
+              <div className="text-xl font-black tracking-tight">${t.usd}</div>
+              <div className="text-base text-white/60 mt-0.5">{t.label}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      <button
+        type="button"
+        onClick={buy}
+        disabled={busy}
+        className="self-start rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] disabled:opacity-50 transition-colors px-5 py-2 text-sm font-semibold uppercase tracking-[0.15em] text-black"
+      >
+        {busy ? "Processing…" : `Pay $${TIERS[tier].usd}`}
+      </button>
+
+      {msg && (
+        <div className="rounded-2xl border border-[var(--brand-green)]/30 bg-[var(--brand-green)]/10 px-4 py-3 text-base text-[var(--brand-green)]" role="status">
+          {msg}
+        </div>
       )}
       {err && (
-        <p className="text-xs text-rose-400 mt-3" role="alert">
-          Failed: {err}
-        </p>
+        <div className="rounded-2xl border border-[var(--brand-red)]/30 bg-[var(--brand-red)]/10 px-4 py-3 text-base text-[var(--brand-red)]" role="alert">
+          {err}
+        </div>
       )}
-    </section>
+
+      <p className="text-sm text-white/30">
+        v1 sandbox · no real charge. Real Stripe lands when we exit beta.
+      </p>
+    </div>
   );
 }
+
+// Back-compat export so existing wallet/page.tsx import works.
+export const SimulateCheckoutButton = BuyGoldCoinsPanel;

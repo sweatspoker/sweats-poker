@@ -166,10 +166,20 @@ export function signSyntheticPayload(rawBody: string): string | null {
  * a string env var that can be misset; cross-checking with VERCEL_ENV gives
  * two independent signals before allowing any synthetic path to proceed.
  * Returns the reason string if synthetic is disallowed here, or null if OK.
+ *
+ * SYNTHETIC_PROD_OVERRIDE=1 escape hatch (Tommy sovereign 2026-05-15): the
+ * Sweats v1 demo period needs to run on www.sweats.poker before real Stripe
+ * lands. Setting this env var explicitly bypasses (a) and (b) production
+ * gates, but SYNTHETIC_PAYMENTS_ENABLED=1 is still required so the flag is
+ * a positive opt-in, never a default. REMOVE THIS FLAG when real Stripe is
+ * wired up to prevent free-GC minting.
  */
 export function syntheticPathBlockedReason(): string | null {
-  if (process.env.NODE_ENV === "production") return "synthetic_blocked_in_production";
-  if (process.env.VERCEL_ENV === "production") return "synthetic_blocked_in_vercel_production";
+  const prodOverride = process.env.SYNTHETIC_PROD_OVERRIDE === "1";
+  if (!prodOverride) {
+    if (process.env.NODE_ENV === "production") return "synthetic_blocked_in_production";
+    if (process.env.VERCEL_ENV === "production") return "synthetic_blocked_in_vercel_production";
+  }
   if (process.env.SYNTHETIC_PAYMENTS_ENABLED !== "1") return "synthetic_payments_disabled";
   return null;
 }
