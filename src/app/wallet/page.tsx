@@ -1,5 +1,6 @@
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { SimulateCheckoutButton } from "./SimulateCheckoutButton";
+import { TabBar } from "@/components/TabBar";
 
 export const dynamic = "force-dynamic";
 
@@ -67,9 +68,15 @@ type PortfolioRow = {
   bb_minor: number | null;
 };
 
-export default async function WalletPage() {
+export default async function WalletPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const { supabase, user, profile } = await requireVerifiedUser();
   void user;
+  const { tab = "coins" } = await searchParams;
+  const isActivityTab = tab === "activity";
 
   const [
     { data: ledgerData, error: ledgerErr },
@@ -94,20 +101,31 @@ export default async function WalletPage() {
 
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
-      <div className="w-full max-w-2xl flex flex-col gap-10">
-        <div className="flex flex-col gap-2">
+      <div className="w-full max-w-2xl flex flex-col gap-8">
+        <div className="flex flex-col gap-3">
           <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
             Your wallet
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
-            Gold Coins
+            {isActivityTab ? "Activities" : "Gold Coins"}
           </h1>
-          <p className="text-white/50 text-base max-w-md">
-            GC is your in-app play currency for trading and redemptions.
-            Redeemable for prizes in the catalog. No cash value.
-          </p>
+          {!isActivityTab && (
+            <p className="text-white/50 text-base max-w-md">
+              GC is your in-app play currency for trading and redemptions.
+              Redeemable for prizes in the catalog. No cash value.
+            </p>
+          )}
+          <TabBar
+            tabs={[
+              { key: "coins", label: "Gold Coins", href: "/wallet" },
+              { key: "activity", label: "Activities", href: "/wallet?tab=activity" },
+            ]}
+            active={tab}
+          />
         </div>
 
+        {!isActivityTab && (
+          <>
         <section className="relative overflow-hidden rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-7 md:p-9">
           <div
             aria-hidden
@@ -191,11 +209,14 @@ export default async function WalletPage() {
           </section>
         )}
 
-        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-7 md:p-9">
+        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-7 md:p-9">
           <SimulateCheckoutButton />
         </section>
+          </>
+        )}
 
-        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 overflow-hidden">
+        {isActivityTab && (
+        <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 overflow-hidden">
           <div className="flex items-baseline justify-between px-7 pt-7 md:px-9 md:pt-9 pb-4">
             <h2 className="text-xl font-semibold text-white/50">
               Recent activity
@@ -280,6 +301,7 @@ export default async function WalletPage() {
             </ul>
           )}
         </section>
+        )}
 
         <footer className="text-base uppercase tracking-[0.2em] text-white/25 text-center">
           Append-only ledger · Drift-checked · SECURITY DEFINER writes only

@@ -83,36 +83,21 @@ export function BidForm({
     setMsg(null);
     setErr(null);
     try {
-      // If the user already has a bid on this offering, the place-bid RPC
-      // rejects with bid_already_exists_use_raise. Auto-route to raise-bid
-      // so submitting again means "update my bid" instead of erroring.
       const newPriceMinor = Math.round(priceNum * 100);
-      const isRaise = !!existingBid;
-      const endpoint = isRaise ? "/api/ipo/raise-bid" : "/api/ipo/place-bid";
-      const payload = isRaise
-        ? {
-            bid_id: existingBid!.bid_id,
-            new_price_per_share_minor: newPriceMinor,
-          }
-        : {
-            offering_id: offeringId,
-            shares_requested: sharesNum,
-            bid_price_per_share_minor: newPriceMinor,
-          };
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/ipo/place-bid", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          offering_id: offeringId,
+          shares_requested: sharesNum,
+          bid_price_per_share_minor: newPriceMinor,
+        }),
       });
       const json = await res.json();
       if (!res.ok) {
         setErr(prettyError(json.error ?? `HTTP ${res.status}`, json.detail));
       } else {
-        setMsg(
-          isRaise
-            ? `Bid raised to ${priceNum} GC per share.`
-            : `Bid placed: ${sharesNum} shares @ ${priceNum} GC each.`,
-        );
+        setMsg(`Bid placed: ${sharesNum} shares @ ${priceNum} GC each.`);
         router.refresh();
       }
     } catch (e) {
@@ -188,8 +173,8 @@ export function BidForm({
 
       {existingBid && (
         <div className="rounded-2xl border border-[var(--brand-green)]/30 bg-[var(--brand-green)]/10 p-3 text-base text-[var(--brand-green)]">
-          Existing bid: {existingBid.shares} shares @ {gcFromMinor(existingBid.price_per_share_minor)} GC.
-          Submitting again replaces it.
+          You have {existingBid.shares} share{existingBid.shares === 1 ? "" : "s"} bid at {gcFromMinor(existingBid.price_per_share_minor)} GC.
+          Submitting again places another bid.
         </div>
       )}
 
@@ -260,12 +245,12 @@ export function BidForm({
       >
         <span
           aria-hidden
-          className="absolute inset-y-0 left-0 bg-[var(--brand-red)] transition-[width] duration-75"
-          style={{ width: `${holdProgress * 100}%` }}
+          className="absolute inset-y-0 left-0 w-full bg-[var(--brand-red)] origin-left"
+          style={{ transform: `scaleX(${holdProgress})` }}
         />
         <span className="relative z-10 pointer-events-none">
           {busy
-            ? existingBid ? "Raising…" : "Placing…"
+            ? "Placing…"
             : insufficient
             ? "Insufficient GC"
             : !sharesValid
@@ -276,8 +261,6 @@ export function BidForm({
             ? "Confirmed"
             : isHolding
             ? "Hold to confirm…"
-            : existingBid
-            ? `Tap and hold to raise to ${priceNum} GC`
             : "Tap and hold to buy"}
         </span>
       </button>

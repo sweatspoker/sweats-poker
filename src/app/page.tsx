@@ -103,7 +103,7 @@ function Hero() {
           escape-container trick; height auto-derives so the whole image fits
           without crop. Phone screens overlay as % of this box so they track the
           in-image phones at every viewport size. */}
-      <div className="relative left-1/2 -translate-x-1/2 w-screen aspect-[3/2]">
+      <div className="relative left-1/2 -translate-x-1/2 w-screen min-h-[calc(100vh-7rem)] md:min-h-0 md:aspect-[3/2]">
         <Image
           src="/poker-room-hero.png"
           alt=""
@@ -131,7 +131,7 @@ function Hero() {
 
         {/* Headline copy overlays the left half of the image */}
         <div className="absolute inset-0">
-          <div className="w-full max-w-6xl mx-auto h-full px-6 grid md:grid-cols-12 items-center">
+          <div className="w-full max-w-6xl mx-auto h-full px-6 py-10 md:py-0 grid md:grid-cols-12 items-center">
             <div className="md:col-span-6 flex flex-col gap-4 sm:gap-6 md:gap-8 relative z-10">
               <div className="hidden sm:inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 whitespace-nowrap">
                 <span className="size-2 rounded-full bg-[var(--brand-red)] live-dot" />
