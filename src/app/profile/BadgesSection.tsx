@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BADGES, badgeAsset, type BadgeId } from "@/lib/badges";
 
@@ -17,6 +17,17 @@ export function BadgesSection({ unlocked, initialSelected, initialShowOnAvatar }
   const [showOnAvatar, setShowOnAvatar] = useState(initialShowOnAvatar);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [tipOpen, setTipOpen] = useState(false);
+  const tipRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!tipOpen) return;
+    function onDocClick(e: MouseEvent) {
+      if (!tipRef.current?.contains(e.target as Node)) setTipOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [tipOpen]);
 
   async function persist(next: { selected_badge: BadgeId | null; show_badge_on_avatar: boolean }) {
     setBusy(true);
@@ -56,7 +67,40 @@ export function BadgesSection({ unlocked, initialSelected, initialShowOnAvatar }
   return (
     <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <div className="text-xl font-semibold text-white/50">Badges</div>
+        <div className="flex items-center gap-2 relative" ref={tipRef}>
+          <div className="text-xl font-semibold text-white/50">Badges</div>
+          <button
+            type="button"
+            onClick={() => setTipOpen((v) => !v)}
+            aria-label="How badges unlock"
+            aria-expanded={tipOpen}
+            className="h-5 w-5 grid place-items-center rounded-full border border-white/25 text-white/55 text-[11px] font-bold hover:text-white hover:border-white/60 transition-colors"
+          >
+            i
+          </button>
+          {tipOpen && (
+            <div
+              role="tooltip"
+              className="absolute left-0 top-full mt-2 z-20 w-72 max-w-[78vw] rounded-2xl border border-white/15 bg-black/95 backdrop-blur px-4 py-3 text-sm text-white/80 shadow-2xl"
+            >
+              <div className="font-semibold text-white mb-2">How badges unlock</div>
+              <p className="text-white/55 leading-snug mb-2">
+                Tiers track your lifetime P&amp;L across settled sessions. Higher tiers unlock as
+                you move further in either direction.
+              </p>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs tabular-nums">
+                <span className="text-white/40">1M+ GC</span><span style={{ color: "#ef4444" }}>Shark</span>
+                <span className="text-white/40">100k+ GC</span><span style={{ color: "#f97316" }}>Crusher</span>
+                <span className="text-white/40">10k+ GC</span><span style={{ color: "#facc15" }}>Grinder</span>
+                <span className="text-white/40">0+ GC</span><span style={{ color: "#e5e5e5" }}>Nit</span>
+                <span className="text-white/40">Any loss</span><span style={{ color: "#4ade80" }}>Fish</span>
+                <span className="text-white/40">10k− GC</span><span style={{ color: "#2dd4bf" }}>Donkey</span>
+                <span className="text-white/40">100k− GC</span><span style={{ color: "#3b82f6" }}>Whale</span>
+                <span className="text-white/40">1M− GC</span><span style={{ color: "#a855f7" }}>Maniac</span>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="text-xs uppercase tracking-[0.15em] text-white/30">
           {unlocked.length} / {BADGES.length} unlocked
         </div>
