@@ -42,7 +42,7 @@ export default async function ProfilePage({
 
         <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <div className="text-xl uppercase tracking-[0.15em] text-white/50 font-semibold">
+            <div className="text-xl font-semibold text-white/50">
               Display name
             </div>
             <div className="text-white/60 text-base">
@@ -76,7 +76,7 @@ export default async function ProfilePage({
         </section>
 
         <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-6 md:p-8 flex flex-col gap-3">
-          <div className="text-xl uppercase tracking-[0.15em] text-white/50 font-semibold">
+          <div className="text-xl font-semibold text-white/50">
             Account
           </div>
           <Row label="Age verified" value="Yes, 18+" tone="green" />
