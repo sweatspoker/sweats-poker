@@ -24,7 +24,7 @@ export const BADGES: BadgeDef[] = [
   { id: "crusher", label: "Crusher", tagline: "100k+ GC lifetime",   side: "profit", threshold_minor:   10_000_000, color: "#f97316" },
   { id: "grinder", label: "Grinder", tagline: "10k+ GC lifetime",    side: "profit", threshold_minor:    1_000_000, color: "#facc15" },
   { id: "nit",     label: "Nit",     tagline: "Break-even or better",side: "profit", threshold_minor:            0, color: "#e5e5e5" },
-  { id: "fish",    label: "Fish",    tagline: "Any losing lifetime", side: "loss",   threshold_minor:         -100, color: "#4ade80" },
+  { id: "fish",    label: "Fish",    tagline: "Any losing lifetime", side: "loss",   threshold_minor:         -100, color: "#00d563" },
   { id: "donkey",  label: "Donkey",  tagline: "10k- GC lifetime",    side: "loss",   threshold_minor:   -1_000_000, color: "#2dd4bf" },
   { id: "whale",   label: "Whale",   tagline: "100k- GC lifetime",   side: "loss",   threshold_minor:  -10_000_000, color: "#3b82f6" },
   { id: "maniac",  label: "Maniac",  tagline: "1mil- GC lifetime",   side: "loss",   threshold_minor: -100_000_000, color: "#a855f7" },

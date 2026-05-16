@@ -93,7 +93,7 @@ export function BadgesSection({ unlocked, initialSelected, initialShowOnAvatar }
                 <span className="text-white/40">100k+ GC</span><span style={{ color: "#f97316" }}>Crusher</span>
                 <span className="text-white/40">10k+ GC</span><span style={{ color: "#facc15" }}>Grinder</span>
                 <span className="text-white/40">0+ GC</span><span style={{ color: "#e5e5e5" }}>Nit</span>
-                <span className="text-white/40">Any loss</span><span style={{ color: "#4ade80" }}>Fish</span>
+                <span className="text-white/40">Any loss</span><span style={{ color: "#00d563" }}>Fish</span>
                 <span className="text-white/40">10k− GC</span><span style={{ color: "#2dd4bf" }}>Donkey</span>
                 <span className="text-white/40">100k− GC</span><span style={{ color: "#3b82f6" }}>Whale</span>
                 <span className="text-white/40">1M− GC</span><span style={{ color: "#a855f7" }}>Maniac</span>
