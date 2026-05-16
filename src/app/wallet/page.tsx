@@ -59,19 +59,19 @@ export default async function WalletPage() {
   const tier = profile.tier ?? "free";
 
   return (
-    <main className="dashboard-scope min-h-screen px-6 py-12 md:py-20 flex justify-center">
+    <main className="min-h-screen px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-2xl flex flex-col gap-10">
         <div className="flex items-center justify-between">
           <a
             href="/profile"
-            className="text-xs uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
+            className="text-lg uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
           >
             ← Profile
           </a>
           <form action="/auth/sign-out" method="post">
             <button
               type="submit"
-              className="text-xs uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
+              className="text-lg uppercase tracking-[0.15em] text-white/40 hover:text-white/70 font-semibold"
             >
               Sign out
             </button>
@@ -79,13 +79,13 @@ export default async function WalletPage() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="text-xs uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
+          <div className="text-2xl uppercase tracking-[0.18em] text-[var(--brand-red)] font-semibold">
             Your wallet
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
             Sweats Coins
           </h1>
-          <p className="text-white/50 text-sm max-w-md">
+          <p className="text-white/50 text-lg max-w-md">
             GC is sweepstakes currency — promotional, redeemable to prizes via
             the catalog. Never purchased with real money for cash value.
           </p>
@@ -97,7 +97,7 @@ export default async function WalletPage() {
             className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[var(--brand-green)]/10 blur-3xl"
           />
           <div className="relative flex flex-col gap-2">
-            <div className="text-xs uppercase tracking-[0.18em] text-white/50 font-semibold">
+            <div className="text-2xl uppercase tracking-[0.18em] text-white/50 font-semibold">
               Available balance
             </div>
             <div className="flex items-baseline gap-3">
@@ -106,7 +106,7 @@ export default async function WalletPage() {
               </div>
               <div className="text-2xl text-white/40 font-semibold">GC</div>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-xs">
+            <div className="mt-4 flex items-center gap-2 text-lg">
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold uppercase tracking-[0.12em] ${
                   tier === "upgraded"
@@ -125,11 +125,11 @@ export default async function WalletPage() {
 
         <section className="flex flex-col gap-4">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-xs uppercase tracking-[0.18em] text-white/50 font-semibold">
+            <h2 className="text-2xl uppercase tracking-[0.18em] text-white/50 font-semibold">
               Recent activity
             </h2>
             {available && available.recent_entries.length > 0 && (
-              <span className="text-xs text-white/30">
+              <span className="text-lg text-white/30">
                 {available.recent_entries.length} entr
                 {available.recent_entries.length === 1 ? "y" : "ies"}
               </span>
@@ -138,8 +138,8 @@ export default async function WalletPage() {
 
           {!available || available.recent_entries.length === 0 ? (
             <div className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-8 text-center">
-              <div className="text-sm text-white/60">No activity yet.</div>
-              <div className="text-xs text-white/40 mt-1">
+              <div className="text-lg text-white/60">No activity yet.</div>
+              <div className="text-lg text-white/40 mt-1">
                 Your welcome bonus arrives the moment you finish age verification.
               </div>
             </div>
@@ -154,7 +154,7 @@ export default async function WalletPage() {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className={`h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold ${
+                        className={`h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-lg font-bold ${
                           positive
                             ? "bg-[var(--brand-green)]/15 text-[var(--brand-green)]"
                             : "bg-[var(--brand-red)]/15 text-[var(--brand-red)]"
@@ -163,21 +163,21 @@ export default async function WalletPage() {
                         {positive ? "+" : "−"}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-sm font-semibold truncate">
+                        <div className="text-lg font-semibold truncate">
                           {prettyType(e.transaction_type)}
                         </div>
                         {e.note && (
-                          <div className="text-xs text-white/40 mt-0.5 truncate">
+                          <div className="text-lg text-white/40 mt-0.5 truncate">
                             {e.note}
                           </div>
                         )}
-                        <div className="text-xs text-white/30 mt-0.5">
+                        <div className="text-lg text-white/30 mt-0.5">
                           {fmtDate(e.created_at)}
                         </div>
                       </div>
                     </div>
                     <div
-                      className={`text-sm font-mono font-semibold tabular-nums shrink-0 ${
+                      className={`text-lg font-mono font-semibold tabular-nums shrink-0 ${
                         positive
                           ? "text-[var(--brand-green)]"
                           : "text-[var(--brand-red)]"
@@ -199,7 +199,7 @@ export default async function WalletPage() {
           </section>
         )}
 
-        <footer className="text-[10px] uppercase tracking-[0.2em] text-white/25 text-center">
+        <footer className="text-lg uppercase tracking-[0.2em] text-white/25 text-center">
           Append-only ledger · Drift-checked · SECURITY DEFINER writes only
         </footer>
       </div>
