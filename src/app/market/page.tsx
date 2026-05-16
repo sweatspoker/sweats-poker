@@ -479,7 +479,7 @@ function ClosedIPOs({ closed }: { closed: ClosedIPO[] }) {
         return (
           <Link
             key={c.offering_id}
-            href={`/market/${c.offering_id}`}
+            href={`/markets/${c.offering_id}`}
             className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-colors p-5 flex flex-col gap-3"
           >
             <div className="flex items-center gap-3">

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -163,13 +162,6 @@ export default async function MarketsTradePage({
   return (
     <main className="min-h-screen px-4 sm:px-6 py-12 md:py-20 flex justify-center">
       <div className="w-full max-w-3xl flex flex-col gap-6">
-        <Link
-          href="/markets"
-          className="text-sm uppercase tracking-[0.18em] text-white/40 hover:text-white/70 font-semibold"
-        >
-          ← Markets
-        </Link>
-
         <header className="flex items-center gap-4">
           <PlayerAvatar src={playerPhoto} name={o.player_display_name} size={80} />
           <div className="flex flex-col gap-2 min-w-0 flex-1">

@@ -43,6 +43,26 @@ type PortfolioRow = {
   bb_minor: number | null;
 };
 
+type OpenOrder = {
+  order_id: string;
+  offering_id: string | null;
+  player_id: string;
+  side: string;
+  shares: number;
+  shares_remaining: number;
+  limit_price_minor: number;
+  status: string;
+  created_at: string;
+};
+
+type MyTradeOffering = {
+  offering_id: string;
+  player_id: string;
+  player_display_name: string;
+  session_state: string;
+  stream_id: string | null;
+};
+
 function dollarsFromMinor(minor: number): string {
   return (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
@@ -107,16 +127,71 @@ export default async function MarketsPage({
     }
   }
 
-  // User's portfolio for My Trades tab + settled receipts for Closed tab.
-  const [{ data: portfolioRaw }, { data: settledRaw }] = await Promise.all([
+  // User's portfolio for My Trades tab + settled receipts for Closed tab +
+  // open orders (so My Trades shows unfilled trades alongside positions).
+  const [
+    { data: portfolioRaw },
+    { data: settledRaw },
+    { data: openOrdersRaw },
+  ] = await Promise.all([
     supabase.rpc("get_my_portfolio"),
     supabase.rpc("get_my_settled_positions", { p_limit: 50 }),
+    supabase.rpc("get_my_orders", { p_include_closed: false }),
   ]);
   const portfolio = ((portfolioRaw as PortfolioRow[] | null) ?? []).filter(
     (p) => p.shares_held > 0 && (p.session_state === "active" || p.session_state === "halted"),
   );
   const settled = (settledRaw as Receipt[] | null) ?? [];
-  const myPlayerIds = Array.from(new Set(portfolio.map((p) => p.player_id)));
+  const openOrders =
+    ((openOrdersRaw as OpenOrder[] | null) ?? []).filter((o) => !!o.offering_id);
+
+  // Build a unified My Trades feed: one row per (offering) showing position
+  // OR a "no position" stub when the user only has resting orders. Plus a
+  // per-row aggregate of unfilled orders.
+  const ordersByOffering = new Map<string, OpenOrder[]>();
+  for (const o of openOrders) {
+    const key = o.offering_id!;
+    if (!ordersByOffering.has(key)) ordersByOffering.set(key, []);
+    ordersByOffering.get(key)!.push(o);
+  }
+
+  const positionsByOffering = new Map<string, PortfolioRow>();
+  for (const p of portfolio) positionsByOffering.set(p.offering_id, p);
+
+  const myTradesOfferingIds = Array.from(
+    new Set<string>([
+      ...Array.from(positionsByOffering.keys()),
+      ...Array.from(ordersByOffering.keys()),
+    ]),
+  );
+
+  // Pull offering + player data for orders on offerings the user doesn't
+  // currently hold a position in.
+  const offeringById = new Map<string, MyTradeOffering>();
+  for (const p of portfolio) {
+    offeringById.set(p.offering_id, {
+      offering_id: p.offering_id,
+      player_id: p.player_id,
+      player_display_name: p.player_display_name,
+      session_state: p.session_state,
+      stream_id: p.stream_id,
+    });
+  }
+  const missingOfferingIds = myTradesOfferingIds.filter(
+    (id) => !offeringById.has(id),
+  );
+  if (missingOfferingIds.length > 0) {
+    const { data: extra } = await admin
+      .schema("ipo")
+      .from("offerings")
+      .select("offering_id, player_id, player_display_name, session_state, stream_id")
+      .in("offering_id", missingOfferingIds);
+    for (const o of extra ?? []) offeringById.set(o.offering_id, o as MyTradeOffering);
+  }
+
+  const myPlayerIds = Array.from(
+    new Set(Array.from(offeringById.values()).map((o) => o.player_id)),
+  );
   if (myPlayerIds.length > 0) {
     const missing = myPlayerIds.filter((id) => !photoByPlayer.has(id));
     if (missing.length > 0) {
@@ -129,9 +204,14 @@ export default async function MarketsPage({
     }
   }
 
+  const myTradesCount = myTradesOfferingIds.length;
   const tabs = [
     { key: "live", label: "Live", href: "/markets" },
-    { key: "mine", label: `My Trades${portfolio.length ? ` (${portfolio.length})` : ""}`, href: "/markets?tab=mine" },
+    {
+      key: "mine",
+      label: `My Trades${myTradesCount ? ` (${myTradesCount})` : ""}`,
+      href: "/markets?tab=mine",
+    },
     { key: "closed", label: `Closed${settled.length ? ` (${settled.length})` : ""}`, href: "/markets?tab=closed" },
   ];
 
@@ -149,7 +229,7 @@ export default async function MarketsPage({
             {isClosedTab
               ? "Players who've cashed out. Tap any card to review the receipt."
               : isMineTab
-              ? "Your open positions on players currently at the table."
+              ? "Your active positions and any unfilled buy/sell orders."
               : "Players currently at the table. Buy and sell their shares while the stream is live."}
           </p>
           <TabBar tabs={tabs} active={tab} />
@@ -171,32 +251,46 @@ export default async function MarketsPage({
             </section>
           )
         ) : isMineTab ? (
-          portfolio.length === 0 ? (
+          myTradesCount === 0 ? (
             <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-10 text-center">
-              <div className="text-base text-white/60">You don&apos;t hold any active shares.</div>
+              <div className="text-base text-white/60">
+                You don&apos;t have any active positions or open orders.
+              </div>
               <div className="text-base text-white/40 mt-1">
-                Win an IPO clearing or buy from the order book to take a position.
+                Win an IPO clearing or place a buy order to take a position.
               </div>
             </section>
           ) : (
             <section className="flex flex-col gap-3">
-              {portfolio.map((p) => {
-                const s = p.stream_id ? streamById.get(p.stream_id) : null;
-                const v = p.stream_id ? venueByStream.get(p.stream_id) : null;
+              {myTradesOfferingIds.map((oid) => {
+                const off = offeringById.get(oid);
+                if (!off) return null;
+                const pos = positionsByOffering.get(oid) ?? null;
+                const orders = ordersByOffering.get(oid) ?? [];
+                const buyCount = orders.filter((o) => o.side === "buy").length;
+                const sellCount = orders.filter((o) => o.side === "sell").length;
+                const buyShares = orders
+                  .filter((o) => o.side === "buy")
+                  .reduce((s, o) => s + o.shares_remaining, 0);
+                const sellShares = orders
+                  .filter((o) => o.side === "sell")
+                  .reduce((s, o) => s + o.shares_remaining, 0);
+                const s = off.stream_id ? streamById.get(off.stream_id) : null;
+                const v = off.stream_id ? venueByStream.get(off.stream_id) : null;
                 return (
                   <Link
-                    key={p.offering_id}
-                    href={`/markets/${p.offering_id}`}
+                    key={oid}
+                    href={`/markets/${oid}`}
                     className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-colors p-5 flex items-center gap-4"
                   >
                     <PlayerAvatar
-                      src={photoByPlayer.get(p.player_id) ?? null}
-                      name={p.player_display_name}
+                      src={photoByPlayer.get(off.player_id) ?? null}
+                      name={off.player_display_name}
                       size={56}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-xl font-bold leading-tight truncate">
-                        {p.player_display_name}
+                        {off.player_display_name}
                       </div>
                       <div className="text-sm text-white/50 mt-0.5 truncate">
                         {s ? (
@@ -205,19 +299,48 @@ export default async function MarketsPage({
                             {v ? ` · ${v.name}` : ""}
                           </>
                         ) : (
-                          p.session_state
+                          off.session_state
                         )}
                       </div>
-                      <div className="text-base text-white/70 mt-1 tabular-nums">
-                        {p.shares_held.toLocaleString()} shares · avg {gcFromMinor(p.weighted_avg_cost_minor)} GC
-                      </div>
+                      {pos ? (
+                        <div className="text-base text-white/70 mt-1 tabular-nums">
+                          {pos.shares_held.toLocaleString()} shares · avg{" "}
+                          {gcFromMinor(pos.weighted_avg_cost_minor)} GC
+                        </div>
+                      ) : (
+                        <div className="text-base text-white/70 mt-1">
+                          No position yet
+                        </div>
+                      )}
+                      {orders.length > 0 && (
+                        <div className="text-sm text-white/50 mt-1 tabular-nums flex items-center gap-2 flex-wrap">
+                          {buyCount > 0 && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-green)]/15 text-[var(--brand-green)] border border-[var(--brand-green)]/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.08em]">
+                              {buyCount} buy · {buyShares.toLocaleString()} unfilled
+                            </span>
+                          )}
+                          {sellCount > 0 && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-red)]/15 text-[var(--brand-red)] border border-[var(--brand-red)]/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.08em]">
+                              {sellCount} sell · {sellShares.toLocaleString()} unfilled
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <span
                       className={`text-sm font-semibold uppercase tracking-[0.12em] shrink-0 ${
-                        p.session_state === "halted" ? "text-yellow-500" : "text-[var(--brand-green)]"
+                        off.session_state === "halted"
+                          ? "text-yellow-500"
+                          : off.session_state === "active"
+                          ? "text-[var(--brand-green)]"
+                          : "text-white/40"
                       }`}
                     >
-                      {p.session_state === "halted" ? "Halted" : "Live"}
+                      {off.session_state === "halted"
+                        ? "Halted"
+                        : off.session_state === "active"
+                        ? "Live"
+                        : off.session_state.replace(/_/g, " ")}
                     </span>
                   </Link>
                 );
