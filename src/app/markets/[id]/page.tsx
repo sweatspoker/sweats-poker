@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
-import { OrderBookView } from "./OrderBookView";
-import { OrderForm } from "./OrderForm";
+import { PriceChart } from "./PriceChart";
+import { PositionPanel } from "./PositionPanel";
 import { MyOrders } from "./MyOrders";
 
 export const dynamic = "force-dynamic";
@@ -124,27 +124,41 @@ export default async function MarketsTradePage({
   }
 
   // User context for trading.
-  const [{ data: ledger }, { data: portfolio }, { data: orders }, { data: book }] =
+  const [{ data: ledger }, { data: portfolio }, { data: orders }, { data: book }, { data: series }] =
     await Promise.all([
       supabase.rpc("get_my_ledger_summary"),
       supabase.rpc("get_my_portfolio"),
       supabase.rpc("get_my_orders", { p_include_closed: false, p_offering_id: id }),
       admin.rpc("get_order_book", { p_offering_id: id }),
+      admin.rpc("get_offering_price_series", { p_offering_id: id, p_range: "all" }),
     ]);
 
   const availableMinor =
     ((ledger as LedgerRow[] | null) ?? []).find((r) => r.account_type === "available")
       ?.balance_minor ?? 0;
   const availableGc = Math.floor(availableMinor / 100);
-  const sharesHeld =
-    ((portfolio as PortfolioRow[] | null) ?? []).find((p) => p.offering_id === id)
-      ?.shares_held ?? 0;
+  const portfolioRow = ((portfolio as PortfolioRow[] | null) ?? []).find(
+    (p) => p.offering_id === id,
+  );
+  const sharesHeld = portfolioRow?.shares_held ?? 0;
+  const weightedAvgCostMinor = portfolioRow?.weighted_avg_cost_minor ?? 0;
   const myOrders = (orders as OrderRow[] | null) ?? [];
+
+  const seriesData = (series as {
+    range: "1m" | "5m" | "15m" | "1h" | "5h" | "all";
+    anchor_price_minor: number;
+    last_price_minor: number | null;
+    points: { t: string; price_minor: number }[];
+  } | null) ?? {
+    range: "all" as const,
+    anchor_price_minor: o.ipo_clearing_price_minor ?? o.price_per_share_minor,
+    last_price_minor: null,
+    points: [],
+  };
 
   const bookData = book as {
     bids?: { price_minor: number }[];
     asks?: { price_minor: number }[];
-    recent_trades?: { matched_price_minor: number }[];
   } | null;
   const topBidGc =
     bookData?.bids && bookData.bids.length > 0
@@ -153,10 +167,6 @@ export default async function MarketsTradePage({
   const topAskGc =
     bookData?.asks && bookData.asks.length > 0
       ? bookData.asks[0].price_minor / 100
-      : null;
-  const lastPriceGc =
-    bookData?.recent_trades && bookData.recent_trades.length > 0
-      ? bookData.recent_trades[0].matched_price_minor / 100
       : null;
 
   return (
@@ -197,29 +207,24 @@ export default async function MarketsTradePage({
           </div>
         </header>
 
-        <OrderBookView offeringId={o.offering_id} />
+        <PriceChart offeringId={o.offering_id} initial={seriesData} />
 
-        <OrderForm
-          playerId={o.player_id}
+        <PositionPanel
           offeringId={o.offering_id}
+          playerId={o.player_id}
           playerName={o.player_display_name}
-          availableGc={availableGc}
           sharesHeld={sharesHeld}
+          weightedAvgCostMinor={weightedAvgCostMinor}
+          lastPriceMinor={seriesData.last_price_minor}
+          anchorPriceMinor={seriesData.anchor_price_minor}
+          availableGc={availableGc}
           topBidGc={topBidGc}
           topAskGc={topAskGc}
-          lastPriceGc={lastPriceGc}
           tierUpgraded={profile.tier === "upgraded"}
           sessionState={o.session_state}
         />
 
         <MyOrders orders={myOrders} />
-
-        <div className="flex items-center justify-between gap-3 rounded-3xl border border-white/8 bg-[var(--surface)]/60 px-5 py-4 text-sm tabular-nums">
-          <div className="text-white/50">Your position</div>
-          <div className="font-semibold">
-            {sharesHeld.toLocaleString()} shares · {availableGc.toLocaleString()} GC available
-          </div>
-        </div>
 
       </div>
     </main>
