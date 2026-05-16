@@ -183,7 +183,7 @@ export default async function MarketsTradePage({
             <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.05] truncate">
               {o.player_display_name}
             </h1>
-            <div className="text-sm text-white/50 truncate">
+            <div className="text-sm text-white/50 break-words">
               {stream ? (
                 <>
                   {stream.name}
