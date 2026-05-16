@@ -43,8 +43,13 @@ function prettyType(t: string): string {
     case "ipo_bid_placed": return "IPO bid placed";
     case "ipo_bid_cancelled": return "IPO bid cancelled";
     case "ipo_bid_cleared": return "IPO cleared";
+    case "ipo_bid_refunded": return "IPO bid refunded";
+    case "order_placed": return "Order placed";
+    case "order_cancelled": return "Order cancelled";
+    case "trade_executed": return "Trade executed";
     case "redemption": return "Redemption";
-    default: return t.replace(/_/g, " ");
+    case "redemption_cancelled": return "Redemption cancelled";
+    default: return t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   }
 }
 
