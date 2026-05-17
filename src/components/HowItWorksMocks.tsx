@@ -8,28 +8,38 @@ import {
 // of the explainer shows the actual screen the user will land on, populated
 // with credible mock data. Mirrors live product copy + Tailwind tokens.
 
-// ---- Step 1: Markets / Live trading list ---------------------------------
+// ---- Step 1: Open IPO list (sealed-bid auctions before sessions go live) -
 
-const upcomingPlayers = [
-  {
-    name: "Tommy Ho",
-    subtitle: "Friday Night Cash · $5/$10",
-    state: "active" as const,
-    photo: "/players/tommy_ho.jpg",
-  },
-  {
-    name: "Phil Galfond",
-    subtitle: "High-Stakes Live · $25/$50",
-    state: "ipo_open" as const,
-    photo: null,
-  },
-  {
-    name: "Daniel Negreanu",
-    subtitle: "Saturday Showcase · $10/$25",
-    state: "ipo_open" as const,
-    photo: null,
-  },
-];
+type IpoOffering = {
+  name: string;
+  shares: string;
+  photo: string | null;
+  hue?: number;
+};
+
+const ipoStreamGroup = {
+  streamName: "Friday Night Cash",
+  subtitle: "$5/$10 · Starts Fri, 8:00 PM",
+  offerings: [
+    {
+      name: "Tommy Ho",
+      shares: "5,000",
+      photo: "/players/tommy_ho.jpg",
+    },
+    {
+      name: "Phil Galfond",
+      shares: "5,000",
+      photo: null,
+      hue: 220,
+    },
+    {
+      name: "Daniel Negreanu",
+      shares: "5,000",
+      photo: null,
+      hue: 12,
+    },
+  ] as IpoOffering[],
+};
 
 export function MarketsListPhone() {
   return (
@@ -38,26 +48,34 @@ export function MarketsListPhone() {
         <div className="flex-1 overflow-hidden flex flex-col gap-3 px-4 pt-9 pb-4">
           <div className="flex flex-col gap-1">
             <span className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-2.5 py-0.5 text-[9px] uppercase tracking-[0.16em] font-bold text-white">
-              Markets · Live
+              Open IPO
             </span>
             <div className="text-2xl font-black tracking-tight leading-tight">
-              Live trading
+              Auctions open
             </div>
             <div className="text-[10px] text-white/55 leading-snug">
-              Players at the table. Buy and sell their shares while the stream is live.
+              Sealed-bid auctions before each session starts. Highest bids win shares.
             </div>
           </div>
 
           <div className="flex items-center gap-1 rounded-full bg-white/5 p-0.5 text-[9px] font-bold uppercase tracking-[0.1em]">
             <span className="flex-1 rounded-full bg-[var(--brand-red)] text-white py-1.5 text-center">
-              Live
+              Open IPOs
             </span>
-            <span className="flex-1 text-white/45 py-1.5 text-center">My trades</span>
+            <span className="flex-1 text-white/45 py-1.5 text-center">My IPOs</span>
             <span className="flex-1 text-white/45 py-1.5 text-center">Closed</span>
           </div>
 
           <div className="flex flex-col gap-2">
-            {upcomingPlayers.map((p) => (
+            <div className="px-1 pt-1">
+              <div className="text-[12px] font-bold leading-tight">
+                {ipoStreamGroup.streamName}
+              </div>
+              <div className="text-[9px] text-white/45 leading-tight">
+                {ipoStreamGroup.subtitle}
+              </div>
+            </div>
+            {ipoStreamGroup.offerings.map((p) => (
               <div
                 key={p.name}
                 className="flex items-center gap-3 rounded-2xl border border-white/8 bg-[var(--surface)]/60 p-3"
@@ -73,22 +91,18 @@ export function MarketsListPhone() {
                   <div
                     className="size-10 rounded-full shrink-0"
                     style={{
-                      background: `linear-gradient(135deg, hsl(${Math.random() * 360}, 60%, 40%), hsl(${Math.random() * 360}, 60%, 30%))`,
+                      background: `linear-gradient(135deg, hsl(${p.hue ?? 12}, 60%, 45%), hsl(${(p.hue ?? 12) + 40}, 60%, 30%))`,
                     }}
                   />
                 )}
                 <div className="flex flex-col leading-tight min-w-0 flex-1">
                   <div className="text-[12px] font-bold truncate">{p.name}</div>
-                  <div className="text-[9px] text-white/45 truncate">{p.subtitle}</div>
+                  <div className="text-[9px] text-white/45 truncate">
+                    {p.shares} shares · Sealed-bid auction
+                  </div>
                 </div>
-                <span
-                  className={`text-[9px] uppercase tracking-[0.12em] font-bold shrink-0 ${
-                    p.state === "active"
-                      ? "text-[var(--brand-green)]"
-                      : "text-[var(--brand-red)]"
-                  }`}
-                >
-                  {p.state === "active" ? "Live" : "IPO open"}
+                <span className="text-[9px] uppercase tracking-[0.12em] font-bold shrink-0 text-[var(--brand-red)]">
+                  Bid
                 </span>
               </div>
             ))}

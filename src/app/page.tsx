@@ -221,7 +221,7 @@ function HowItWorks() {
     {
       n: 1,
       title: "Pick a player.",
-      body: "Browse upcoming sessions on Markets. Sessions live in different states - IPO open (still bidding) and Live (already trading). Tap in to see the player, the stakes, and the order book.",
+      body: "Open IPOs are sealed-bid auctions that open hours before each session. Browse the upcoming roster - players, stakes, when they sit down - and tap in to size up a bid.",
       mock: <MarketsListPhone />,
     },
     {
