@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { BuySellPhone } from "@/components/BuySellPhone";
 import { TradingViewMock } from "@/components/TradingViewMock";
-import { SettlementReceipt } from "@/components/SettlementReceipt";
 import {
   MarketsListPhone,
   IPOBidPhone,
@@ -304,7 +303,7 @@ function ProductDeepDive() {
     <section className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28">
       <SectionHeading
         kicker="The product"
-        title="A real order book. A real settlement."
+        title="A real order book."
       />
 
       <div className="mt-14 grid md:grid-cols-2 gap-12 items-center">
@@ -323,25 +322,6 @@ function ProductDeepDive() {
         </div>
         <div className="rounded-3xl border border-white/10 bg-[var(--surface)]/80 p-2 backdrop-blur-sm shadow-2xl">
           <TradingViewMock />
-        </div>
-      </div>
-
-      <div className="mt-24 grid md:grid-cols-2 gap-12 items-center">
-        <div className="md:order-2">
-          <div className="text-sm uppercase tracking-[0.18em] text-[var(--brand-green)] font-semibold">
-            Settlement at cashout
-          </div>
-          <h3 className="mt-4 text-4xl md:text-5xl font-black tracking-tight leading-tight">
-            When they rack up, you get paid.
-          </h3>
-          <p className="mt-5 text-lg text-white/75 leading-relaxed">
-            When the player cashes out, the pool pays every shareholder
-            proportional to the final stack. No delays. No disputes. The
-            market closes the way it opened. At the table.
-          </p>
-        </div>
-        <div className="md:order-1">
-          <SettlementReceipt />
         </div>
       </div>
     </section>
