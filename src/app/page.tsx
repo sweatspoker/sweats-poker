@@ -50,20 +50,12 @@ function Header({
             Your profile
           </a>
         ) : (
-          <>
-            <a
-              href="/login"
-              className="hidden sm:inline-flex items-center justify-center rounded-full border border-white/15 hover:border-white/30 transition-colors px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white whitespace-nowrap"
-            >
-              Sign in
-            </a>
-            <a
-              href="/login"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-black whitespace-nowrap"
-            >
-              Get started
-            </a>
-          </>
+          <a
+            href="/login"
+            className="inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-black whitespace-nowrap"
+          >
+            Sign in
+          </a>
         )}
       </div>
     </header>
