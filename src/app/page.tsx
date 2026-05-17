@@ -109,8 +109,7 @@ function HeroCopy() {
       </h1>
       <p className="text-xl md:text-2xl text-white/75 max-w-xl leading-relaxed">
         Buy shares of players when they sit down. Trade their swings in real
-        time. Cash out when they do. The first market built for the poker
-        stream era.
+        time. Settle when they do. The first market built for live poker.
       </p>
       <div id="waitlist" className="pt-2">
         <WaitlistForm />
@@ -276,10 +275,9 @@ function ProductDeepDive() {
             Watch the spread move with every all-in.
           </h3>
           <p className="mt-5 text-lg text-white/75 leading-relaxed">
-            Bids and asks update in real time as the table plays. No bonding
-            curves, no AMMs. Peer-to-peer trading, the way real markets work.
-            Watch the depth, post your limit, take the market when the stream
-            tells you to move.
+            Bids and asks update in real time as the table plays. Peer-to-peer
+            trading, the way real markets work. Watch the depth, post your
+            limit, take the market when the stream tells you to move.
           </p>
         </div>
         <div className="rounded-3xl border border-white/10 bg-[var(--surface)]/80 p-2 backdrop-blur-sm shadow-2xl">
@@ -296,10 +294,9 @@ function ProductDeepDive() {
             When they rack up, you get paid.
           </h3>
           <p className="mt-5 text-lg text-white/75 leading-relaxed">
-            No abstract settlement line. No oracle disputes. When the player
-            cashes out, the pool pays every shareholder proportionally based
-            on the final stack. The market closes the way it opened. At the
-            table.
+            When the player cashes out, the pool pays every shareholder
+            proportional to the final stack. No delays. No disputes. The
+            market closes the way it opened. At the table.
           </p>
         </div>
         <div className="md:order-1">
@@ -314,15 +311,15 @@ function WhyNow() {
   const points = [
     {
       title: "Watching isn't enough anymore.",
-      body: "Millions of fans watch high-stakes poker for hours every night. They're deeply invested in the action, yet stuck behind the glass. We build the bridge.",
+      body: "Fans watch high-stakes poker for hours every night. They're locked in, but locked out, stuck behind the glass. We open the door.",
     },
     {
       title: "Chip stacks are live assets.",
-      body: "In poker, value changes with every card dealt. Sweats turns that volatility into a liquid market. Fans trade players' stacks in real time as the stream unfolds.",
+      body: "In poker, value moves with every card. Sweats turns that volatility into a market. Fans trade players' stacks in real time as the stream unfolds.",
     },
     {
       title: "Streams need a second layer.",
-      body: "Passive viewing has reached its ceiling. Turning spectators into active traders transforms a one-way broadcast into a high-velocity ecosystem where every hand matters.",
+      body: "Watching used to be the whole product. Now it's the setup. When viewers become traders, every hand has a market behind it.",
     },
   ];
   return (
