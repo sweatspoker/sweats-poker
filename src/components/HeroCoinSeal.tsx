@@ -7,7 +7,7 @@ import { BADGE_BY_ID, coinAsset, type BadgeId } from "@/lib/badges";
 type Props = {
   /** Which tier-colored coin to use. */
   tier: BadgeId;
-  /** Sprite size in px. Defaults to 140. */
+  /** Sprite size in px. Defaults to 200. */
   size?: number;
   /** Called when the seal animation ends so the parent can unmount. */
   onDone?: () => void;
@@ -23,7 +23,7 @@ type Props = {
  * coin sprite to document.body with position: fixed at the measured
  * viewport coords.
  */
-export function HeroCoinSeal({ tier, size = 140, onDone }: Props) {
+export function HeroCoinSeal({ tier, size = 200, onDone }: Props) {
   const anchorRef = useRef<HTMLSpanElement | null>(null);
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
 
@@ -35,7 +35,7 @@ export function HeroCoinSeal({ tier, size = 140, onDone }: Props) {
 
   useEffect(() => {
     if (!onDone) return;
-    const t = setTimeout(onDone, 950);
+    const t = setTimeout(onDone, 1350);
     return () => clearTimeout(t);
   }, [onDone]);
 

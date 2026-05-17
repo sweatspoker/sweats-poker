@@ -7,8 +7,9 @@ import type { BadgeId } from "@/lib/badges";
 type Props = {
   /** Tier-colored coin sprite. */
   tier: BadgeId;
-  /** How many accent coins. Default 3 (council guidance — coins are accents,
-   * not the hero; cluster reads as "satisfying pop," not "explosion"). */
+  /** How many accent coins. Default 6 — they read as one molten splash
+   * under the SVG goo filter, so a higher count looks abundant rather
+   * than chaotic. */
   count?: number;
   /** Callback when the longest particle clears. */
   onDone?: () => void;
@@ -37,7 +38,7 @@ type Particle = {
  * Meant to play SECONDARY to <HeroCoinSeal> — the big coin slamming in
  * is the hero; these are the satisfying pop around it.
  */
-export function CoinSplash({ tier, count = 3, onDone }: Props) {
+export function CoinSplash({ tier, count = 6, onDone }: Props) {
   const anchorRef = useRef<HTMLSpanElement | null>(null);
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
 
@@ -50,13 +51,14 @@ export function CoinSplash({ tier, count = 3, onDone }: Props) {
   const particles = useMemo<Particle[]>(() => {
     const out: Particle[] = [];
     for (let i = 0; i < count; i++) {
-      // Tight 60° cone, upward only. Spread evenly across [-30°, +30°]
-      // off vertical for visual balance even at low counts.
+      // 100° upward cone — wider than the council-suggested 60° so a
+      // 6-coin cluster reads as abundant rather than bunched. Goo
+      // filter still binds them visually at the source.
       const slot = count === 1 ? 0 : i / (count - 1); // 0..1
-      const baseAngle = -90 + (slot - 0.5) * 60; // -120° to -60°
-      const jitter = (Math.random() - 0.5) * 10;
+      const baseAngle = -90 + (slot - 0.5) * 100; // -140° to -40°
+      const jitter = (Math.random() - 0.5) * 14;
       const angle = (baseAngle + jitter) * (Math.PI / 180);
-      const distance = 180 + Math.random() * 80; // 180-260px
+      const distance = 200 + Math.random() * 120; // 200-320px
       out.push({
         id: i,
         dx: Math.cos(angle) * distance,
