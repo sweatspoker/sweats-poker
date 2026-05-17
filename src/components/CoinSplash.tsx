@@ -63,7 +63,7 @@ export function CoinSplash({ tier, count = 6, onDone }: Props) {
         dx: Math.cos(angle) * distance,
         dy: Math.sin(angle) * distance, // negative (upward)
         rot: (Math.random() - 0.5) * 1080,
-        size: 56 + Math.random() * 24, // 56-80px
+        size: 112 + Math.random() * 48, // 112-160px
         delay: Math.random() * 90,
       });
     }
