@@ -23,10 +23,7 @@ export default async function Home() {
       <Hero />
       <HowItWorks />
       <ProductDeepDive />
-      <WhyNow />
-      <Partner />
       <FAQ />
-      <PoweredByValuebet />
       <FooterCTA />
       <Footer />
     </main>
@@ -351,73 +348,6 @@ function ProductDeepDive() {
   );
 }
 
-function WhyNow() {
-  const points = [
-    {
-      title: "Watching isn't enough anymore.",
-      body: "Fans watch high-stakes poker for hours every night. They're locked in, but locked out, stuck behind the glass. We open the door.",
-    },
-    {
-      title: "Chip stacks are live assets.",
-      body: "In poker, value moves with every card. Sweats turns that volatility into a market. Fans trade players' stacks in real time as the stream unfolds.",
-    },
-    {
-      title: "Streams need a second layer.",
-      body: "Watching used to be the whole product. Now it's the setup. When viewers become traders, every hand has a market behind it.",
-    },
-  ];
-  return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28">
-      <SectionHeading kicker="Why now" title="The audience showed up. Nobody built the floor." />
-      <div className="grid md:grid-cols-3 gap-6 mt-14">
-        {points.map((p) => (
-          <div
-            key={p.title}
-            className="rounded-2xl border border-white/8 bg-gradient-to-b from-[var(--surface)]/80 to-[var(--surface-2)]/40 p-8"
-          >
-            <div className="font-semibold text-xl leading-tight min-h-[2lh]">
-              {p.title}
-            </div>
-            <div className="mt-4 text-base text-white/65 leading-relaxed">
-              {p.body}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Partner() {
-  return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-16 md:py-20">
-      <div className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 px-8 py-10 md:px-12 md:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div>
-          <div className="text-sm uppercase tracking-[0.18em] text-white/55 font-semibold">
-            Partner rooms
-          </div>
-          <div className="mt-3 text-3xl md:text-4xl font-black tracking-tight">
-            Powered by{" "}
-            <span className="text-[var(--brand-red)]">your room</span>.
-          </div>
-          <p className="mt-4 text-white/70 max-w-xl text-base leading-relaxed">
-            Sweats partners with one poker room per market. You bring the
-            stream and the players. We bring the audience and the trading
-            layer. A new revenue line on every session, and a reason for
-            your viewers to never leave the broadcast.
-          </p>
-        </div>
-        <a
-          href="mailto:support@sweats.poker"
-          className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 px-6 py-3.5 text-base font-semibold whitespace-nowrap transition-colors"
-        >
-          Talk to us →
-        </a>
-      </div>
-    </section>
-  );
-}
-
 function FooterCTA() {
   return (
     <section className="w-full max-w-6xl mx-auto px-6 py-24 md:py-32">
@@ -442,48 +372,6 @@ function FooterCTA() {
           >
             How it works
           </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PoweredByValuebet() {
-  return (
-    <section className="w-full max-w-5xl mx-auto px-6 py-16 md:py-24">
-      <div className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 px-8 py-10 md:px-14 md:py-14 flex flex-col md:flex-row items-center gap-8 md:gap-12">
-        <a
-          href="https://www.valuebet.app"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="ValueBet"
-          className="shrink-0 rounded-2xl bg-white p-4 md:p-6 hover:opacity-90 transition-opacity"
-        >
-          <Image
-            src="/partners/valuebet.png"
-            alt="ValueBet"
-            width={1200}
-            height={300}
-            className="h-10 md:h-14 w-auto"
-          />
-        </a>
-        <div className="flex flex-col gap-3 text-center md:text-left">
-          <div className="text-xs uppercase tracking-[0.18em] text-white/45 font-bold">
-            Powered by ValueBet
-          </div>
-          <p className="text-base md:text-lg text-white/75 leading-relaxed">
-            Host your own sports betting contests - Survivor, Pick&apos;em, and
-            Bankroll Leaderboards - at{" "}
-            <a
-              href="https://www.valuebet.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white font-semibold underline decoration-[var(--brand-red)] decoration-2 underline-offset-4 hover:text-[var(--brand-red)] transition-colors"
-            >
-              valuebet.app
-            </a>
-            .
-          </p>
         </div>
       </div>
     </section>
