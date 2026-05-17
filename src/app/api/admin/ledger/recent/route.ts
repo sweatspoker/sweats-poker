@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
   }
 
   const txIds = (txs ?? []).map((t) => t.transaction_id);
-  let entriesByTx = new Map<string, number>();
+  const entriesByTx = new Map<string, number>();
   if (txIds.length > 0) {
     const { data: entries, error: eErr } = await admin
       .schema("ledger")
@@ -62,10 +62,51 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const enriched = (txs ?? []).map((t) => ({
-    ...t,
-    total_minor: entriesByTx.get(t.transaction_id) ?? 0,
-  }));
+  // Resolve initiator UUIDs → display_name (+ email fallback) so the admin
+  // ledger doesn't show a column of cryptic UUID prefixes.
+  const initiatorIds = Array.from(
+    new Set((txs ?? []).map((t) => t.initiated_by).filter((v): v is string => !!v)),
+  );
+  const initiatorById = new Map<string, { display_name: string | null; email: string | null }>();
+  if (initiatorIds.length > 0) {
+    const [{ data: profiles }, { data: users }] = await Promise.all([
+      admin
+        .from("profiles")
+        .select("user_id, display_name")
+        .in("user_id", initiatorIds),
+      admin.auth.admin.listUsers({ perPage: 200 }),
+    ]);
+    const emailById = new Map<string, string>();
+    for (const u of users?.users ?? []) {
+      if (u.id && u.email) emailById.set(u.id, u.email);
+    }
+    for (const p of profiles ?? []) {
+      initiatorById.set(p.user_id, {
+        display_name: p.display_name,
+        email: emailById.get(p.user_id) ?? null,
+      });
+    }
+    // Any initiator with no profile row still gets the email if we have it
+    // (e.g. signup_bonus fires before profile.display_name lands).
+    for (const id of initiatorIds) {
+      if (!initiatorById.has(id)) {
+        initiatorById.set(id, {
+          display_name: null,
+          email: emailById.get(id) ?? null,
+        });
+      }
+    }
+  }
+
+  const enriched = (txs ?? []).map((t) => {
+    const ini = t.initiated_by ? initiatorById.get(t.initiated_by) : null;
+    return {
+      ...t,
+      total_minor: entriesByTx.get(t.transaction_id) ?? 0,
+      initiator_display_name: ini?.display_name ?? null,
+      initiator_email: ini?.email ?? null,
+    };
+  });
 
   return NextResponse.json({ ok: true, transactions: enriched });
 }
