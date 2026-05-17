@@ -312,9 +312,6 @@ export default async function WalletPage({
         </section>
         )}
 
-        <footer className="text-base uppercase tracking-[0.2em] text-white/25 text-center">
-          Append-only ledger · Drift-checked · SECURITY DEFINER writes only
-        </footer>
       </div>
     </main>
   );
