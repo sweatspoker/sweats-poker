@@ -90,15 +90,15 @@ body {
 }
 
 /* Coin rain on settlement WIN: particles fall from above the viewport
-   straight down past the bottom edge, spinning. The animation drives
-   100vh of vertical travel — each particle starts at y=-20vh, falls to
-   y=+120vh, rotates --rot degrees end to end. */
+   straight down past the bottom edge, spinning. They start fully
+   opaque but well off-screen (y=-40vh) so they enter the visible
+   viewport naturally rather than fading in at the top edge. Slight
+   ease-in mimics gravity. Fade out only happens as they exit below. */
 @keyframes coin-rain {
   0% {
-    transform: translateY(-20vh) rotate(0deg);
-    opacity: 0;
+    transform: translateY(-40vh) rotate(0deg);
+    opacity: 1;
   }
-  10% { opacity: 1; }
   85% { opacity: 1; }
   100% {
     transform: translateY(120vh) rotate(var(--rot));
@@ -106,7 +106,7 @@ body {
   }
 }
 .coin-raindrop {
-  animation: coin-rain 2200ms cubic-bezier(0.4, 0, 0.7, 1) forwards;
+  animation: coin-rain 2600ms cubic-bezier(0.32, 0, 0.62, 1) forwards;
   will-change: transform, opacity;
 }
 

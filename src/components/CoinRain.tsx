@@ -51,7 +51,7 @@ export function CoinRain({ tier, count = 14, onDone }: Props) {
     return out;
   }, [count]);
 
-  const totalDuration = 2200 + 1400;
+  const totalDuration = 2600 + 1400;
   useEffect(() => {
     if (!onDone) return;
     const t = setTimeout(onDone, totalDuration);
