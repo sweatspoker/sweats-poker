@@ -5,7 +5,7 @@ import {
   SettlementReceiptCard,
   type Receipt,
 } from "@/components/SettlementReceiptCard";
-import { CoinSplash } from "@/components/CoinSplash";
+import { CoinRain } from "@/components/CoinRain";
 import type { BadgeId } from "@/lib/badges";
 
 /**
@@ -15,9 +15,9 @@ import type { BadgeId } from "@/lib/badges";
  * Storybook-style harness.
  *
  * Behavior:
- *   - Backdrop fades in, modal scales up from 0.92 → 1 over ~350ms
- *   - On WIN: a coin burst (tier-colored) fires from the modal center
- *     ~120ms after open
+ *   - Backdrop fades in, modal scales up from 0.92 → 1 over ~420ms
+ *   - On WIN: tier-colored coin rain cascades down across the screen
+ *     starting ~120ms after the modal lands
  *   - LOSS + BREAKEVEN: modal-only entrance, no coins
  */
 export function SettlementCelebrationView({
@@ -34,13 +34,13 @@ export function SettlementCelebrationView({
   const win = receipt.pnl_minor > 0;
   const loss = receipt.pnl_minor < 0;
 
-  // Delay the coin burst slightly so the modal lands first, then the
-  // celebration arrives — feels more like "you did it" than "everything
-  // at once."
-  const [burstReady, setBurstReady] = useState(false);
+  // Delay the rain slightly so the modal lands first, then the
+  // celebration arrives — feels more like "you did it" than
+  // "everything at once."
+  const [rainReady, setRainReady] = useState(false);
   useEffect(() => {
     if (!win) return;
-    const t = setTimeout(() => setBurstReady(true), 120);
+    const t = setTimeout(() => setRainReady(true), 120);
     return () => clearTimeout(t);
   }, [win]);
 
@@ -70,10 +70,10 @@ export function SettlementCelebrationView({
       role="dialog"
       aria-modal="true"
     >
+      {win && rainReady && (
+        <CoinRain tier={tier} count={14} onDone={() => setRainReady(false)} />
+      )}
       <div className="celebration-modal relative w-full max-w-md flex flex-col gap-4 max-h-full overflow-y-auto">
-        {win && burstReady && (
-          <CoinSplash tier={tier} count={8} onDone={() => setBurstReady(false)} />
-        )}
         <div className="text-center">
           <div
             className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.16em] font-bold ${headlinePill.tone}`}
