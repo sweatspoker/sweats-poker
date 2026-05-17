@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CoinSplash } from "@/components/CoinSplash";
-import type { BadgeId } from "@/lib/badges";
+import { HeroCoinSeal } from "@/components/HeroCoinSeal";
+import { BADGE_BY_ID, type BadgeId } from "@/lib/badges";
 
 type Props = {
   playerId: string;
@@ -295,11 +296,22 @@ export function OrderForm({
 
       <div className="relative">
       {splash > 0 && (
-        <CoinSplash
-          key={splash}
-          tier={tierBadge}
-          onDone={() => setSplash(0)}
-        />
+        <>
+          <HeroCoinSeal key={`hero-${splash}`} tier={tierBadge} />
+          <CoinSplash
+            key={`splash-${splash}`}
+            tier={tierBadge}
+            onDone={() => setSplash(0)}
+          />
+          <span
+            key={`halo-${splash}`}
+            aria-hidden
+            className="button-halo"
+            style={{
+              ["--halo-color" as string]: `${BADGE_BY_ID[tierBadge].color}66`,
+            }}
+          />
+        </>
       )}
       <button
         type="button"
@@ -310,6 +322,7 @@ export function OrderForm({
         onContextMenu={(e) => e.preventDefault()}
         disabled={!formValid}
         aria-label={`Tap and hold to place ${side} order`}
+        data-celebrating={splash > 0 ? "1" : "0"}
         className={`relative overflow-hidden w-full rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all px-4 py-4 text-base font-bold uppercase tracking-[0.12em] select-none ${
           isHolding ? "bg-white" : ""
         } ${holdProgress >= 1 ? "scale-[1.02]" : "scale-100"}`}

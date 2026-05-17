@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { CoinSplash } from "@/components/CoinSplash";
+import { HeroCoinSeal } from "@/components/HeroCoinSeal";
 import { SettlementCelebrationView } from "@/components/SettlementCelebrationView";
-import { BADGES, badgeAsset, type BadgeId } from "@/lib/badges";
+import { BADGES, BADGE_BY_ID, badgeAsset, type BadgeId } from "@/lib/badges";
 import type { Receipt } from "@/components/SettlementReceiptCard";
 
 type Variant = "win" | "loss" | "breakeven";
@@ -88,43 +89,60 @@ export function CelebrationsHarness() {
           <div className="text-xs uppercase tracking-[0.15em] text-white/40 font-bold">
             Coin splash
           </div>
-          <h2 className="text-xl font-bold mt-1">By tier</h2>
+          <h2 className="text-xl font-bold mt-1">Order confirm — &quot;Press, Punch, Pulse&quot;</h2>
           <p className="text-sm text-white/45 mt-1">
-            Fires from the center of its button. Mirrors what users see after
-            tap-and-hold on an order or IPO bid confirm.
+            What users see after tap-and-hold on an order or IPO bid confirm.
+            Tap a tier tile to fire its full ritual: button press + tier-tinted
+            halo + hero coin slam &amp; flip + 3-coin accent burst (goo-filtered
+            cluster).
           </p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {BADGES.map((b) => (
-            <div key={b.id} className="relative">
-              {splashTier === b.id && splashKey > 0 && (
-                <CoinSplash
-                  key={splashKey}
-                  tier={b.id}
-                  onDone={() => setSplashTier(null)}
-                />
-              )}
-              <button
-                type="button"
-                onClick={() => fireSplash(b.id)}
-                className="w-full aspect-square rounded-2xl border-2 hover:scale-[1.02] transition-transform overflow-hidden grid place-items-center"
-                style={{ borderColor: b.color, backgroundColor: `${b.color}10` }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={badgeAsset(b.id)}
-                  alt={b.label}
-                  className="h-3/5 w-3/5 object-contain"
-                />
-              </button>
-              <div
-                className="mt-2 text-center text-xs uppercase tracking-[0.12em] font-bold"
-                style={{ color: b.color }}
-              >
-                {b.label}
+          {BADGES.map((b) => {
+            const active = splashTier === b.id && splashKey > 0;
+            return (
+              <div key={b.id} className="relative">
+                {active && (
+                  <>
+                    <HeroCoinSeal key={`hero-${splashKey}`} tier={b.id} size={120} />
+                    <CoinSplash
+                      key={`splash-${splashKey}`}
+                      tier={b.id}
+                      onDone={() => setSplashTier(null)}
+                    />
+                    <span
+                      key={`halo-${splashKey}`}
+                      aria-hidden
+                      className="button-halo"
+                      style={{
+                        ["--halo-color" as string]: `${BADGE_BY_ID[b.id].color}66`,
+                      }}
+                    />
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={() => fireSplash(b.id)}
+                  data-celebrating={active ? "1" : "0"}
+                  className="relative w-full aspect-square rounded-2xl border-2 hover:scale-[1.02] transition-transform overflow-hidden grid place-items-center"
+                  style={{ borderColor: b.color, backgroundColor: `${b.color}10` }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={badgeAsset(b.id)}
+                    alt={b.label}
+                    className="h-3/5 w-3/5 object-contain"
+                  />
+                </button>
+                <div
+                  className="mt-2 text-center text-xs uppercase tracking-[0.12em] font-bold"
+                  style={{ color: b.color }}
+                >
+                  {b.label}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -138,7 +156,9 @@ export function CelebrationsHarness() {
           <p className="text-sm text-white/45 mt-1">
             Full-screen takeover when an offering you hold settles. Mock
             350-share position in Tommy Ho on a 4-hour session at $5/$10.
-            WIN gets a tier-colored coin burst from the modal center.
+            WIN fires a tier-colored radial pulse + contained coin burst
+            that settles around the receipt. LOSS drops one tier coin with
+            a modal shake; BREAKEVEN spins one coin behind the headline.
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">

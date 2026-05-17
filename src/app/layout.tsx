@@ -57,6 +57,28 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* SVG goo filter — mounted once at the root so coin clusters can
+            reference it via `filter: url(#sweats-goo)` and read as a single
+            molten splash that separates into discrete coins as they spread.
+            Cheap 10× upgrade per council. */}
+        <svg
+          aria-hidden
+          width="0"
+          height="0"
+          style={{ position: "absolute", pointerEvents: "none" }}
+        >
+          <defs>
+            <filter id="sweats-goo">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+              <feColorMatrix
+                in="blur"
+                values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
+                result="goo"
+              />
+              <feBlend in="SourceGraphic" in2="goo" />
+            </filter>
+          </defs>
+        </svg>
         {children}
         <BottomNav signedIn={!!user} />
         <SettlementCelebration signedIn={!!user} tier={tier} />

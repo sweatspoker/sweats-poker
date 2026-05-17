@@ -5,8 +5,8 @@ import {
   SettlementReceiptCard,
   type Receipt,
 } from "@/components/SettlementReceiptCard";
-import { CoinRain } from "@/components/CoinRain";
-import type { BadgeId } from "@/lib/badges";
+import { CoinBurst } from "@/components/CoinBurst";
+import { BADGE_BY_ID, badgeAsset, type BadgeId } from "@/lib/badges";
 
 /**
  * Pure presentational layer for the settlement celebration: takes a
@@ -14,11 +14,15 @@ import type { BadgeId } from "@/lib/badges";
  * No data fetching, no auth — safe to mount from a preview page or
  * Storybook-style harness.
  *
- * Behavior:
- *   - Backdrop fades in, modal scales up from 0.92 → 1 over ~420ms
- *   - On WIN: tier-colored coin rain cascades down across the screen
- *     starting ~120ms after the modal lands
- *   - LOSS + BREAKEVEN: modal-only entrance, no coins
+ * Behavior (council-converged, 2026-05-17):
+ *   - Backdrop fades in, modal scales 0.88 → 1.02 → 1 with overshoot
+ *   - WIN: tier-colored radial pulse from behind headline +
+ *          CoinBurst (8 coins) erupting from the receipt and settling
+ *          around its edges. Receipt is the hero, coins orbit it.
+ *   - LOSS: single tier coin (loss-side badge) drops from headline,
+ *           modal gets a brief ±4px y-shake. No glow, no burst.
+ *   - BREAKEVEN: single coin spins in place behind the headline. No
+ *                burst. "Push" energy.
  */
 export function SettlementCelebrationView({
   receipt,
@@ -34,15 +38,15 @@ export function SettlementCelebrationView({
   const win = receipt.pnl_minor > 0;
   const loss = receipt.pnl_minor < 0;
 
-  // Delay the rain slightly so the modal lands first, then the
-  // celebration arrives — feels more like "you did it" than
-  // "everything at once."
-  const [rainReady, setRainReady] = useState(false);
+  // Slight delay so the modal lands first, then the celebration arrives.
+  const [burstReady, setBurstReady] = useState(false);
   useEffect(() => {
     if (!win) return;
-    const t = setTimeout(() => setRainReady(true), 120);
+    const t = setTimeout(() => setBurstReady(true), 140);
     return () => clearTimeout(t);
   }, [win]);
+
+  const tierColor = BADGE_BY_ID[tier].color;
 
   const headlinePill = win
     ? {
@@ -70,23 +74,86 @@ export function SettlementCelebrationView({
       role="dialog"
       aria-modal="true"
     >
-      {win && rainReady && (
-        <CoinRain tier={tier} count={14} onDone={() => setRainReady(false)} />
-      )}
-      <div className="celebration-modal relative w-full max-w-md flex flex-col gap-4 max-h-full overflow-y-auto">
-        <div className="text-center">
-          <div
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.16em] font-bold ${headlinePill.tone}`}
+      <div
+        className={`celebration-modal relative w-full max-w-md flex flex-col gap-4 max-h-full overflow-y-auto ${loss ? "loss-shake" : ""}`}
+        style={{ ["--tier-color"]: tierColor } as React.CSSProperties}
+      >
+        {/* WIN: radial tier-tinted pulse from behind the headline pill.
+            Mounted absolutely so it doesn't push layout. */}
+        {win && burstReady && (
+          <span
+            aria-hidden
+            className="win-radial-pulse"
+            style={{
+              width: "260px",
+              height: "260px",
+              marginLeft: "-130px",
+              marginTop: "-130px",
+              top: "40px",
+            }}
+          />
+        )}
+
+        {/* LOSS: single tier coin (loss-side badge color) drops from above
+            the headline, scales down, fades. */}
+        {loss && (
+          <span
+            aria-hidden
+            className="absolute left-1/2 -translate-x-1/2 z-30"
+            style={{ top: "12px" }}
           >
-            <span className={`size-2 rounded-full live-dot ${headlinePill.dot}`} />
-            {headlinePill.label}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={badgeAsset(tier)}
+              alt=""
+              className="loss-coin-drop block"
+              style={{ width: "96px", height: "96px" }}
+            />
+          </span>
+        )}
+
+        {/* BREAKEVEN: single coin spins in place behind the headline. */}
+        {!win && !loss && (
+          <span
+            aria-hidden
+            className="absolute z-0"
+            style={{ left: "50%", top: "40px" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={badgeAsset(tier)}
+              alt=""
+              className="breakeven-coin-spin block"
+              style={{ width: "120px", height: "120px" }}
+            />
+          </span>
+        )}
+
+        {/* WIN: contained coin burst that erupts from the receipt center
+            and settles around its edges (council: receipt is the hero,
+            coins orbit it). The CoinBurst anchor is inside the receipt
+            wrapper so getBoundingClientRect measures its bounds. */}
+        <div className="relative">
+          {win && burstReady && (
+            <CoinBurst tier={tier} count={8} onDone={() => setBurstReady(false)} />
+          )}
+          <div className="flex flex-col gap-4">
+            <div className="text-center relative z-10">
+              <div
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.16em] font-bold ${headlinePill.tone}`}
+              >
+                <span className={`size-2 rounded-full live-dot ${headlinePill.dot}`} />
+                {headlinePill.label}
+              </div>
+            </div>
+            <SettlementReceiptCard r={receipt} />
           </div>
         </div>
-        <SettlementReceiptCard r={receipt} />
+
         <button
           type="button"
           onClick={onDismiss}
-          className="w-full rounded-full bg-white text-black px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] hover:bg-white/90 transition-colors"
+          className="w-full rounded-full bg-white text-black px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] hover:bg-white/90 transition-colors relative z-10"
         >
           {dismissLabel}
         </button>

@@ -61,53 +61,222 @@ body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
-/* Jackpot-style coin burst on order / bid confirmation. Single
-   uninterrupted launch from origin to (--dx, --dy) with continuous
-   rotation (--rot) and scale growing through the flight — only two
-   transform keyframes so the easing curve runs end-to-end (no
-   per-segment re-easing that causes a perceptible pause mid-flight).
-   Opacity gets its own intermediate stops to fade in fast and fade
-   out as the coin exits, without disturbing the motion. */
-@keyframes coin-particle {
-  0% {
-    transform: translate(0, 0) rotate(0deg) scale(0.35);
-    opacity: 0;
-  }
-  8%   { opacity: 1; }
-  78%  { opacity: 1; }
-  100% {
-    transform:
-      translate(var(--dx), var(--dy))
-      rotate(var(--rot)) scale(1);
-    opacity: 0;
-  }
+/* ============================================================================
+   Celebration motion system (council-converged 2026-05-17)
+   ----------------------------------------------------------------------------
+   Principle: receipt/button is the hero, particles are accents. Every
+   celebration has anticipation (wind-up) → impact (hit) → settle. Single
+   keyframe pairs are banned — they skip both anticipation and overshoot.
+   Coin clusters use SVG filter url(#sweats-goo) so multiple sprites read
+   as one molten splash that separates as it spreads.
+============================================================================ */
+
+/* Button celebrate — press, punch, pulse. Drives off [data-celebrating="1"]
+   so the button reacts to its own action without touching React state.
+   Phase 1 (0-80ms): scale 1 → 0.94 dip (the anticipation = press).
+   Phase 2 (80-230ms): springs back to 1.06 with overshoot.
+   Phase 3 (230-450ms): settles to 1. */
+@keyframes button-confirm-pop {
+  0%   { transform: scale(1); }
+  18%  { transform: scale(0.94); }
+  52%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
-.coin-particle {
-  /* ease-out: launches fast, decelerates as it leaves the screen.
-     Matches the natural feel of an object thrown upward with air drag. */
-  animation: coin-particle 1700ms cubic-bezier(0.16, 0.68, 0.32, 1) forwards;
+[data-celebrating="1"] {
+  animation: button-confirm-pop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Radial halo that expands from button center on confirm. Tinted via
+   --halo-color inline. */
+@keyframes button-halo-expand {
+  0%   { transform: scale(0.4); opacity: 0; }
+  18%  { opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.button-halo {
+  position: absolute;
+  inset: -10%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, var(--halo-color, rgba(255,255,255,0.6)) 0%, transparent 65%);
+  pointer-events: none;
+  animation: button-halo-expand 450ms ease-out forwards;
   will-change: transform, opacity;
 }
 
-/* Coin rain on settlement WIN: particles fall from above the viewport
-   straight down past the bottom edge, spinning. They start fully
-   opaque but well off-screen (y=-40vh) so they enter the visible
-   viewport naturally rather than fading in at the top edge. Slight
-   ease-in mimics gravity. Fade out only happens as they exit below. */
-@keyframes coin-rain {
+/* Hero coin seal — the centerpiece of order confirm. Pops in from
+   button center, flips once on rotateY, then collapses to a small check
+   pip. Uses CSS custom property --tier-color for the brand tint glow. */
+@keyframes hero-coin-seal {
   0% {
-    transform: translateY(-40vh) rotate(0deg);
-    opacity: 1;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3) rotateY(0deg);
   }
-  85% { opacity: 1; }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.18) rotateY(90deg);
+  }
+  42% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotateY(180deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotateY(360deg);
+  }
   100% {
-    transform: translateY(120vh) rotate(var(--rot));
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35) rotateY(360deg);
+  }
+}
+.hero-coin-seal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  animation: hero-coin-seal 900ms cubic-bezier(0.22, 0.78, 0.32, 1) forwards;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 4px 16px var(--tier-color, rgba(255, 255, 255, 0.55)));
+}
+
+/* Coin cluster wrapper — applies the goo filter so the small accent
+   coins read as one molten splash that splits apart. */
+.coin-cluster {
+  filter: url(#sweats-goo);
+}
+
+/* Order-confirm micro coin: tight upward cone, single ease-out, single
+   transform keyframe pair (we want this snappy, not over-acted — the
+   hero coin already carries the emotion). */
+@keyframes coin-burst-cone {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+  15% { opacity: 1; }
+  70% { opacity: 1; }
+  100% {
+    transform:
+      translate(var(--dx), var(--dy))
+      rotate(var(--rot)) scale(0.8);
     opacity: 0;
   }
 }
-.coin-raindrop {
-  animation: coin-rain 2600ms cubic-bezier(0.32, 0, 0.62, 1) forwards;
+.coin-burst-cone {
+  animation: coin-burst-cone 700ms cubic-bezier(0.18, 0.74, 0.4, 1) forwards;
   will-change: transform, opacity;
+}
+
+/* Settlement WIN burst — anchored on the receipt center. Each coin arcs
+   up to its apex (--dx, --dy), reaches it at 55% of the timeline, then
+   gently falls and settles below the receipt's bottom edge. Spin
+   continues throughout so the coins keep visual energy. */
+@keyframes win-burst-arc {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.3);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 0.18), calc(var(--dy) * 0.18))
+               rotate(calc(var(--rot) * 0.18)) scale(0.9);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(var(--dx), var(--dy))
+               rotate(calc(var(--rot) * 0.55)) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 1.05), calc(var(--dy-bottom, 240px)))
+               rotate(calc(var(--rot) * 0.85)) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx) * 1.05), calc(var(--dy-bottom, 240px) + 30px))
+               rotate(var(--rot)) scale(0.85);
+  }
+}
+.win-burst-coin {
+  animation: win-burst-arc 1400ms cubic-bezier(0.22, 0.72, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Receipt headline radial glow pulse — tier-tinted gradient that flashes
+   from behind the headline pill on WIN. */
+@keyframes win-radial-pulse {
+  0% { opacity: 0; transform: scale(0.5); }
+  18% { opacity: 0.55; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+.win-radial-pulse {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+  background: radial-gradient(circle, var(--tier-color, var(--brand-green)) 0%, transparent 65%);
+  pointer-events: none;
+  animation: win-radial-pulse 900ms ease-out forwards;
+  will-change: transform, opacity;
+}
+
+/* LOSS — a single tier-colored coin drops from the headline, scales
+   down, lands. The modal also gets a subtle ±4px vertical shake. */
+@keyframes loss-coin-drop {
+  0%  { opacity: 0; transform: translateY(-80px) scale(1); }
+  25% { opacity: 1; transform: translateY(-20px) scale(0.95); }
+  55% { opacity: 1; transform: translateY(0) scale(0.8); }
+  75% { opacity: 0.8; transform: translateY(8px) scale(0.75); }
+  100% { opacity: 0; transform: translateY(8px) scale(0.7); }
+}
+.loss-coin-drop {
+  animation: loss-coin-drop 1100ms cubic-bezier(0.45, 0, 0.7, 1) forwards;
+  will-change: transform, opacity;
+}
+@keyframes loss-shake {
+  0%, 100% { transform: translateY(0); }
+  20% { transform: translateY(-4px); }
+  40% { transform: translateY(4px); }
+  60% { transform: translateY(-2px); }
+  80% { transform: translateY(2px); }
+}
+.loss-shake {
+  animation: loss-shake 220ms ease-in-out forwards;
+}
+
+/* BREAKEVEN — single coin spins in place behind the headline. No burst. */
+@keyframes breakeven-coin-spin {
+  0%   { opacity: 0; transform: translate(-50%, -50%) rotateY(0deg) scale(0.7); }
+  20%  { opacity: 0.7; transform: translate(-50%, -50%) rotateY(120deg) scale(1); }
+  60%  { opacity: 0.7; transform: translate(-50%, -50%) rotateY(280deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotateY(380deg) scale(0.75); }
+}
+.breakeven-coin-spin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  animation: breakeven-coin-spin 900ms cubic-bezier(0.34, 0.84, 0.36, 1) forwards;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.25));
+}
+
+/* Accessibility — users who prefer reduced motion skip particles
+   entirely; keep only the structural cues (button flash, receipt scale,
+   backdrop tint). Information preserved, motion gone. */
+@media (prefers-reduced-motion: reduce) {
+  .coin-burst-cone,
+  .win-burst-coin,
+  .loss-coin-drop,
+  .breakeven-coin-spin,
+  .hero-coin-seal {
+    animation: none !important;
+    display: none !important;
+  }
+  [data-celebrating="1"] {
+    animation: none !important;
+  }
+  .button-halo,
+  .win-radial-pulse {
+    animation-duration: 250ms !important;
+  }
 }
 
 /* Settlement celebration entrance: backdrop fades, modal scales in. */

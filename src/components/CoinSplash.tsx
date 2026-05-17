@@ -5,42 +5,39 @@ import { createPortal } from "react-dom";
 import type { BadgeId } from "@/lib/badges";
 
 type Props = {
-  /** Which coin recolor to use. Falls back to "nit" (white). */
+  /** Tier-colored coin sprite. */
   tier: BadgeId;
-  /** How many coins to burst. Default 6. */
+  /** How many accent coins. Default 3 (council guidance — coins are accents,
+   * not the hero; cluster reads as "satisfying pop," not "explosion"). */
   count?: number;
-  /** Callback when the animation ends + the component should unmount. */
+  /** Callback when the longest particle clears. */
   onDone?: () => void;
 };
 
 type Particle = {
   id: number;
-  /** Horizontal exit offset in px (signed). */
+  /** Horizontal exit offset in px (signed, tight cone). */
   dx: number;
-  /** Upward exit distance in px (negative — off-screen). */
+  /** Upward exit distance in px (negative). */
   dy: number;
-  /** Final rotation in degrees. */
+  /** Final rotation in degrees (gentle — these are accents). */
   rot: number;
   /** Sprite size in px. */
   size: number;
-  /** Animation delay in ms. */
+  /** Delay so the cluster splits visibly under the goo filter. */
   delay: number;
 };
 
 /**
- * Jackpot-style burst of tier-colored coins out of the parent's center —
- * particles pop up and off the screen rather than arcing back down. Use
- * absolutely positioned over the trigger element. Mounts → animates →
- * calls onDone after the longest particle clears so the parent can
- * unmount cleanly.
+ * Order-confirm accent burst — 3 tier-colored coins in a TIGHT upward
+ * 60° cone (per council). Wrapped in .coin-cluster which applies the
+ * SVG goo filter (url(#sweats-goo)) so the coins read as one molten
+ * splash that separates as it spreads, rather than discrete particles.
  *
- *   {showSplash && <CoinSplash tier={tier} onDone={() => setShowSplash(false)} />}
+ * Meant to play SECONDARY to <HeroCoinSeal> — the big coin slamming in
+ * is the hero; these are the satisfying pop around it.
  */
-export function CoinSplash({ tier, count = 6, onDone }: Props) {
-  // Anchor at the trigger's center via a 1×1 marker we drop into the
-  // parent's positioning context. On mount we measure its viewport
-  // position and re-render the actual splash through a body-level
-  // portal so the coins clear any drawer / overflow clipping.
+export function CoinSplash({ tier, count = 3, onDone }: Props) {
   const anchorRef = useRef<HTMLSpanElement | null>(null);
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
 
@@ -53,32 +50,31 @@ export function CoinSplash({ tier, count = 6, onDone }: Props) {
   const particles = useMemo<Particle[]>(() => {
     const out: Particle[] = [];
     for (let i = 0; i < count; i++) {
-      // Upward fan biased between -130° and -50° (mostly straight up,
-      // some sideways spread).
-      const angle = (-130 + Math.random() * 80) * (Math.PI / 180);
-      // Big exit distance — well past viewport so they fly OFF screen.
-      const distance = 700 + Math.random() * 350; // 700-1050px
+      // Tight 60° cone, upward only. Spread evenly across [-30°, +30°]
+      // off vertical for visual balance even at low counts.
+      const slot = count === 1 ? 0 : i / (count - 1); // 0..1
+      const baseAngle = -90 + (slot - 0.5) * 60; // -120° to -60°
+      const jitter = (Math.random() - 0.5) * 10;
+      const angle = (baseAngle + jitter) * (Math.PI / 180);
+      const distance = 180 + Math.random() * 80; // 180-260px
       out.push({
         id: i,
         dx: Math.cos(angle) * distance,
-        dy: Math.sin(angle) * distance, // negative (upward)
-        rot: (Math.random() - 0.5) * 1080,
-        size: 112 + Math.random() * 48, // 112-160px
-        delay: Math.random() * 90,
+        dy: Math.sin(angle) * distance,
+        rot: (Math.random() - 0.5) * 480, // ±240°
+        size: 56 + Math.random() * 16, // 56-72px (small accents)
+        delay: Math.random() * 60,
       });
     }
     return out;
   }, [count]);
 
-  // Unmount after the longest particle clears.
-  const total = 1300 + 90; // animation 1300ms + max delay
   useEffect(() => {
     if (!onDone) return;
-    const t = setTimeout(onDone, total);
+    const t = setTimeout(onDone, 700 + 60);
     return () => clearTimeout(t);
-  }, [onDone, total]);
+  }, [onDone]);
 
-  // Anchor marker drops into the parent so we can compute origin.
   const anchor = (
     <span
       ref={anchorRef}
@@ -87,7 +83,6 @@ export function CoinSplash({ tier, count = 6, onDone }: Props) {
     />
   );
 
-  // Portal the actual particles so they fly over drawers / nav / modals.
   const portal =
     origin && typeof document !== "undefined"
       ? createPortal(
@@ -96,13 +91,13 @@ export function CoinSplash({ tier, count = 6, onDone }: Props) {
             className="pointer-events-none fixed inset-0 z-[100] overflow-visible"
           >
             <div
-              className="absolute"
+              className="absolute coin-cluster"
               style={{ left: `${origin.x}px`, top: `${origin.y}px` }}
             >
               {particles.map((p) => (
                 <span
                   key={p.id}
-                  className="coin-particle absolute block"
+                  className="coin-burst-cone absolute block"
                   style={{
                     width: `${p.size}px`,
                     height: `${p.size}px`,
@@ -118,7 +113,7 @@ export function CoinSplash({ tier, count = 6, onDone }: Props) {
                   <img
                     src={`/coins/${tier}.png`}
                     alt=""
-                    className="block h-full w-full drop-shadow-[0_4px_12px_rgba(0,0,0,0.65)]"
+                    className="block h-full w-full"
                   />
                 </span>
               ))}
