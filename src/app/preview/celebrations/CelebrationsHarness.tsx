@@ -73,6 +73,7 @@ export function CelebrationsHarness() {
   const [splashTier, setSplashTier] = useState<BadgeId | null>(null);
   const [splashKey, setSplashKey] = useState(0);
   const [modalVariant, setModalVariant] = useState<Variant | null>(null);
+  const [modalTier, setModalTier] = useState<BadgeId>("fish");
 
   function fireSplash(tier: BadgeId) {
     setSplashTier(tier);
@@ -137,7 +138,29 @@ export function CelebrationsHarness() {
           <p className="text-sm text-white/45 mt-1">
             Full-screen takeover when an offering you hold settles. Mock
             350-share position in Tommy Ho on a 4-hour session at $5/$10.
+            WIN gets a tier-colored coin burst from the modal center.
           </p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs uppercase tracking-[0.12em] text-white/45 font-bold mr-1">
+            Tier for win burst:
+          </span>
+          {BADGES.map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => setModalTier(b.id)}
+              aria-pressed={modalTier === b.id}
+              className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.1em] border transition-all"
+              style={{
+                borderColor: modalTier === b.id ? b.color : "rgba(255,255,255,0.15)",
+                backgroundColor: modalTier === b.id ? `${b.color}25` : "transparent",
+                color: modalTier === b.id ? b.color : "rgba(255,255,255,0.55)",
+              }}
+            >
+              {b.label}
+            </button>
+          ))}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <VariantButton
@@ -166,6 +189,7 @@ export function CelebrationsHarness() {
           receipt={buildReceipt(modalVariant)}
           onDismiss={() => setModalVariant(null)}
           dismissLabel="Close preview"
+          tier={modalTier}
         />
       )}
     </div>

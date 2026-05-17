@@ -38,6 +38,19 @@ export default async function RootLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  // Resolve the signed-in user's tier so the settlement celebration can
+  // colour its coin burst. Falls back to "nit" (the universal baseline)
+  // when there's no profile row or no badge selected.
+  let tier: "shark" | "crusher" | "grinder" | "nit" | "fish" | "donkey" | "whale" | "maniac" = "nit";
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("selected_badge")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    const b = profile?.selected_badge as typeof tier | null | undefined;
+    if (b) tier = b;
+  }
   return (
     <html
       lang="en"
@@ -46,7 +59,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <BottomNav signedIn={!!user} />
-        <SettlementCelebration signedIn={!!user} />
+        <SettlementCelebration signedIn={!!user} tier={tier} />
       </body>
     </html>
   );
