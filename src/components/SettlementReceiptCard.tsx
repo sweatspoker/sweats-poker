@@ -123,7 +123,7 @@ export function SettlementReceiptCard({ r }: { r: Receipt }) {
       <div className={`rounded-2xl border ${tone} px-5 py-4 flex items-center justify-between gap-3`}>
         <div>
           <div className={`text-[10px] uppercase tracking-wider font-bold ${payoutClass}`}>
-            Your payout
+            Final value
           </div>
           <div className={`text-2xl font-black mt-0.5 tabular-nums ${payoutClass}`}>
             {win || r.pnl_minor === 0 ? "+" : ""}
