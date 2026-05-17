@@ -115,12 +115,6 @@ function HeroCopy() {
       </p>
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <a
-          href="/login"
-          className="inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-7 py-4 text-base font-bold text-black"
-        >
-          Get started - free Sweats Coins
-        </a>
-        <a
           href="#how-it-works"
           className="inline-flex items-center justify-center rounded-full border border-white/15 hover:border-white/30 transition-colors px-7 py-4 text-base font-bold text-white"
         >
