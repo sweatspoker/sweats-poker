@@ -22,8 +22,9 @@ export function SettlementCelebration({ signedIn }: { signedIn: boolean }) {
   useEffect(() => {
     if (!signedIn) return;
     let cancelled = false;
-    (async () => {
-      const supabase = createSupabaseBrowserClient();
+    const supabase = createSupabaseBrowserClient();
+
+    async function check() {
       const { data, error } = await supabase.rpc("get_my_unseen_settlement");
       if (cancelled) return;
       if (error) {
@@ -31,10 +32,37 @@ export function SettlementCelebration({ signedIn }: { signedIn: boolean }) {
         return;
       }
       const rows = (data as Receipt[] | null) ?? [];
-      if (rows.length > 0) setReceipt(rows[0] as Receipt);
-    })();
+      if (rows.length > 0) setReceipt((prev) => prev ?? (rows[0] as Receipt));
+    }
+
+    // First poll on mount catches anything that landed while the user was
+    // on another tab / before the page loaded.
+    check();
+
+    // Realtime: any settle the operator triggers anywhere fires an UPDATE
+    // on ipo.offerings. We don't filter client-side — the RPC already
+    // gates on auth.uid() + portfolio.shares_held > 0, so most channel
+    // pings will be a cheap "no row" return.
+    const channel = supabase
+      .channel("settle-celebration")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "ipo",
+          table: "offerings",
+          filter: "session_state=eq.settled",
+        },
+        () => {
+          // tiny debounce so the RPC sees the final state, not mid-write.
+          setTimeout(check, 400);
+        },
+      )
+      .subscribe();
+
     return () => {
       cancelled = true;
+      supabase.removeChannel(channel);
     };
   }, [signedIn]);
 
