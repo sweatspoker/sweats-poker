@@ -61,26 +61,20 @@ body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
-/* Jackpot-style coin burst on order / bid confirmation. Each particle
-   pops up to scale-1 fast, then accelerates off-screen along
-   (--dx, --dy) with continuous rotation (--rot). No arc-back — they
-   exit the viewport entirely. Sized + delayed per-instance via inline
-   style. */
+/* Jackpot-style coin burst on order / bid confirmation. Single
+   uninterrupted launch from origin to (--dx, --dy) with continuous
+   rotation (--rot) and scale growing through the flight — only two
+   transform keyframes so the easing curve runs end-to-end (no
+   per-segment re-easing that causes a perceptible pause mid-flight).
+   Opacity gets its own intermediate stops to fade in fast and fade
+   out as the coin exits, without disturbing the motion. */
 @keyframes coin-particle {
   0% {
-    transform: translate(0, 0) rotate(0deg) scale(0.25);
+    transform: translate(0, 0) rotate(0deg) scale(0.35);
     opacity: 0;
   }
-  10% {
-    transform: translate(0, 0) rotate(calc(var(--rot) * 0.05)) scale(1);
-    opacity: 1;
-  }
-  80% {
-    transform:
-      translate(calc(var(--dx) * 0.78), calc(var(--dy) * 0.78))
-      rotate(calc(var(--rot) * 0.78)) scale(1);
-    opacity: 1;
-  }
+  8%   { opacity: 1; }
+  78%  { opacity: 1; }
   100% {
     transform:
       translate(var(--dx), var(--dy))
@@ -89,6 +83,8 @@ body {
   }
 }
 .coin-particle {
-  animation: coin-particle 1300ms cubic-bezier(0.18, 0.72, 0.36, 1) forwards;
+  /* ease-out: launches fast, decelerates as it leaves the screen.
+     Matches the natural feel of an object thrown upward with air drag. */
+  animation: coin-particle 1300ms cubic-bezier(0.16, 0.68, 0.32, 1) forwards;
   will-change: transform, opacity;
 }
