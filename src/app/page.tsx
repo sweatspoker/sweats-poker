@@ -197,22 +197,22 @@ function HowItWorks() {
     {
       n: 1,
       title: "Player sits, shares mint",
-      body: "A streamed player buys in for $1,000. We mint exactly 1,000 shares. The pool size mirrors their chip stack.",
+      body: "A streamed player buys in for $1,000. We mint 1,000 shares. The pool tracks their chip stack.",
     },
     {
       n: 2,
       title: "Bid in the IPO",
-      body: "Place auction-style bids as shares hit the market. Final price clears at whatever the room is willing to pay.",
+      body: "Auction-style bidding before the session starts. Highest bids win shares. Clearing price is whatever the market pays.",
     },
     {
       n: 3,
       title: "Trade the swings",
-      body: "Real-time order book. Buy low when they tilt, sell high when they stack chips. No pauses, no circuit breakers.",
+      body: "Order book opens when cards fly. Buy when they tilt, sell when they stack. No pauses. No circuit breakers.",
     },
     {
       n: 4,
-      title: "Cash out when they do",
-      body: "Final share value = final stack ÷ total shares. The platform pays out every shareholder from the pool.",
+      title: "Settle when they do",
+      body: "Final share value = final stack ÷ total shares. The pool pays every shareholder. Game over.",
     },
   ];
   return (
