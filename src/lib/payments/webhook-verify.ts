@@ -172,7 +172,7 @@ export function signSyntheticPayload(rawBody: string): string | null {
  * lands. Setting this env var explicitly bypasses (a) and (b) production
  * gates, but SYNTHETIC_PAYMENTS_ENABLED=1 is still required so the flag is
  * a positive opt-in, never a default. REMOVE THIS FLAG when real Stripe is
- * wired up to prevent free-GC minting.
+ * wired up to prevent free-SC minting.
  */
 export function syntheticPathBlockedReason(): string | null {
   const prodOverride = process.env.SYNTHETIC_PROD_OVERRIDE === "1";

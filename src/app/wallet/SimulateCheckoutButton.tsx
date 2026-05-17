@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 type TierKey = "starter" | "standard" | "founder";
 
 const TIERS: Record<TierKey, { gc: number; usd: number; label: string; note?: string }> = {
-  starter:  { gc: 50,   usd: 5,   label: "50 GC"      },
-  standard: { gc: 200,  usd: 20,  label: "200 GC"     },
-  founder:  { gc: 1000, usd: 100, label: "1,000 GC", note: "Best value" },
+  starter:  { gc: 50,   usd: 5,   label: "50 SC"      },
+  standard: { gc: 200,  usd: 20,  label: "200 SC"     },
+  founder:  { gc: 1000, usd: 100, label: "1,000 SC", note: "Best value" },
 };
 
 export function BuyGoldCoinsPanel() {
@@ -32,7 +32,7 @@ export function BuyGoldCoinsPanel() {
       if (!res.ok) {
         setErr(json.error ?? `HTTP ${res.status}`);
       } else {
-        setMsg(`+${json.gc_credited} GC credited`);
+        setMsg(`+${json.gc_credited} SC credited`);
         // Re-run the server component so balance + activity update without
         // a manual page reload.
         router.refresh();
@@ -47,7 +47,7 @@ export function BuyGoldCoinsPanel() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <div className="text-xl font-semibold text-white/50">Buy Gold Coins</div>
+        <div className="text-xl font-semibold text-white/50">Buy Sweats Coins</div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

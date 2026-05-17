@@ -11,7 +11,7 @@ function constantTimeEqual(a: string, b: string): boolean {
 }
 
 /**
- * Card 2 admin GC grant — operator credits a user's `available` from `platform_treasury`.
+ * Card 2 admin SC grant — operator credits a user's `available` from `platform_treasury`.
  *
  * Auth model (Card 2): shared-secret header `x-ledger-admin-token` matched against
  * env LEDGER_ADMIN_TOKEN. Crude but sufficient for the operator-only Card 2 surface.
@@ -20,7 +20,7 @@ function constantTimeEqual(a: string, b: string): boolean {
  * Body (JSON):
  *   {
  *     "user_id": "<uuid>",
- *     "amount_minor": <bigint, must be > 0; 100 = 1 GC>,
+ *     "amount_minor": <bigint, must be > 0; 100 = 1 SC>,
  *     "idempotency_key": "<text, namespaced e.g. 'admin:<grant_id>'>",
  *     "initiated_by": "<uuid of operator>",
  *     "note": "<optional human-readable string>"
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
   }
   if (typeof amount_minor !== "number" || !Number.isInteger(amount_minor) || amount_minor <= 0) {
     return NextResponse.json(
-      { error: "amount_minor must be positive integer (minor units; 100 = 1 GC)" },
+      { error: "amount_minor must be positive integer (minor units; 100 = 1 SC)" },
       { status: 400 }
     );
   }

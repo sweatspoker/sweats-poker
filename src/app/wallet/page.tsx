@@ -23,7 +23,7 @@ type ActivityRow = {
 
 function fmtGc(minor: number): string {
   // Always show 2 decimals so rounding doesn't make a 10 @ 1.55 bid show
-  // "15" GC out and "16" GC refunded when the actual amount is 15.50.
+  // "15" SC out and "16" SC refunded when the actual amount is 15.50.
   return (minor / 100).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -116,17 +116,17 @@ export default async function WalletPage({
             Your wallet
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
-            {isActivityTab ? "Activities" : "Gold Coins"}
+            {isActivityTab ? "Activities" : "Sweats Coins"}
           </h1>
           {!isActivityTab && (
             <p className="text-white/50 text-base max-w-md">
-              GC is your in-app play currency for trading and redemptions.
+              SC is your in-app play currency for trading and redemptions.
               Redeemable for prizes in the catalog. No cash value.
             </p>
           )}
           <TabBar
             tabs={[
-              { key: "coins", label: "Gold Coins", href: "/wallet" },
+              { key: "coins", label: "Sweats Coins", href: "/wallet" },
               { key: "activity", label: "Activities", href: "/wallet?tab=activity" },
             ]}
             active={tab}
@@ -148,7 +148,7 @@ export default async function WalletPage({
               <div className="text-6xl md:text-7xl font-black tracking-tight tabular-nums">
                 {available ? fmtGc(available.balance_minor) : "0"}
               </div>
-              <div className="text-2xl text-white/40 font-semibold">GC</div>
+              <div className="text-2xl text-white/40 font-semibold">SC</div>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-base">
               <span
@@ -205,10 +205,10 @@ export default async function WalletPage({
                         {p.shares_held.toLocaleString()} shares
                       </div>
                       <div className="text-base text-white/40">
-                        avg {(p.weighted_avg_cost_minor / 100).toFixed(2)} GC
+                        avg {(p.weighted_avg_cost_minor / 100).toFixed(2)} SC
                       </div>
                       <div className="text-base text-white/30">
-                        cost {costGc.toFixed(0)} GC
+                        cost {costGc.toFixed(0)} SC
                       </div>
                     </div>
                   </li>
@@ -281,7 +281,7 @@ export default async function WalletPage({
                               `${(e.price_per_share_minor / 100).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
-                              })} GC`}
+                              })} SC`}
                           </div>
                         )}
                         {!e.shares && !e.price_per_share_minor && e.note && (
@@ -302,7 +302,7 @@ export default async function WalletPage({
                       }`}
                     >
                       {positive ? "+" : ""}
-                      {fmtGc(e.delta_minor)} GC
+                      {fmtGc(e.delta_minor)} SC
                     </div>
                   </li>
                 );

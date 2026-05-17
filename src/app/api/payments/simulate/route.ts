@@ -24,13 +24,13 @@ import { signSyntheticPayload, syntheticPathBlockedReason } from "@/lib/payments
  * path tests a different code path than production will.
  */
 
-// Locked Card 3 rate: $1 = 10 GC = 1000 minor units / dollar.
+// Locked Card 3 rate: $1 = 10 SC = 1000 minor units / dollar.
 const RATE_MINOR_PER_DOLLAR = 1000;
 
 const TIER_AMOUNTS_USD: Record<string, number> = {
-  starter: 5,        // 50 GC
-  standard: 20,      // 200 GC
-  founder: 100,      // 1000 GC — Card 3a founding-member tier
+  starter: 5,        // 50 SC
+  standard: 20,      // 200 SC
+  founder: 100,      // 1000 SC — Card 3a founding-member tier
 };
 
 export async function POST(request: NextRequest) {

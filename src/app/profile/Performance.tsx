@@ -157,20 +157,20 @@ export function PerformanceTab({
         {p.best_win && (
           <Row
             label="Best win"
-            value={`+${gc(p.best_win.pnl_minor)} GC · ${p.best_win.player_display_name}`}
+            value={`+${gc(p.best_win.pnl_minor)} SC · ${p.best_win.player_display_name}`}
             tone="green"
           />
         )}
         {p.worst_loss && (
           <Row
             label="Worst loss"
-            value={`${gc(p.worst_loss.pnl_minor)} GC · ${p.worst_loss.player_display_name}`}
+            value={`${gc(p.worst_loss.pnl_minor)} SC · ${p.worst_loss.player_display_name}`}
             tone="red"
           />
         )}
         <Row
           label="Cost basis"
-          value={`${gc(p.settled_cost_basis_minor)} GC`}
+          value={`${gc(p.settled_cost_basis_minor)} SC`}
           tone="muted"
         />
       </section>
@@ -197,14 +197,14 @@ export function PerformanceTab({
         ) : (
           <>
             <Row label="Positions held" value={o.positions.toString()} />
-            <Row label="Cost basis" value={`${gc(o.cost_basis_minor)} GC`} />
-            <Row label="Market value" value={`${gc(o.market_value_minor)} GC`} />
+            <Row label="Cost basis" value={`${gc(o.cost_basis_minor)} SC`} />
+            <Row label="Market value" value={`${gc(o.market_value_minor)} SC`} />
             <Row
               label="Unrealised P&L"
               value={
                 <span className={pnlToneClass(o.unrealised_minor)}>
                   {pnlSign(o.unrealised_minor)}
-                  {gc(o.unrealised_minor)} GC
+                  {gc(o.unrealised_minor)} SC
                   {o.unrealised_pct != null && (
                     <span className="ml-2 text-sm">
                       ({pnlSign(0, o.unrealised_pct)}
@@ -239,7 +239,7 @@ export function PerformanceTab({
         />
         <Row
           label="IPO spend"
-          value={`${gc(a.total_ipo_spent_minor)} GC`}
+          value={`${gc(a.total_ipo_spent_minor)} SC`}
         />
         <Row
           label="Trades executed"
@@ -247,7 +247,7 @@ export function PerformanceTab({
         />
         <Row
           label="Trading volume"
-          value={`${gc(a.total_trade_volume_minor)} GC`}
+          value={`${gc(a.total_trade_volume_minor)} SC`}
         />
       </section>
     </div>

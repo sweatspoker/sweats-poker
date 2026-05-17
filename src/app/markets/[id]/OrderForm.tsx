@@ -25,7 +25,7 @@ function gcStr(value: number, digits = 2): string {
 
 function prettyError(code: string, detail?: string): string {
   const t = `${code} ${detail ?? ""}`;
-  if (t.includes("insufficient_balance")) return "Not enough GC available.";
+  if (t.includes("insufficient_balance")) return "Not enough SC available.";
   if (t.includes("insufficient_shares") || t.includes("portfolio_not_found"))
     return "You don't have enough shares to sell.";
   if (t.includes("shares_must_be_positive")) return "Shares must be at least 1.";
@@ -114,7 +114,7 @@ export function OrderForm({
         setErr(prettyError(json.error ?? `HTTP ${res.status}`, json.detail));
       } else {
         setMsg(
-          `${side === "buy" ? "Buy" : "Sell"} order placed: ${sharesNum} @ ${priceNum} GC.`,
+          `${side === "buy" ? "Buy" : "Sell"} order placed: ${sharesNum} @ ${priceNum} SC.`,
         );
         router.refresh();
       }
@@ -159,7 +159,7 @@ export function OrderForm({
   if (!tierUpgraded) {
     return (
       <section className="rounded-3xl border border-[var(--brand-red)]/40 bg-[var(--brand-red)]/10 p-5 text-base text-[var(--brand-red)]">
-        Upgraded tier required to trade. Buy Gold Coins to upgrade — first purchase ≥ $10 unlocks
+        Upgraded tier required to trade. Buy Sweats Coins to upgrade — first purchase ≥ $10 unlocks
         trading automatically.
       </section>
     );
@@ -260,11 +260,11 @@ export function OrderForm({
           <span className="text-sm text-white/30 tabular-nums">
             {isBuy
               ? topAskGc != null
-                ? `Top ask ${gcStr(topAskGc)} GC`
-                : "GC per share"
+                ? `Top ask ${gcStr(topAskGc)} SC`
+                : "SC per share"
               : topBidGc != null
-                ? `Top bid ${gcStr(topBidGc)} GC`
-                : "GC per share"}
+                ? `Top bid ${gcStr(topBidGc)} SC`
+                : "SC per share"}
           </span>
         </label>
       </div>
@@ -276,13 +276,13 @@ export function OrderForm({
             isBuy && insufficientGc ? "text-[var(--brand-red)]" : ""
           }`}
         >
-          {gcStr(totalGc, 2)} GC
+          {gcStr(totalGc, 2)} SC
         </span>
       </div>
       <div className="flex items-center justify-between text-sm text-white/40">
         <span>{isBuy ? "Available balance" : "Shares held"}</span>
         <span className="tabular-nums">
-          {isBuy ? `${availableGc.toLocaleString()} GC` : sharesHeld.toLocaleString()}
+          {isBuy ? `${availableGc.toLocaleString()} SC` : sharesHeld.toLocaleString()}
         </span>
       </div>
 
@@ -319,7 +319,7 @@ export function OrderForm({
           {busy
             ? "Placing…"
             : insufficientGc
-            ? "Insufficient GC"
+            ? "Insufficient SC"
             : insufficientShares
             ? "Insufficient shares"
             : !sharesValid

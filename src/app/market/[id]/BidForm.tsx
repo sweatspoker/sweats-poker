@@ -22,7 +22,7 @@ function prettyError(code: string, detail?: string): string {
   const text = `${code} ${detail ?? ""}`;
   if (text.includes("bid_already_exists"))
     return "You already have a bid on this IPO — submitting again raises it instead.";
-  if (text.includes("insufficient_balance")) return "Not enough GC in your wallet.";
+  if (text.includes("insufficient_balance")) return "Not enough SC in your wallet.";
   if (text.includes("price_below_reserve")) return "Bid price is below the reserve.";
   if (text.includes("shares_must_be_positive")) return "Shares must be at least 1.";
   if (text.includes("price_must_be_positive")) return "Price must be greater than 0.";
@@ -97,7 +97,7 @@ export function BidForm({
       if (!res.ok) {
         setErr(prettyError(json.error ?? `HTTP ${res.status}`, json.detail));
       } else {
-        setMsg(`Bid placed: ${sharesNum} shares @ ${priceNum} GC each.`);
+        setMsg(`Bid placed: ${sharesNum} shares @ ${priceNum} SC each.`);
         router.refresh();
       }
     } catch (e) {
@@ -146,7 +146,7 @@ export function BidForm({
   if (!tierUpgraded) {
     return (
       <div className="rounded-2xl border border-[var(--brand-red)]/40 bg-[var(--brand-red)]/10 p-5 text-base text-[var(--brand-red)]">
-        Upgraded tier required to bid. Buy Gold Coins to upgrade — first purchase ≥ $10 unlocks
+        Upgraded tier required to bid. Buy Sweats Coins to upgrade — first purchase ≥ $10 unlocks
         bidding automatically.
       </div>
     );
@@ -173,7 +173,7 @@ export function BidForm({
 
       {existingBid && (
         <div className="rounded-2xl border border-[var(--brand-green)]/30 bg-[var(--brand-green)]/10 p-3 text-base text-[var(--brand-green)]">
-          You have {existingBid.shares} share{existingBid.shares === 1 ? "" : "s"} bid at {gcFromMinor(existingBid.price_per_share_minor)} GC.
+          You have {existingBid.shares} share{existingBid.shares === 1 ? "" : "s"} bid at {gcFromMinor(existingBid.price_per_share_minor)} SC.
           Submitting again places another bid.
         </div>
       )}
@@ -207,19 +207,19 @@ export function BidForm({
             disabled={busy}
             className={`w-full rounded-2xl border ${priceBorder} bg-white/5 px-4 py-3 text-base tabular-nums focus:outline-none transition-colors`}
           />
-          <span className="text-sm text-white/30 tabular-nums">Min = {pricePerShareGc} GC</span>
+          <span className="text-sm text-white/30 tabular-nums">Min = {pricePerShareGc} SC</span>
         </label>
       </div>
 
       <div className="flex items-center justify-between text-base">
         <span className="text-white/50">Total cost</span>
         <span className={`tabular-nums font-semibold ${insufficient ? "text-[var(--brand-red)]" : ""}`}>
-          {totalGc.toLocaleString()} GC
+          {totalGc.toLocaleString()} SC
         </span>
       </div>
       <div className="flex items-center justify-between text-sm text-white/40">
         <span>Available balance</span>
-        <span className="tabular-nums">{availableGc.toLocaleString()} GC</span>
+        <span className="tabular-nums">{availableGc.toLocaleString()} SC</span>
       </div>
 
       <button
@@ -252,11 +252,11 @@ export function BidForm({
           {busy
             ? "Placing…"
             : insufficient
-            ? "Insufficient GC"
+            ? "Insufficient SC"
             : !sharesValid
             ? `Min ${MIN_SHARES} share${MIN_SHARES === 1 ? "" : "s"}`
             : !priceValid
-            ? `Price below ${pricePerShareGc} GC`
+            ? `Price below ${pricePerShareGc} SC`
             : holdProgress >= 1
             ? "Confirmed"
             : isHolding

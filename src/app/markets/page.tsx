@@ -305,7 +305,7 @@ export default async function MarketsPage({
                       {pos ? (
                         <div className="text-base text-white/70 mt-1 tabular-nums">
                           {pos.shares_held.toLocaleString()} shares · avg{" "}
-                          {gcFromMinor(pos.weighted_avg_cost_minor)} GC
+                          {gcFromMinor(pos.weighted_avg_cost_minor)} SC
                         </div>
                       ) : (
                         <div className="text-base text-white/70 mt-1">

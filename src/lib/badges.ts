@@ -22,13 +22,13 @@ export type BadgeDef = {
 //   Bottom row (loss-side, mildest → most extreme): Fish, Donkey, Whale, Maniac
 export const BADGES: BadgeDef[] = [
   { id: "nit",     label: "Nit",     tagline: "Break-even or better",side: "profit", threshold_minor:            0, color: "#e5e5e5" },
-  { id: "grinder", label: "Grinder", tagline: "10k+ GC lifetime",    side: "profit", threshold_minor:    1_000_000, color: "#facc15" },
-  { id: "crusher", label: "Crusher", tagline: "100k+ GC lifetime",   side: "profit", threshold_minor:   10_000_000, color: "#f97316" },
-  { id: "shark",   label: "Shark",   tagline: "1mil+ GC lifetime",   side: "profit", threshold_minor:  100_000_000, color: "#ef4444" },
+  { id: "grinder", label: "Grinder", tagline: "10k+ SC lifetime",    side: "profit", threshold_minor:    1_000_000, color: "#facc15" },
+  { id: "crusher", label: "Crusher", tagline: "100k+ SC lifetime",   side: "profit", threshold_minor:   10_000_000, color: "#f97316" },
+  { id: "shark",   label: "Shark",   tagline: "1mil+ SC lifetime",   side: "profit", threshold_minor:  100_000_000, color: "#ef4444" },
   { id: "fish",    label: "Fish",    tagline: "Any losing lifetime", side: "loss",   threshold_minor:         -100, color: "#00d563" },
-  { id: "donkey",  label: "Donkey",  tagline: "10k- GC lifetime",    side: "loss",   threshold_minor:   -1_000_000, color: "#2dd4bf" },
-  { id: "whale",   label: "Whale",   tagline: "100k- GC lifetime",   side: "loss",   threshold_minor:  -10_000_000, color: "#3b82f6" },
-  { id: "maniac",  label: "Maniac",  tagline: "1mil- GC lifetime",   side: "loss",   threshold_minor: -100_000_000, color: "#a855f7" },
+  { id: "donkey",  label: "Donkey",  tagline: "10k- SC lifetime",    side: "loss",   threshold_minor:   -1_000_000, color: "#2dd4bf" },
+  { id: "whale",   label: "Whale",   tagline: "100k- SC lifetime",   side: "loss",   threshold_minor:  -10_000_000, color: "#3b82f6" },
+  { id: "maniac",  label: "Maniac",  tagline: "1mil- SC lifetime",   side: "loss",   threshold_minor: -100_000_000, color: "#a855f7" },
 ];
 
 export const BADGE_BY_ID: Record<BadgeId, BadgeDef> = Object.fromEntries(
@@ -36,7 +36,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDef> = Object.fromEntries(
 ) as Record<BadgeId, BadgeDef>;
 
 export function unlockedBadges(lifetimePnlMinor: number): BadgeId[] {
-  // Nit is the baseline tier — everyone starts at 0+ GC, so it's always
+  // Nit is the baseline tier — everyone starts at 0+ SC, so it's always
   // available regardless of whether the user is currently in the red.
   const u: BadgeId[] = ["nit"];
   if (lifetimePnlMinor >= 1_000_000) u.push("grinder");

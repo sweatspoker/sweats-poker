@@ -197,27 +197,27 @@ export function PlayerStats({ playerId }: { playerId: string; playerName?: strin
     },
     {
       label: "Avg final share value",
-      value: t.sessions_settled > 0 ? `${gc(t.avg_final_share_value_minor, 2)} GC` : "—",
+      value: t.sessions_settled > 0 ? `${gc(t.avg_final_share_value_minor, 2)} SC` : "—",
     },
     {
       label: "Avg IPO price",
       value:
         t.avg_clearing_price_minor > 0
-          ? `${gc(t.avg_clearing_price_minor, 2)} GC`
+          ? `${gc(t.avg_clearing_price_minor, 2)} SC`
           : "—",
     },
     {
       label: "Total sold volume",
       value:
         t.total_sold_volume_minor > 0
-          ? `${gc(t.total_sold_volume_minor, 0)} GC`
+          ? `${gc(t.total_sold_volume_minor, 0)} SC`
           : "—",
     },
     {
       label: "Avg sold volume",
       value:
         t.avg_sold_volume_minor > 0
-          ? `${gc(t.avg_sold_volume_minor, 0)} GC`
+          ? `${gc(t.avg_sold_volume_minor, 0)} SC`
           : "—",
     },
   ];
@@ -318,14 +318,14 @@ export function PlayerStats({ playerId }: { playerId: string; playerName?: strin
                     <div className="text-sm text-white/40 tabular-nums">
                       {fmtDate(date)} · {(s.shares_filled ?? 0).toLocaleString()} / {s.total_shares.toLocaleString()} at{" "}
                       {s.ipo_clearing_price_minor != null
-                        ? `${gc(s.ipo_clearing_price_minor, 2)} GC`
-                        : `${facePriceGc.toFixed(2)} GC`}
+                        ? `${gc(s.ipo_clearing_price_minor, 2)} SC`
+                        : `${facePriceGc.toFixed(2)} SC`}
                     </div>
                   </div>
                   <div className="text-right shrink-0 tabular-nums">
                     {s.final_share_value_minor != null ? (
                       <>
-                        <div className="text-base font-bold">{gc(s.final_share_value_minor, 2)} GC</div>
+                        <div className="text-base font-bold">{gc(s.final_share_value_minor, 2)} SC</div>
                         {swingPct != null && (
                           <div
                             className={`text-sm font-semibold ${

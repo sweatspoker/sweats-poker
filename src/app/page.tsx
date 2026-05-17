@@ -118,7 +118,7 @@ function HeroCopy() {
       <div className="flex items-center gap-6 text-sm text-white/55">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-[var(--brand-green)]" />
-          Free to play. Gold Coins, no cash redemption.
+          Free to play. Sweats Coins, no cash redemption.
         </div>
       </div>
     </div>
@@ -386,7 +386,7 @@ function FooterCTA() {
         </h2>
         <p className="mt-6 text-lg md:text-xl text-white/75 max-w-lg mx-auto leading-relaxed">
           We&apos;re opening the waitlist before our first stream. Drop your
-          email. First-day traders get a Gold Coin bonus on launch.
+          email. First-day traders get a Sweats Coin bonus on launch.
         </p>
         <div className="mt-10 max-w-md mx-auto">
           <WaitlistForm />

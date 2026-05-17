@@ -155,7 +155,7 @@ export function PriceChart({ offeringId, initial }: Props) {
     <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5 md:p-6 flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <div className="text-5xl md:text-6xl font-black tracking-tight tabular-nums">
-          {gc(headlinePrice)} <span className="text-2xl md:text-3xl text-white/40">GC</span>
+          {gc(headlinePrice)} <span className="text-2xl md:text-3xl text-white/40">SC</span>
         </div>
         <div
           className="text-sm font-semibold tabular-nums"
@@ -166,7 +166,7 @@ export function PriceChart({ offeringId, initial }: Props) {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}{" "}
-          GC ({headlineUp ? "+" : "−"}
+          SC ({headlineUp ? "+" : "−"}
           {Math.abs(headlineDeltaPct).toFixed(2)}%)
           {hoverIdx != null && (
             <span className="ml-2 text-white/40 font-normal">

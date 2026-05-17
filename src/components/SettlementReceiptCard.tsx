@@ -116,7 +116,7 @@ export function SettlementReceiptCard({ r }: { r: Receipt }) {
         <Cell label="Total shares" value={r.total_shares.toLocaleString()} />
         <Cell
           label="Settled price"
-          value={`${gc(r.final_share_value_minor)} GC`}
+          value={`${gc(r.final_share_value_minor)} SC`}
         />
       </div>
 
@@ -127,16 +127,16 @@ export function SettlementReceiptCard({ r }: { r: Receipt }) {
           </div>
           <div className={`text-2xl font-black mt-0.5 tabular-nums ${payoutClass}`}>
             {win || r.pnl_minor === 0 ? "+" : ""}
-            {gc(r.payout_minor)} GC
+            {gc(r.payout_minor)} SC
           </div>
           <div className="text-xs text-white/40 mt-1 tabular-nums">
-            Cost basis {gc(r.cost_basis_minor)} GC
+            Cost basis {gc(r.cost_basis_minor)} SC
           </div>
           <div className="text-xs mt-0.5 tabular-nums">
             <span className="text-white/40">P&amp;L </span>
             <span className={payoutClass}>
               {r.pnl_minor >= 0 ? "+" : ""}
-              {gc(r.pnl_minor)} GC
+              {gc(r.pnl_minor)} SC
             </span>
           </div>
         </div>

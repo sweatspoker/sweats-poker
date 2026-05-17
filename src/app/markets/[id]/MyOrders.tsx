@@ -80,7 +80,7 @@ export function MyOrders({ orders }: { orders: Order[] }) {
                 </span>
                 <div className="min-w-0 tabular-nums">
                   <div className="text-base font-semibold">
-                    {o.shares_remaining.toLocaleString()} @ {gc(o.limit_price_minor)} GC
+                    {o.shares_remaining.toLocaleString()} @ {gc(o.limit_price_minor)} SC
                   </div>
                   <div className="text-sm text-white/40">
                     {filled > 0 ? `${filled.toLocaleString()} filled · ` : ""}

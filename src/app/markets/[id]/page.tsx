@@ -200,7 +200,7 @@ export default async function MarketsTradePage({
               <div className="text-base text-white/70 tabular-nums">
                 IPO cleared at{" "}
                 <span className="font-semibold">
-                  {gc(o.ipo_clearing_price_minor ?? o.price_per_share_minor)} GC
+                  {gc(o.ipo_clearing_price_minor ?? o.price_per_share_minor)} SC
                 </span>
               </div>
             )}

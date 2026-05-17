@@ -57,11 +57,11 @@ export function PositionPanel(props: Props) {
         ) : (
           <div className="grid grid-cols-2 gap-y-4 gap-x-6">
             <Stat label="Shares" value={sharesHeld.toLocaleString()} />
-            <Stat label="Market value" value={`${gc(marketValueMinor)} GC`} />
-            <Stat label="Average cost" value={`${gc(weightedAvgCostMinor)} GC`} />
+            <Stat label="Market value" value={`${gc(marketValueMinor)} SC`} />
+            <Stat label="Average cost" value={`${gc(weightedAvgCostMinor)} SC`} />
             <Stat
               label="Total return"
-              value={`${isPositive ? "+" : "−"}${gc(Math.abs(totalReturnMinor))} GC`}
+              value={`${isPositive ? "+" : "−"}${gc(Math.abs(totalReturnMinor))} SC`}
               valueTone={isPositive ? "green" : "red"}
               sub={`(${isPositive ? "+" : "−"}${Math.abs(totalReturnPct).toFixed(2)}%)`}
             />
@@ -71,7 +71,7 @@ export function PositionPanel(props: Props) {
         <div className="flex items-center justify-between gap-3 pt-1 text-sm text-white/45">
           <span>Available balance</span>
           <span className="tabular-nums text-white/80">
-            {availableGc.toLocaleString()} GC
+            {availableGc.toLocaleString()} SC
           </span>
         </div>
 

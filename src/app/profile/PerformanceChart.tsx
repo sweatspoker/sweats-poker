@@ -149,7 +149,7 @@ export function PerformanceChart({ initial }: Props) {
         >
           {headlineUp ? "+" : "−"}
           {gc(Math.abs(headlinePnl))}
-          <span className="text-2xl md:text-3xl text-white/40 ml-2">GC</span>
+          <span className="text-2xl md:text-3xl text-white/40 ml-2">SC</span>
         </div>
         {hoverIdx != null && (
           <div className="text-sm text-white/45">

@@ -158,10 +158,10 @@ export default async function IpoDetailPage({
                   <div className="text-right tabular-nums">
                     <div className="text-base">
                       {b.shares_requested.toLocaleString()} ×{" "}
-                      {gcFromMinor(b.bid_price_per_share_minor)} GC
+                      {gcFromMinor(b.bid_price_per_share_minor)} SC
                     </div>
                     <div className="text-sm text-white/40">
-                      {gcFromMinor(b.shares_requested * b.bid_price_per_share_minor)} GC
+                      {gcFromMinor(b.shares_requested * b.bid_price_per_share_minor)} SC
                     </div>
                   </div>
                 </li>

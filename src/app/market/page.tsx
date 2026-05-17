@@ -211,7 +211,7 @@ export default async function MarketPage({
           </h1>
           {profile.tier !== "upgraded" && !isMineTab && !isClosedTab && (
             <p className="text-[var(--brand-red)]/80 text-base">
-              Upgraded tier required to bid — buy GC to upgrade.
+              Upgraded tier required to bid — buy SC to upgrade.
             </p>
           )}
           <TabBar tabs={tabs} active={tab} />
@@ -430,10 +430,10 @@ function MyBids({
                     {b.shares_requested.toLocaleString()} share{b.shares_requested === 1 ? "" : "s"}
                   </span>
                   <span className="text-white">
-                    @ {gcFromMinor(b.bid_price_per_share_minor)} GC
+                    @ {gcFromMinor(b.bid_price_per_share_minor)} SC
                   </span>
                   <span className="text-white/40 text-sm">
-                    {gcFromMinor(b.shares_requested * b.bid_price_per_share_minor)} GC
+                    {gcFromMinor(b.shares_requested * b.bid_price_per_share_minor)} SC
                   </span>
                 </li>
               ))}
@@ -441,7 +441,7 @@ function MyBids({
             <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10 text-base">
               <span className="text-white/50">Total escrow</span>
               <span className="font-bold tabular-nums">
-                {totalShares.toLocaleString()} shares · {gcFromMinor(totalCostMinor)} GC
+                {totalShares.toLocaleString()} shares · {gcFromMinor(totalCostMinor)} SC
               </span>
             </div>
           </Link>
@@ -507,20 +507,20 @@ function ClosedIPOs({ closed }: { closed: ClosedIPO[] }) {
               <li className="flex items-center justify-between gap-3 py-1">
                 <span className="text-white/55">Your bid</span>
                 <span className="font-semibold">
-                  {c.shares_requested_total.toLocaleString()} shares · {gcFromMinor(c.escrow_total_minor)} GC
+                  {c.shares_requested_total.toLocaleString()} shares · {gcFromMinor(c.escrow_total_minor)} SC
                 </span>
               </li>
               <li className="flex items-center justify-between gap-3 py-1 border-t border-white/5">
                 <span className="text-white/55">IPO cleared at</span>
                 <span className="font-semibold">
-                  {cleared ? `${gcFromMinor(c.ipo_clearing_price_minor!)} GC` : "—"}
+                  {cleared ? `${gcFromMinor(c.ipo_clearing_price_minor!)} SC` : "—"}
                 </span>
               </li>
               {allocated && (
                 <li className="flex items-center justify-between gap-3 py-1 border-t border-white/5">
                   <span className="text-white/55">Shares allocated</span>
                   <span className="font-semibold text-[var(--brand-green)]">
-                    {filledShares.toLocaleString()} · {gcFromMinor(c.fill_cost_minor)} GC
+                    {filledShares.toLocaleString()} · {gcFromMinor(c.fill_cost_minor)} SC
                   </span>
                 </li>
               )}
@@ -528,7 +528,7 @@ function ClosedIPOs({ closed }: { closed: ClosedIPO[] }) {
                 <li className="flex items-center justify-between gap-3 py-1 border-t border-white/5">
                   <span className="text-white/55">Refunded</span>
                   <span className="font-semibold text-[var(--brand-red)]">
-                    {gcFromMinor(c.refund_total_minor)} GC
+                    {gcFromMinor(c.refund_total_minor)} SC
                   </span>
                 </li>
               )}

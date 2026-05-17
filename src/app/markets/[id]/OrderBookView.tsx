@@ -88,7 +88,7 @@ export function OrderBookView({ offeringId }: { offeringId: string }) {
       </div>
 
       <div className="grid grid-cols-3 gap-2 text-sm tabular-nums">
-        <Stat label="Last" value={lastPrice != null ? `${gc(lastPrice)} GC` : "—"} />
+        <Stat label="Last" value={lastPrice != null ? `${gc(lastPrice)} SC` : "—"} />
         <Stat
           label="Bid / Ask"
           value={
@@ -99,7 +99,7 @@ export function OrderBookView({ offeringId }: { offeringId: string }) {
             </span>
           }
         />
-        <Stat label="Spread" value={spread != null ? `${gc(spread)} GC` : "—"} />
+        <Stat label="Spread" value={spread != null ? `${gc(spread)} SC` : "—"} />
       </div>
 
       {/* Bid / Ask depth table: 4 columns — bid vol, bid price, ask price, ask vol.
@@ -216,7 +216,7 @@ export function OrderBookView({ offeringId }: { offeringId: string }) {
                   })}
                 </span>
                 <span>{t.matched_shares}</span>
-                <span className="font-semibold">{gc(t.matched_price_minor)} GC</span>
+                <span className="font-semibold">{gc(t.matched_price_minor)} SC</span>
               </li>
             ))}
           </ul>
