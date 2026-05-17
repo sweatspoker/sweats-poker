@@ -204,11 +204,16 @@ export default async function MarketPage({
       <div className="w-full max-w-3xl flex flex-col gap-8">
         <div className="flex flex-col gap-3">
           <div className="inline-flex w-fit items-center rounded-full bg-[var(--brand-red)] px-3 py-1 text-sm uppercase tracking-[0.18em] text-white font-semibold">
-            Market · {profile.tier === "upgraded" ? "Upgraded" : "Free tier"}
+            Open IPO
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
-            {isClosedTab ? "Closed IPOs" : isMineTab ? "My IPOs" : "Open IPOs"}
+            {isClosedTab ? "Closed IPOs" : isMineTab ? "My IPOs" : "Auctions open"}
           </h1>
+          {!isMineTab && !isClosedTab && (
+            <p className="text-white/55 text-base max-w-xl leading-relaxed">
+              Sealed-bid auctions before each session starts. Highest bids win shares.
+            </p>
+          )}
           {profile.tier !== "upgraded" && !isMineTab && !isClosedTab && (
             <p className="text-[var(--brand-red)]/80 text-base">
               Upgraded tier required to bid - buy SC to upgrade.
