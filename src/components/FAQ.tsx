@@ -5,11 +5,14 @@ import { useState } from "react";
 type Item = { q: string; a: string };
 type Group = { kicker: string; items: Item[] };
 
-// Council-converged FAQ (DeepSeek R1, 2026-05-17). 6 buckets, sharp answers
-// in product voice - no apology, no crypto jargon, no sports-betting hedge.
-// Where the live platform doesn't yet have a feature DeepSeek inferred
-// (referral rewards, specific redemption channels, etc.), we wrote the
-// answer in plainer terms or marked TBD so we don't ship false claims.
+// Council-converged FAQ (DeepSeek R1, 2026-05-17). Sharp answers in product
+// voice - no apology, no crypto jargon, no sports-betting hedge.
+//
+// Product framing: Sweats is JUST FOR FUN at v1. Sweats Coins (SC) are a
+// free in-app play currency with NO CASH VALUE. We're not a sweepstakes
+// platform, not a gambling site, no real-money redemption. Down the road
+// SC will redeem in-kind for merchandise, food, drinks, or play time at
+// partner poker rooms - but not for cash, ever.
 
 const groups: Group[] = [
   {
@@ -17,11 +20,11 @@ const groups: Group[] = [
     items: [
       {
         q: "Is this gambling?",
-        a: "No. Sweats is a sweepstakes platform. You play with Sweats Coins (SC), a free virtual currency, and you can win cash through the redemption tier. There's no wager, no pot, and no fee to participate.",
+        a: "No. Sweats is just for fun. You play with Sweats Coins (SC), a free in-app currency with no cash value. Nothing to wager, nothing to lose, nothing to win as cash.",
       },
       {
         q: "Do I have to pay to play?",
-        a: "No. New accounts get a free Sweats Coin signup bonus. You can also top up with extra SC via card if you want bigger bets, but paying never increases your odds - it just gives you more volume.",
+        a: "No. Every account is free and you get Sweats Coins to start trading right away.",
       },
       {
         q: "How do I sign up?",
@@ -29,7 +32,7 @@ const groups: Group[] = [
       },
       {
         q: "What's a Sweats Coin worth?",
-        a: "1 SC is the in-app unit you trade with. It's not a cryptocurrency - there's no blockchain, no wallet to connect, nothing transferable outside the app. You earn it free or top up via card; you win it back as your players cash out.",
+        a: "Nothing in cash. SC is a play currency that lives inside the app for trading shares of players. It's not crypto - no blockchain, no wallet to connect, nothing transferable outside Sweats. Down the road SC will redeem in-kind for things at our partner rooms (merch, food, drinks, table time), but never for cash.",
       },
     ],
   },
@@ -80,19 +83,19 @@ const groups: Group[] = [
     ],
   },
   {
-    kicker: "Money & redemption",
+    kicker: "Sweats Coins & rewards",
     items: [
       {
-        q: "How do I top up SC?",
-        a: "Wallet → Top up. Card payments are processed through Stripe. We never see or store your card details.",
+        q: "Can I cash out my Sweats Coins?",
+        a: "No. SC has no cash value and is not redeemable for money. It lives inside the app as a play currency.",
       },
       {
-        q: "How do I cash out winnings?",
-        a: "Once your account is on the upgraded redemption tier and you've cleared the play-through requirement, you can redeem your SC for cash. We'll publish channels (bank, gift card) as the redemption tier rolls out.",
+        q: "Then what do I do with all the SC I win?",
+        a: "Right now, keep trading with it - the leaderboard's there for bragging rights. Soon, you'll be able to redeem SC in-kind at partner poker rooms for things like merchandise, food and drinks at the table, or play time. We'll announce each redemption option as it rolls out.",
       },
       {
-        q: "Is my payment info safe?",
-        a: "Yes. Stripe handles every charge. No card data ever touches our servers.",
+        q: "Can I buy SC?",
+        a: "Top-ups will be available soon for bigger trading volume, processed through Stripe. They'll never convert back to cash - same rule applies.",
       },
     ],
   },
@@ -118,15 +121,15 @@ const groups: Group[] = [
     items: [
       {
         q: "Is this legal where I live?",
-        a: "Sweats operates as a sweepstakes under US law. The redemption tier isn't available in every state. We'll check eligibility when you upgrade.",
+        a: "Yes. Sweats is a free-to-play app with no cash prizes and no real-money wagers - it's not gambling and it's not a sweepstakes. Same legal footing as any free leaderboard game.",
       },
       {
         q: "How old do I have to be?",
-        a: "18+ to play, 21+ to redeem cash in jurisdictions that require it. We verify age at signup and identity at redemption.",
+        a: "18+ to play. We verify age at signup.",
       },
       {
         q: "I run a poker room - can I partner?",
-        a: "Yes. Email partnerships@sweats.poker. Branded sessions, custom roster, a cut of trading volume on your players.",
+        a: "Yes. Email partnerships@sweats.poker. Branded sessions, custom roster, your venue as one of the places traders can redeem SC for merch, food, drinks, or table time.",
       },
     ],
   },

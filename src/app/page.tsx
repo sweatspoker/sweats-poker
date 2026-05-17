@@ -134,7 +134,7 @@ function HeroCopy() {
       <div className="flex items-center gap-6 text-sm text-white/55">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-[var(--brand-green)]" />
-          Free to play. Win cash through the redemption tier.
+          Free to play. Sweats Coins have no cash value.
         </div>
       </div>
     </div>
