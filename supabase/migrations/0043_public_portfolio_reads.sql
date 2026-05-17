@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0043: public.get_my_portfolio() — read-side wrapper for the player wallet.
+-- 0043: public.get_my_portfolio() - read-side wrapper for the player wallet.
 --
 -- Returns the user's share holdings joined with offering + player +
 -- (optionally) stream + venue info, ordered by most-recently-updated.

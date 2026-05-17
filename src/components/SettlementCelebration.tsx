@@ -38,7 +38,7 @@ export function SettlementCelebration({ signedIn }: { signedIn: boolean }) {
     check();
 
     // Realtime: any settle the operator triggers anywhere fires an UPDATE
-    // on ipo.offerings. We don't filter client-side — the RPC already
+    // on ipo.offerings. We don't filter client-side - the RPC already
     // gates on auth.uid() + portfolio.shares_held > 0, so most channel
     // pings will be a cheap "no row" return.
     const channel = supabase

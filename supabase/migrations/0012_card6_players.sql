@@ -1,4 +1,4 @@
--- Card 6 — Player-listings table (Card 7 order-book pre-req).
+-- Card 6 - Player-listings table (Card 7 order-book pre-req).
 -- Council R1 unanimous PICK D: DeepSeek + Claude.ai. Tactical notes
 -- from Claude.ai folded in (tradeable status enum, FK retrofit on
 -- ipo.offerings.player_id during this Card).
@@ -38,7 +38,7 @@ grant usage on schema players to service_role;
 grant select, insert, update, delete on players.players to service_role;
 
 -- =============================================================================
--- 2. Public SELECT shim — readable by anyone (player listings are not PII).
+-- 2. Public SELECT shim - readable by anyone (player listings are not PII).
 --    Authenticated users see all active players; admins see all statuses
 --    via direct service-role queries.
 -- =============================================================================
@@ -84,7 +84,7 @@ revoke all on function public.get_player(text) from public;
 grant execute on function public.get_player(text) to authenticated, anon;
 
 -- =============================================================================
--- 3. Admin CRUD RPC — single SECURITY DEFINER writer with audit emission.
+-- 3. Admin CRUD RPC - single SECURITY DEFINER writer with audit emission.
 --    Upsert pattern: insert or update existing player_id. Status transitions
 --    are validated; CHECK constraint catches invalid status strings.
 -- =============================================================================

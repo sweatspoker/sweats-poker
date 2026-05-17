@@ -7,7 +7,7 @@ import { checkAdminToken } from "@/lib/admin-auth";
  *
  * Returns recent ledger.transactions plus an aggregated `total_minor`
  * absolute amount (sum of positive entry legs) for each. Aggregation
- * happens in JS — Supabase REST doesn't grant us join power against the
+ * happens in JS - Supabase REST doesn't grant us join power against the
  * ledger schema otherwise.
  *
  * Auth: x-ledger-admin-token header.

@@ -54,7 +54,7 @@ update ledger.transactions
    and purchase_source is null
    and metadata ? 'purchase_source';
 
--- (2b) (Validation step removed — see 1c note above.)
+-- (2b) (Validation step removed - see 1c note above.)
 
 -- (3) Partial index for the eventual wipe query (Claude.ai R2 nit).
 --     "DELETE WHERE purchase_source = 'synthetic'" needs a quick lookup.
@@ -129,7 +129,7 @@ begin
     coalesce(p_initiated_by, p_user_id), v_meta, true
   );
 
-  -- New: stamp the structural column. Idempotent — replays return the same
+  -- New: stamp the structural column. Idempotent - replays return the same
   -- transaction_id from post_transaction's idempotency table, and this UPDATE
   -- is a no-op if the row already has the column set.
   update ledger.transactions
@@ -213,5 +213,5 @@ $$;
 revoke all on function ledger.purchase_refund(text, uuid, bigint, text, uuid, jsonb) from public;
 grant execute on function ledger.purchase_refund(text, uuid, bigint, text, uuid, jsonb) to service_role;
 
--- (6) PostgREST schema cache reload — picks up function signature changes.
+-- (6) PostgREST schema cache reload - picks up function signature changes.
 notify pgrst, 'reload schema';

@@ -8,7 +8,7 @@ import {
 /**
  * Pure presentational layer for the settlement modal: takes a Receipt
  * + an onDismiss handler and renders the full-screen takeover. No data
- * fetching, no auth — safe to mount from any caller.
+ * fetching, no auth - safe to mount from any caller.
  *
  * Tone-aware headline pill (win / loss / breakeven) is the only visual
  * cue beyond the receipt. The modal lands with a standard scale-in

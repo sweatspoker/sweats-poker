@@ -159,7 +159,7 @@ export function OrderForm({
   if (!tierUpgraded) {
     return (
       <section className="rounded-3xl border border-[var(--brand-red)]/40 bg-[var(--brand-red)]/10 p-5 text-base text-[var(--brand-red)]">
-        Upgraded tier required to trade. Buy Sweats Coins to upgrade — first purchase ≥ $10 unlocks
+        Upgraded tier required to trade. Buy Sweats Coins to upgrade - first purchase ≥ $10 unlocks
         trading automatically.
       </section>
     );

@@ -32,7 +32,7 @@ alter table ledger.transactions
   ));
 
 -- ============================================================================
--- 2. redemptions.catalog — admin-curated redeemable items.
+-- 2. redemptions.catalog - admin-curated redeemable items.
 -- ============================================================================
 
 create table if not exists redemptions.catalog (
@@ -98,7 +98,7 @@ end;
 $$;
 
 -- ============================================================================
--- 5. redemptions.request_catalog_item — user picks catalog item.
+-- 5. redemptions.request_catalog_item - user picks catalog item.
 --    Drops the KYC gate (appendix Sec 13). Generates an 8-char code with
 --    90-day expiry. Single ledger leg: available → escrow_redemption.
 -- ============================================================================
@@ -198,7 +198,7 @@ revoke all on function redemptions.request_catalog_item(uuid, uuid, text, uuid) 
 grant execute on function redemptions.request_catalog_item(uuid, uuid, text, uuid) to service_role;
 
 -- ============================================================================
--- 6. redemptions.fulfill_request — operator marks code redeemed at the room.
+-- 6. redemptions.fulfill_request - operator marks code redeemed at the room.
 --    Moves GC from user escrow → platform_float (Sweats owes the room IRL).
 -- ============================================================================
 
@@ -266,7 +266,7 @@ revoke all on function redemptions.fulfill_request(uuid, uuid, text) from public
 grant execute on function redemptions.fulfill_request(uuid, uuid, text) to service_role;
 
 -- ============================================================================
--- 7. redemptions.cancel_request — user-initiated cancel before fulfillment.
+-- 7. redemptions.cancel_request - user-initiated cancel before fulfillment.
 --    Refund: escrow → available.
 -- ============================================================================
 
@@ -325,7 +325,7 @@ revoke all on function redemptions.cancel_request(uuid, uuid, text, text) from p
 grant execute on function redemptions.cancel_request(uuid, uuid, text, text) to service_role;
 
 -- ============================================================================
--- 8. redemptions.expire_codes — admin sweep refunds 90-day-expired codes.
+-- 8. redemptions.expire_codes - admin sweep refunds 90-day-expired codes.
 -- ============================================================================
 
 create or replace function redemptions.expire_codes(
@@ -389,7 +389,7 @@ revoke all on function redemptions.expire_codes(uuid) from public;
 grant execute on function redemptions.expire_codes(uuid) to service_role;
 
 -- ============================================================================
--- 9. redemptions.upsert_catalog_item — admin curation.
+-- 9. redemptions.upsert_catalog_item - admin curation.
 -- ============================================================================
 
 create or replace function redemptions.upsert_catalog_item(

@@ -1,4 +1,4 @@
--- Card 8 — Support / dispute inbox (Card 1b)
+-- Card 8 - Support / dispute inbox (Card 1b)
 -- R1 council: DeepSeek + Claude.ai. 4/6 unanimous; Q5 (reopening) Claude.ai
 -- bounded-window over DeepSeek strict-immutable; Q6 Claude.ai three-layer
 -- (RPC param + ledger metadata + audit row) over DeepSeek two-layer.
@@ -50,7 +50,7 @@ grant usage on schema support to service_role;
 grant select, insert, update on support.tickets to service_role;
 
 -- =============================================================================
--- 1. open_ticket — user-side write path.
+-- 1. open_ticket - user-side write path.
 -- =============================================================================
 
 create or replace function support.open_ticket(
@@ -102,7 +102,7 @@ revoke all on function support.open_ticket(uuid, text, text, text, text, uuid, u
 grant execute on function support.open_ticket(uuid, text, text, text, text, uuid, uuid, uuid, uuid, jsonb) to service_role;
 
 -- =============================================================================
--- 2. update_ticket — admin status/resolution writer.
+-- 2. update_ticket - admin status/resolution writer.
 --    Bounded reopen: closed/resolved tickets can be reopened within 30 days
 --    of their close timestamp; after that, return error and surface backlink path.
 -- =============================================================================
@@ -178,7 +178,7 @@ revoke all on function support.update_ticket(uuid, uuid, text, text, uuid, text,
 grant execute on function support.update_ticket(uuid, uuid, text, text, uuid, text, jsonb) to service_role;
 
 -- =============================================================================
--- 3. resolve_with_ledger_action — three-layer linkage per Claude.ai R1:
+-- 3. resolve_with_ledger_action - three-layer linkage per Claude.ai R1:
 --    explicit RPC intent + ledger metadata + resolution audit row.
 --    Admin calls this when they take a ledger action (refund/grant) tied to a ticket.
 -- =============================================================================
@@ -282,7 +282,7 @@ revoke all on function public.get_my_tickets(boolean) from public;
 grant execute on function public.get_my_tickets(boolean) to authenticated;
 
 -- Note: description, resolution_notes, and other PII-sensitive fields are
--- intentionally NOT returned by get_my_tickets — users see their own ticket
+-- intentionally NOT returned by get_my_tickets - users see their own ticket
 -- list with metadata only; full description retrievable via authenticated
 -- separate SELECT (future Card) once a user-facing ticket-detail page exists.
 

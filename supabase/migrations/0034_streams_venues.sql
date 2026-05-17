@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0034: streams.venues — physical poker rooms / broadcast venues.
+-- 0034: streams.venues - physical poker rooms / broadcast venues.
 --
 -- Council R3 ratified 2026-05-16. First in the Streams + Venues build stack.
 -- ============================================================================

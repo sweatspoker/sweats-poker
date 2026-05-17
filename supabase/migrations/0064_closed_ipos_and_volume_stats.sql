@@ -1,6 +1,6 @@
 -- 0064: Open IPO "Closed" tab data + player stats volume metrics.
 --
--- (A) get_my_closed_ipos() — every offering the user placed at least one
+-- (A) get_my_closed_ipos() - every offering the user placed at least one
 --     IPO bid on, where the offering is past the ipo_open / ipo_closing
 --     bidding window (state in active / halted / settling / settled /
 --     cancelled). Returns aggregated bid info + clearing outcome.

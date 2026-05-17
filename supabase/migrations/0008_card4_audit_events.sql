@@ -1,4 +1,4 @@
--- Card 4 — Global audit_events table (Card 1a co-requisite promoted)
+-- Card 4 - Global audit_events table (Card 1a co-requisite promoted)
 -- Council R1 (DeepSeek + GPT + Claude.ai) unanimous PICK B on 2026-05-15.
 --
 -- Promotes ledger.audit (inline, ledger-scoped, kind+message JSON) into a
@@ -8,12 +8,12 @@
 -- to write into rather than each re-litigating an audit schema.
 --
 -- Design:
---   - New schema `audit` (parallels `ledger`) — keeps audit invariants
+--   - New schema `audit` (parallels `ledger`) - keeps audit invariants
 --     enforceable separate from operational tables.
 --   - `audit.events` table: structured action_type + source + severity +
 --     actor/subject + jsonb metadata. Append-only via REVOKE.
 --   - `audit.log_event(...)` SECURITY DEFINER RPC is the single writer.
---   - Backfill from ledger.audit (existing inline rows) — preserved with
+--   - Backfill from ledger.audit (existing inline rows) - preserved with
 --     source='ledger_audit_backfill' for traceability.
 --   - Dual-write hook: ledger.post_transaction continues to write
 --     ledger.audit for backwards compat AND now writes audit.events.
@@ -26,7 +26,7 @@ set search_path = public;
 create schema if not exists audit;
 
 -- =============================================================================
--- 1. audit.events — the single global audit destination.
+-- 1. audit.events - the single global audit destination.
 -- =============================================================================
 
 create table if not exists audit.events (
@@ -65,7 +65,7 @@ create index if not exists events_severity_critical_idx
   on audit.events (occurred_at desc) where severity = 'critical';
 
 -- =============================================================================
--- 2. RLS + grants — append-only, service-role-only writes.
+-- 2. RLS + grants - append-only, service-role-only writes.
 -- =============================================================================
 
 alter table audit.events enable row level security;
@@ -79,7 +79,7 @@ grant usage on schema audit to service_role;
 grant insert, select on audit.events to service_role;
 
 -- =============================================================================
--- 3. audit.log_event — single writer. SECURITY DEFINER. Called from anywhere.
+-- 3. audit.log_event - single writer. SECURITY DEFINER. Called from anywhere.
 -- =============================================================================
 
 create or replace function audit.log_event(
@@ -290,7 +290,7 @@ begin
   insert into ledger.idempotency_keys (key, user_id, response_transaction_id)
   values (p_idempotency_key, p_user_id, v_transaction_id);
 
-  -- ledger.audit (existing, kept for backwards compat — readers may still query it)
+  -- ledger.audit (existing, kept for backwards compat - readers may still query it)
   insert into ledger.audit (user_id, severity, kind, message, metadata)
   values (p_user_id, 'info', 'transaction_posted',
           format('Posted %s for user', p_transaction_type),

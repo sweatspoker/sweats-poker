@@ -11,7 +11,7 @@ set search_path = public;
 alter table streams.streams
   add column if not exists name text;
 
--- Backfill any existing rows (defensive — production has 0 streams right now).
+-- Backfill any existing rows (defensive - production has 0 streams right now).
 update streams.streams
    set name = coalesce(name,
      'Stream at ' || coalesce((select v.name from streams.venues v where v.venue_id = streams.streams.venue_id), 'unknown venue')

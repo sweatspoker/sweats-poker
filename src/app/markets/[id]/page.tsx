@@ -193,7 +193,7 @@ export default async function MarketsTradePage({
                   {" · "}${(stream.sb_minor / 100).toFixed(0)}/${(stream.bb_minor / 100).toFixed(0)}
                 </>
               ) : (
-                "—"
+                "-"
               )}
             </div>
             {(o.ipo_clearing_price_minor != null || o.price_per_share_minor) && (

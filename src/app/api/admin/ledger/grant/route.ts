@@ -11,7 +11,7 @@ function constantTimeEqual(a: string, b: string): boolean {
 }
 
 /**
- * Card 2 admin SC grant — operator credits a user's `available` from `platform_treasury`.
+ * Card 2 admin SC grant - operator credits a user's `available` from `platform_treasury`.
  *
  * Auth model (Card 2): shared-secret header `x-ledger-admin-token` matched against
  * env LEDGER_ADMIN_TOKEN. Crude but sufficient for the operator-only Card 2 surface.

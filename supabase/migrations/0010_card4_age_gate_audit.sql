@@ -1,4 +1,4 @@
--- Card 4 — Gemini reviewer nit (STAMP-WITH-NITS):
+-- Card 4 - Gemini reviewer nit (STAMP-WITH-NITS):
 -- submit_age_gate is the primary identity gate but currently only leaves an
 -- audit trail via the resulting signup_bonus transaction. Add an explicit
 -- audit.events row for the age_verified state change itself, so

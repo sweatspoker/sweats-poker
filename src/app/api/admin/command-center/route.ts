@@ -3,7 +3,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { checkAdminToken } from "@/lib/admin-auth";
 
 /**
- * Command Center snapshot — single read aggregating platform health into one
+ * Command Center snapshot - single read aggregating platform health into one
  * jsonb blob. Backs the admin landing dashboard (Card 18 council refinement).
  *
  * GET /api/admin/command-center

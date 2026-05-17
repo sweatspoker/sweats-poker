@@ -1,7 +1,7 @@
 // Below-fold "Live order book" feature. Visually mirrors the real
 // <OrderBookView> from app/markets/[id]/OrderBookView.tsx so what
 // fans see on the landing page IS what they'll see when they sign
-// in and open the Trade drawer — same DOM, same classes, same depth
+// in and open the Trade drawer - same DOM, same classes, same depth
 // bars, only the data is hardcoded.
 
 type Level = { price_minor: number; shares: number };
@@ -50,7 +50,7 @@ export function TradingViewMock() {
         <span className="text-sm text-white/30">polls 5s</span>
       </div>
 
-      {/* Stat row — LAST / BID·ASK / SPREAD */}
+      {/* Stat row - LAST / BID·ASK / SPREAD */}
       <div className="grid grid-cols-3 gap-2 text-sm tabular-nums">
         <Stat label="Last" value={`${gc(lastPrice)} SC`} />
         <Stat

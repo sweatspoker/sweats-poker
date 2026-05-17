@@ -1,4 +1,4 @@
--- Card 4 — PostgREST shim for audit.log_event.
+-- Card 4 - PostgREST shim for audit.log_event.
 -- Same constraint as Card 3 PostgREST shim (migration 0006): the `audit`
 -- schema is not in the project's exposed db_schemas, so supabase-js cannot
 -- call audit.log_event via .schema('audit').rpc. Forward verbatim from a

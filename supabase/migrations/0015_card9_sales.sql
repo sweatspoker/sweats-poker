@@ -1,4 +1,4 @@
--- Card 9 (Card 3a) — pre-launch GC sale + founding-member tiers + referral
+-- Card 9 (Card 3a) - pre-launch GC sale + founding-member tiers + referral
 --
 -- R1 council: DeepSeek + Claude.ai. Bypass Tier-3 (sovereign directive);
 -- proceed with default "synthetic credits permanent + tagged" (Card 3 wipe
@@ -89,7 +89,7 @@ grant select, insert, update on sales.campaigns to service_role;
 grant select, insert, update on referrals.codes to service_role;
 
 -- =============================================================================
--- 4. sales.complete_founding_purchase — atomic single-transaction RPC.
+-- 4. sales.complete_founding_purchase - atomic single-transaction RPC.
 --    Computes bonus from tier config. If referral_code valid + unredeemed,
 --    credits both referrer's and redeemer's bonuses. Single ledger.post_transaction
 --    call carries all legs.
@@ -278,7 +278,7 @@ revoke all on function sales.complete_founding_purchase(text, uuid, uuid, text, 
 grant execute on function sales.complete_founding_purchase(text, uuid, uuid, text, text, text, uuid, jsonb) to service_role;
 
 -- =============================================================================
--- 5. referrals.create_code — admin/user mint a referral code.
+-- 5. referrals.create_code - admin/user mint a referral code.
 -- =============================================================================
 
 create or replace function referrals.create_code(

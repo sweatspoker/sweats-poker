@@ -91,7 +91,7 @@ function parseAndValidate(rawBody: string): {
  * Card 3 dual-path webhook verifier.
  *
  * The verifier is the ONLY place that needs to change at real-Stripe cutover.
- * It returns a CanonicalEvent including the namespaced idempotency_key —
+ * It returns a CanonicalEvent including the namespaced idempotency_key -
  * route.ts treats the return value opaquely.
  *
  * Real Stripe flow (future cutover):
@@ -119,7 +119,7 @@ export async function verifyAndParseWebhook(
   const synthSecret = process.env.SYNTHETIC_WEBHOOK_SECRET;
 
   if (stripeSecret) {
-    // Cutover seam — annotated stub so the next Card knows exactly where to
+    // Cutover seam - annotated stub so the next Card knows exactly where to
     // edit. Returns 501 today; replaced when Stripe SDK lands.
     throw new WebhookVerifyError(
       "stripe_path_not_yet_implemented; install stripe SDK in next Card",
@@ -152,7 +152,7 @@ export async function verifyAndParseWebhook(
 
 /**
  * Helper used by the synthetic UI simulator. NEVER call from the client.
- * Returns null when SYNTHETIC_WEBHOOK_SECRET is unset — synthetic mode
+ * Returns null when SYNTHETIC_WEBHOOK_SECRET is unset - synthetic mode
  * is a hard block in that case (no fallback).
  */
 export function signSyntheticPayload(rawBody: string): string | null {

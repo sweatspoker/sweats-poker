@@ -6,12 +6,12 @@
 --   1. closes_at < now() AND clearing_status = 'open'
 --   2. Skip reserve players (they require operator promotion first)
 --   3. Call streams_force_to_active(offering_id, system_uuid)
---      — same RPC the admin's "Push Live" button hits: clears bids
+--      - same RPC the admin's "Push Live" button hits: clears bids
 --      (allocates shares + refunds losers), then flips session_state
 --      to 'active' so secondary trading opens.
 --   4. Audit-log each transition.
 --
--- Scheduled via pg_cron to run every minute. Idempotent — already-active
+-- Scheduled via pg_cron to run every minute. Idempotent - already-active
 -- offerings are silently skipped by force_to_active's own guard.
 
 create extension if not exists pg_cron with schema extensions;
@@ -132,7 +132,7 @@ begin
   perform cron.unschedule('auto-close-due-offerings')
     where exists (select 1 from cron.job where jobname = 'auto-close-due-offerings');
 exception when others then
-  -- pg_cron not yet in path or schema; ignore — the schedule call below
+  -- pg_cron not yet in path or schema; ignore - the schedule call below
   -- will fail loudly in that case.
   null;
 end$$;

@@ -46,7 +46,7 @@ type Session = {
 type Stats = { player_id: string; totals: Totals; sessions: Session[]; snapshot_at: string };
 
 function gc(minor: number | null | undefined, digits = 0): string {
-  if (minor == null) return "—";
+  if (minor == null) return "-";
   return (minor / 100).toLocaleString(undefined, {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
@@ -54,7 +54,7 @@ function gc(minor: number | null | undefined, digits = 0): string {
 }
 
 function fmtDate(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
@@ -192,40 +192,40 @@ export function PlayerStats({ playerId }: { playerId: string; playerName?: strin
       : []),
     {
       label: "Win rate",
-      value: t.sessions_settled > 0 ? `${Number(t.win_rate_pct).toFixed(1)}%` : "—",
+      value: t.sessions_settled > 0 ? `${Number(t.win_rate_pct).toFixed(1)}%` : "-",
       tone: t.win_rate_pct >= 50 ? "green" : t.win_rate_pct > 0 ? "red" : "muted",
     },
     {
       label: "Avg final share value",
-      value: t.sessions_settled > 0 ? `${gc(t.avg_final_share_value_minor, 2)} SC` : "—",
+      value: t.sessions_settled > 0 ? `${gc(t.avg_final_share_value_minor, 2)} SC` : "-",
     },
     {
       label: "Avg IPO price",
       value:
         t.avg_clearing_price_minor > 0
           ? `${gc(t.avg_clearing_price_minor, 2)} SC`
-          : "—",
+          : "-",
     },
     {
       label: "Total sold volume",
       value:
         t.total_sold_volume_minor > 0
           ? `${gc(t.total_sold_volume_minor, 0)} SC`
-          : "—",
+          : "-",
     },
     {
       label: "Avg sold volume",
       value:
         t.avg_sold_volume_minor > 0
           ? `${gc(t.avg_sold_volume_minor, 0)} SC`
-          : "—",
+          : "-",
     },
   ];
 
   return (
     <>
       <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 p-5 flex flex-col gap-4">
-        {/* Streak dots row — last 10 sessions, newest first. */}
+        {/* Streak dots row - last 10 sessions, newest first. */}
         <div className="flex items-center gap-2">
           {streak.length > 0 ? (
             <>
@@ -236,7 +236,7 @@ export function PlayerStats({ playerId }: { playerId: string; playerName?: strin
                 <span
                   key={s.offering_id}
                   className={`h-3 w-3 rounded-full ${resultDot(s.result)}`}
-                  title={`${s.result ?? "—"} · ${fmtDate(s.settled_at ?? s.started_at ?? s.created_at)}`}
+                  title={`${s.result ?? "-"} · ${fmtDate(s.settled_at ?? s.started_at ?? s.created_at)}`}
                 />
               ))}
             </>

@@ -1,4 +1,4 @@
--- Card 7 — Order book / trade execution (limit orders, price-time priority,
+-- Card 7 - Order book / trade execution (limit orders, price-time priority,
 -- admin-triggered matching tick).
 --
 -- Council R1: DeepSeek + Claude.ai. 6/8 sub-questions unanimous; Q1/Q4
@@ -10,7 +10,7 @@
 -- Architecture:
 --   - New `orders` schema with `orders.orders` and `orders.trades`.
 --   - Two new escrow account_types: `escrow_order_buy` (GC) and
---     `escrow_order_shares` (per-offering shares — uses `offering_id`
+--     `escrow_order_shares` (per-offering shares - uses `offering_id`
 --     metadata field on the account for per-player tracking).
 --   - New transaction_types: order_placed, order_cancelled, trade_executed.
 --   - `orders.place_order(user, player, offering, side, shares, limit_price,...)`
@@ -141,7 +141,7 @@ grant usage on schema orders to service_role;
 grant select, insert, update, delete on orders.orders, orders.trades to service_role;
 
 -- =============================================================================
--- 6. orders.place_order — pure insertion + escrow posting. No matching.
+-- 6. orders.place_order - pure insertion + escrow posting. No matching.
 --    Self-trade prevention is in match_book (skipping pairs with same user).
 --    Tradeable gate via players.is_tradeable.
 -- =============================================================================
@@ -223,7 +223,7 @@ begin
         detail = format('held=%s requested=%s', coalesce(v_portfolio_held,0), p_shares);
     end if;
 
-    -- Debit portfolio. (Locked shares can't be sold twice — sell-order
+    -- Debit portfolio. (Locked shares can't be sold twice - sell-order
     -- placement reduces shares_held immediately. Refund on cancel/expire.)
     update ipo.portfolio
        set shares_held = shares_held - p_shares,
@@ -280,7 +280,7 @@ revoke all on function orders.place_order(uuid, text, text, bigint, bigint, text
 grant execute on function orders.place_order(uuid, text, text, bigint, bigint, text, uuid, uuid, timestamptz, jsonb) to service_role;
 
 -- =============================================================================
--- 7. orders.cancel_order — instant refund.
+-- 7. orders.cancel_order - instant refund.
 -- =============================================================================
 
 create or replace function orders.cancel_order(
@@ -368,7 +368,7 @@ revoke all on function orders.cancel_order(uuid, uuid, text) from public;
 grant execute on function orders.cancel_order(uuid, uuid, text) to service_role;
 
 -- =============================================================================
--- 8. orders.match_book — admin-triggered matching tick.
+-- 8. orders.match_book - admin-triggered matching tick.
 --    Price-time priority. Self-trading prevention. Atomic settlement.
 -- =============================================================================
 

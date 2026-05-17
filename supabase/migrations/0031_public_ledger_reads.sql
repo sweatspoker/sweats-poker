@@ -2,7 +2,7 @@
 -- 0031: public-schema wrapper for ledger.get_my_ledger_summary
 --
 -- Latent bug since Card 2: get_my_ledger_summary is defined in the `ledger`
--- schema, but Supabase PostgREST only exposes `public` + `graphql_public` —
+-- schema, but Supabase PostgREST only exposes `public` + `graphql_public` -
 -- so /wallet's RPC call always failed with PGRST202 ("function not found in
 -- schema cache"). Welcome bonus + synthetic-checkout credits land in the
 -- ledger fine; the wallet just couldn't read them.

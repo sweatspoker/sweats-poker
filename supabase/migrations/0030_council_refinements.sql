@@ -3,15 +3,15 @@
 -- Three convergent recommendations from DeepSeek + GPT-5 + Claude.ai
 -- admin-dashboard scope poll, ratified by Tommy:
 --
---   #1 Structured admin_grant subtypes (Claude.ai) — replace free-form grants
+--   #1 Structured admin_grant subtypes (Claude.ai) - replace free-form grants
 --      with enum subtype + required reason. Makes ledger-correction audits
 --      categorizable instead of a free-text dumpster.
 --
---   #2 audit.annotations side-table (Claude.ai) — separate mutable operator-
+--   #2 audit.annotations side-table (Claude.ai) - separate mutable operator-
 --      notes layer attached to audit.events while keeping audit.events
 --      itself strictly append-only.
 --
---   #3 Command Center backend snapshot RPC (GPT-5) — single aggregate query
+--   #3 Command Center backend snapshot RPC (GPT-5) - single aggregate query
 --      that backs the admin landing dashboard ("is the platform safe to
 --      operate right now?").
 
@@ -72,7 +72,7 @@ create trigger trg_enforce_admin_grant_subtype
   for each row execute function ledger._enforce_admin_grant_subtype();
 
 -- ============================================================================
--- 2. audit.annotations — mutable operator notes attached to audit.events.
+-- 2. audit.annotations - mutable operator notes attached to audit.events.
 --    audit.events stays append-only (existing CHECK constraints + grants);
 --    annotations live in their own table with their own audit trail.
 -- ============================================================================

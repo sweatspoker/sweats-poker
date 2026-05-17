@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0037: streams.stakes_events — immutable history of mid-stream stakes changes.
+-- 0037: streams.stakes_events - immutable history of mid-stream stakes changes.
 --
 -- Stream row always shows CURRENT stakes (cheap to read). Every change writes
 -- a new event row capturing the pre-change snapshot for audit + replay.

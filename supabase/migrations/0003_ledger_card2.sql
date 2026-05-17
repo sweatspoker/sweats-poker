@@ -1,4 +1,4 @@
--- Card 2 (GC Wallet & Ledger) — council R1 + Gemini judge verdict (cycle 879ca7b7)
+-- Card 2 (GC Wallet & Ledger) - council R1 + Gemini judge verdict (cycle 879ca7b7)
 -- Adopts: dedicated `ledger` schema, double-entry transactions+entries, cached balance,
 -- bigint minor units (1 GC = 100), advisory-lock concurrency, idempotency_keys with text
 -- namespaced PK, strict age_verified gate inside RPC, GRANT EXECUTE to service_role only.
@@ -113,7 +113,7 @@ revoke all on all tables in schema ledger from public, anon, authenticated;
 alter default privileges in schema ledger revoke all on tables from public, anon, authenticated;
 
 -- ============================================================================
--- 4. Row-level security on read paths (defense-in-depth — PostgREST endpoints are
+-- 4. Row-level security on read paths (defense-in-depth - PostgREST endpoints are
 -- not granted, but if a future migration grants SELECT, RLS still scopes to owner).
 -- ============================================================================
 
@@ -126,7 +126,7 @@ alter table ledger.audit enable row level security;
 -- Deny-by-default; the SECURITY DEFINER functions below SET LOCAL ROLE postgres to bypass.
 
 -- ============================================================================
--- 5. System accounts (platform_treasury + platform_float) — sentinel uuid owner.
+-- 5. System accounts (platform_treasury + platform_float) - sentinel uuid owner.
 -- ============================================================================
 
 insert into ledger.accounts (account_id, user_id, account_type, balance_cached)
@@ -163,7 +163,7 @@ declare
   v_account_type text;
   v_sum_check bigint := 0;
 begin
-  -- (a) Idempotency replay — return prior transaction_id if key hit.
+  -- (a) Idempotency replay - return prior transaction_id if key hit.
   if p_idempotency_key is null or length(p_idempotency_key) = 0 then
     raise exception 'idempotency_key_required' using errcode = '22023';
   end if;
@@ -267,7 +267,7 @@ begin
   insert into ledger.idempotency_keys (key, user_id, response_transaction_id)
   values (p_idempotency_key, p_user_id, v_transaction_id);
 
-  -- (h) Audit log success (info severity — for ops visibility).
+  -- (h) Audit log success (info severity - for ops visibility).
   insert into ledger.audit (user_id, severity, kind, message, metadata)
   values (p_user_id, 'info', 'transaction_posted',
           format('Posted %s for user', p_transaction_type),
@@ -312,7 +312,7 @@ begin
     raise exception 'amount_must_be_positive' using errcode = '22023';
   end if;
 
-  -- Ensure user_available account exists (lazy-create — balance plumbing, not identity).
+  -- Ensure user_available account exists (lazy-create - balance plumbing, not identity).
   insert into ledger.accounts (user_id, account_type)
   values (p_user_id, 'available')
   on conflict (user_id, account_type) do nothing;
@@ -371,7 +371,7 @@ begin
     p_user_id, 'signup_bonus', v_legs,
     'signup:' || p_user_id::text,
     p_user_id,
-    jsonb_build_object('note', 'Welcome to Sweats — 100 GC starter bonus'),
+    jsonb_build_object('note', 'Welcome to Sweats - 100 GC starter bonus'),
     true  -- require age_verified; caller (submit_age_gate) just set it to true
   );
 end;
@@ -466,7 +466,7 @@ revoke all on function ledger.verify_balance(uuid) from public;
 grant execute on function ledger.verify_balance(uuid) to service_role;
 
 -- ============================================================================
--- 11. Wire signup bonus into submit_age_gate — post-verification, idempotent.
+-- 11. Wire signup bonus into submit_age_gate - post-verification, idempotent.
 -- ============================================================================
 
 create or replace function public.submit_age_gate(p_dob date)

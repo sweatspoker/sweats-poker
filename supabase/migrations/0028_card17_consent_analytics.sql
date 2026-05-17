@@ -12,7 +12,7 @@
 set search_path = public;
 
 -- ============================================================================
--- 1. players.consent_releases — signed release per player.
+-- 1. players.consent_releases - signed release per player.
 -- ============================================================================
 
 create table if not exists players.consent_releases (

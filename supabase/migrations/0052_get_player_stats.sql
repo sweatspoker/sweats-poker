@@ -1,4 +1,4 @@
--- 0052: public.get_player_stats(player_id) — aggregate + per-session stats
+-- 0052: public.get_player_stats(player_id) - aggregate + per-session stats
 -- for the Place Bid detail page's player-stats panel. Pulls from
 -- ipo.offerings (sessions + IPO clearing + final share value) and joins
 -- with streams.streams (stream name + start time) and orders.trades

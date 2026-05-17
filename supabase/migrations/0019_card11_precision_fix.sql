@@ -3,7 +3,7 @@
 -- with treasury".
 --
 -- Original distribute() used (total_pool / total_shares) first, then
--- multiplied by shares_held — which floors per-share THEN multiplies,
+-- multiplied by shares_held - which floors per-share THEN multiplies,
 -- compounding the rounding loss. Fixed: multiply-first, divide-last so
 -- each holder gets the maximum integer-minor-unit (cent) payout, with
 -- residual still staying with treasury.

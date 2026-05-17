@@ -1,5 +1,5 @@
 -- Card 5 restructure → sealed-bid uniform-clearing-price auction
--- (Sweats Building Appendix Sec 4 — converged with sovereign 2026-05-15).
+-- (Sweats Building Appendix Sec 4 - converged with sovereign 2026-05-15).
 --
 -- Replaces the v0.1 face-value FCFS-by-time mechanic with the auction mechanic
 -- the appendix mandates:
@@ -10,7 +10,7 @@
 --     Top bids fill until shares exhausted. All winners pay the LOWEST
 --     accepted bid (uniform clearing price). Overbid refunds the difference.
 --   • Pool funded at face_value × total_filled. Premium (clearing - face)
---     goes to platform_revenue at IPO close (NOT into pool — appendix Sec 4).
+--     goes to platform_revenue at IPO close (NOT into pool - appendix Sec 4).
 --   • Unfilled bidders fully refunded.
 
 set search_path = public;
@@ -57,7 +57,7 @@ alter table ledger.transactions
   ));
 
 -- ============================================================================
--- 3. ipo.bids — first-class bid table (appendix Sec 9 ipo_bids).
+-- 3. ipo.bids - first-class bid table (appendix Sec 9 ipo_bids).
 -- ============================================================================
 
 create table if not exists ipo.bids (

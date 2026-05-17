@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0035: streams.streams — a streamed cash game event at a venue.
+-- 0035: streams.streams - a streamed cash game event at a venue.
 --
 -- Hybrid stakes model (council R3): discrete canonical columns for the 95%
 -- case (sb/bb/ante/straddle), plus stakes_extras jsonb for non-standard
@@ -52,7 +52,7 @@ comment on table streams.streams is
   'machine: scheduled -> live -> ended | cancelled.';
 
 -- ============================================================================
--- streams.ipo_window(stream) — resolved IPO open/close window for a stream.
+-- streams.ipo_window(stream) - resolved IPO open/close window for a stream.
 -- Falls back to platform_settings when per-stream override is null.
 -- ============================================================================
 

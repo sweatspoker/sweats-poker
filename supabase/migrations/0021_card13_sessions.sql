@@ -140,7 +140,7 @@ end;
 $$;
 
 -- ============================================================================
--- 4. ipo.transition_session — admin-driven state machine driver for post-IPO
+-- 4. ipo.transition_session - admin-driven state machine driver for post-IPO
 --    transitions. Skips the trigger by writing session_state directly; the
 --    trigger only touches session_state when clearing_status moves.
 -- ============================================================================

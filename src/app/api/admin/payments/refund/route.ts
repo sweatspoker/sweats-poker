@@ -10,7 +10,7 @@ function constantTimeEqual(a: string, b: string): boolean {
 }
 
 /**
- * Card 3 admin refund — operator-triggered refund/chargeback simulation.
+ * Card 3 admin refund - operator-triggered refund/chargeback simulation.
  *
  * Gemini reviewer nit: dev/admin panel must have a way to test the refund
  * side of the ledger before real Stripe ships dispute events. Same shared-

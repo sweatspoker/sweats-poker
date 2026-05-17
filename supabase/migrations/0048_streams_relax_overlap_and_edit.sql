@@ -9,7 +9,7 @@
 --
 --     New rule: only LIVE rosters can't overlap (physical reality:
 --     player can only be at one table at once). Scheduled rosters
---     are allowed to overlap freely — operator owns the schedule.
+--     are allowed to overlap freely - operator owns the schedule.
 --
 -- (B) Add streams.streams_edit RPC for the new operator edit UI.
 
@@ -27,7 +27,7 @@ alter table streams.stream_roster
   ) where (status = 'live');
 
 -- Also tighten the time_range default in sessions_add_player from
--- 12 hours to 6 hours when end_time is null — closer to typical cash
+-- 12 hours to 6 hours when end_time is null - closer to typical cash
 -- game length, less spurious overlap.
 
 create or replace function streams.sessions_add_player(
@@ -124,7 +124,7 @@ end;
 $$;
 
 -- =========================================================================
--- (B) streams_edit — mutable fields: name, start_time, end_time, notes
+-- (B) streams_edit - mutable fields: name, start_time, end_time, notes
 -- =========================================================================
 
 create or replace function streams.streams_edit(

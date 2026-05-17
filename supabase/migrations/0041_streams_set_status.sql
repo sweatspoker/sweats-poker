@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0041: stream lifecycle controls — start / end / cancel with state-aware
+-- 0041: stream lifecycle controls - start / end / cancel with state-aware
 -- cascade to each offering.
 --
 -- Council R3 explicitly rejected "blind mass-update" cascade. Each
@@ -15,7 +15,7 @@
 --                           session_status='voided'.
 --   any       -> cancelled: cancel every active bid via ipo.cancel_bid, then
 --                           mark all offerings session_status='cancelled'.
---                           (Distinct from no_show — that's per-offering and
+--                           (Distinct from no_show - that's per-offering and
 --                           preserves trade history per Claude.ai R3 nit.)
 --
 -- Halt+amend+resume per-offering (operator error recovery) lands in a
@@ -103,7 +103,7 @@ begin
          where offering_id = v_offering.offering_id;
         v_clear_count := v_clear_count + 1;
       else
-        -- Already past clearing (e.g. 'active' or 'settling') — mark settled.
+        -- Already past clearing (e.g. 'active' or 'settling') - mark settled.
         update ipo.offerings
            set session_status = 'settled'
          where offering_id = v_offering.offering_id;

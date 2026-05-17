@@ -2,7 +2,7 @@
 
 Branded HTML for the auth emails Supabase sends on the player app's behalf
 (`signInWithOtp`, `signUp`, etc.). Supabase doesn't pull these from the
-repo — you have to paste them into the dashboard manually.
+repo - you have to paste them into the dashboard manually.
 
 ## How to deploy
 
@@ -13,7 +13,7 @@ repo — you have to paste them into the dashboard manually.
    **Message (HTML)** field
 5. Click **Save**
 
-The template uses Supabase's standard token `{{ .ConfirmationURL }}` —
+The template uses Supabase's standard token `{{ .ConfirmationURL }}` -
 do not edit that line.
 
 ## Where the email comes from
@@ -28,4 +28,4 @@ same dashboard under **Authentication → SMTP Settings** with
 
 Dark surface (#0a0a0a bg / #141414 card), brand-red logomark, brand-green
 CTA pill ("Sign in →"). Mirrors the live login page treatment. Inlined
-styles only — works in clients that strip `<style>` blocks (Gmail, Outlook).
+styles only - works in clients that strip `<style>` blocks (Gmail, Outlook).

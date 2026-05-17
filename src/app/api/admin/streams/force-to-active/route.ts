@@ -5,7 +5,7 @@ import { checkAdminToken } from "@/lib/admin-auth";
 /**
  * POST /api/admin/streams/force-to-active
  *
- * Operator "Push Live" — player just sat down. Clears the IPO (allocates
+ * Operator "Push Live" - player just sat down. Clears the IPO (allocates
  * shares to winning bidders, refunds losers), then transitions the
  * offering to session_state='active' so secondary-market trading opens.
  * Idempotent if already active.

@@ -21,7 +21,7 @@ function gcFromMinor(minor: number): string {
 function prettyError(code: string, detail?: string): string {
   const text = `${code} ${detail ?? ""}`;
   if (text.includes("bid_already_exists"))
-    return "You already have a bid on this IPO — submitting again raises it instead.";
+    return "You already have a bid on this IPO - submitting again raises it instead.";
   if (text.includes("insufficient_balance")) return "Not enough SC in your wallet.";
   if (text.includes("price_below_reserve")) return "Bid price is below the reserve.";
   if (text.includes("shares_must_be_positive")) return "Shares must be at least 1.";
@@ -146,7 +146,7 @@ export function BidForm({
   if (!tierUpgraded) {
     return (
       <div className="rounded-2xl border border-[var(--brand-red)]/40 bg-[var(--brand-red)]/10 p-5 text-base text-[var(--brand-red)]">
-        Upgraded tier required to bid. Buy Sweats Coins to upgrade — first purchase ≥ $10 unlocks
+        Upgraded tier required to bid. Buy Sweats Coins to upgrade - first purchase ≥ $10 unlocks
         bidding automatically.
       </div>
     );

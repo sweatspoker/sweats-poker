@@ -58,7 +58,7 @@ export async function GET(
       participantCount = new Set(bids.map((b) => b.user_id)).size;
     }
   } catch {
-    // swallow — counters are informational
+    // swallow - counters are informational
   }
 
   return NextResponse.json({

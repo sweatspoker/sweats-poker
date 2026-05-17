@@ -45,7 +45,7 @@ export type PerformanceSeries = {
 };
 
 function gc(minor: number | null | undefined, digits = 2): string {
-  if (minor == null) return "—";
+  if (minor == null) return "-";
   return (minor / 100).toLocaleString(undefined, {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
@@ -96,7 +96,7 @@ export function PerformanceTab({
     <div className="flex flex-col gap-6">
       <PerformanceChart initial={seedSeries} />
 
-      {/* Performance breakdown — tier badge in the header. */}
+      {/* Performance breakdown - tier badge in the header. */}
       <section className="rounded-3xl border border-white/8 bg-[var(--surface)]/60 p-5 flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3 pb-1">
           <div className="text-base font-semibold text-white/50 uppercase tracking-[0.1em]">
@@ -143,7 +143,7 @@ export function PerformanceTab({
         )}
         <Row
           label="Win rate"
-          value={p.win_rate_pct != null ? `${p.win_rate_pct.toFixed(1)}%` : "—"}
+          value={p.win_rate_pct != null ? `${p.win_rate_pct.toFixed(1)}%` : "-"}
           tone={
             p.win_rate_pct == null
               ? undefined

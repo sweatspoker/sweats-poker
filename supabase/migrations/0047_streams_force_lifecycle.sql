@@ -1,7 +1,7 @@
 -- 0047: Two operator-facing fast-forwards for the IPO lifecycle.
 --
 -- (A) streams.force_open_offering: rewrite so it ALSO pulls opens_at to
---     now() (and bumps closes_at if needed) — previously it only flipped
+--     now() (and bumps closes_at if needed) - previously it only flipped
 --     session_state, leaving ipo.place_bid blocked by the time window
 --     check (now() between opens_at and closes_at). Operator-facing button
 --     looked like it enabled bidding but bids kept getting rejected with
@@ -12,7 +12,7 @@
 --     to winning bidders, refunds losers via ipo.clear_offering) and
 --     transitions session_state to 'active' so secondary-market trading
 --     opens. Maps to the operator action "the player just sat down at
---     the table — open trading on their shares". Idempotent if already
+--     the table - open trading on their shares". Idempotent if already
 --     active.
 
 create or replace function streams.force_open_offering(
@@ -82,7 +82,7 @@ end;
 $$;
 
 -- ============================================================================
--- streams.force_to_active — operator clicks "Push Live" on a player who
+-- streams.force_to_active - operator clicks "Push Live" on a player who
 -- just sat down. Clears the IPO if needed, then transitions to active.
 -- ============================================================================
 

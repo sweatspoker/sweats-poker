@@ -89,7 +89,7 @@ revoke all on function public.venues_upsert(uuid, text, text, text, text, text, 
 grant execute on function public.venues_upsert(uuid, text, text, text, text, text, text, text, text, boolean, uuid, jsonb) to service_role;
 
 -- ----------------------------------------------------------------------------
--- streams_create — create a Stream + seed an initial stakes_events row.
+-- streams_create - create a Stream + seed an initial stakes_events row.
 -- ----------------------------------------------------------------------------
 create or replace function streams.streams_create(
   p_venue_id               uuid,
@@ -176,7 +176,7 @@ revoke all on function public.streams_create(uuid, timestamptz, timestamptz, big
 grant execute on function public.streams_create(uuid, timestamptz, timestamptz, bigint, bigint, bigint, bigint, jsonb, integer, integer, text, uuid) to service_role;
 
 -- ----------------------------------------------------------------------------
--- streams_record_stakes_change — append a stakes_events row + update streams.
+-- streams_record_stakes_change - append a stakes_events row + update streams.
 -- ----------------------------------------------------------------------------
 create or replace function streams.streams_record_stakes_change(
   p_stream_id      uuid,
@@ -243,7 +243,7 @@ revoke all on function public.streams_record_stakes_change(uuid, bigint, bigint,
 grant execute on function public.streams_record_stakes_change(uuid, bigint, bigint, bigint, bigint, jsonb, text, uuid) to service_role;
 
 -- ----------------------------------------------------------------------------
--- sessions_add_player — creates one ipo.offerings + one stream_roster row
+-- sessions_add_player - creates one ipo.offerings + one stream_roster row
 -- atomically and links them together. Replaces the old sessions_create.
 -- ----------------------------------------------------------------------------
 create or replace function streams.sessions_add_player(
@@ -292,7 +292,7 @@ begin
   v_total_shares := p_declared_buyin_minor / v_price_per_share_minor;
   if v_total_shares <= 0 then raise exception 'declared_buyin_too_small' using errcode = '22023'; end if;
 
-  -- Create the offering. session_state seeds from the resolved IPO window —
+  -- Create the offering. session_state seeds from the resolved IPO window -
   -- reserve role keeps the offering in 'draft' until promoted.
   insert into ipo.offerings (
     player_id, player_display_name, total_shares, shares_remaining,
@@ -358,7 +358,7 @@ revoke all on function public.sessions_add_player(uuid, text, bigint, text, time
 grant execute on function public.sessions_add_player(uuid, text, bigint, text, timestamptz, text, uuid) to service_role;
 
 -- ----------------------------------------------------------------------------
--- sessions_promote_reserve — atomic reserve→starting promotion.
+-- sessions_promote_reserve - atomic reserve→starting promotion.
 -- ----------------------------------------------------------------------------
 create or replace function streams.sessions_promote_reserve(
   p_reserve_offering_id  uuid,

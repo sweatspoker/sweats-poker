@@ -88,24 +88,24 @@ export function OrderBookView({ offeringId }: { offeringId: string }) {
       </div>
 
       <div className="grid grid-cols-3 gap-2 text-sm tabular-nums">
-        <Stat label="Last" value={lastPrice != null ? `${gc(lastPrice)} SC` : "—"} />
+        <Stat label="Last" value={lastPrice != null ? `${gc(lastPrice)} SC` : "-"} />
         <Stat
           label="Bid / Ask"
           value={
             <span>
-              <span className="text-[var(--brand-green)]">{topBid != null ? gc(topBid) : "—"}</span>
+              <span className="text-[var(--brand-green)]">{topBid != null ? gc(topBid) : "-"}</span>
               <span className="text-white/30"> / </span>
-              <span className="text-[var(--brand-red)]">{topAsk != null ? gc(topAsk) : "—"}</span>
+              <span className="text-[var(--brand-red)]">{topAsk != null ? gc(topAsk) : "-"}</span>
             </span>
           }
         />
-        <Stat label="Spread" value={spread != null ? `${gc(spread)} SC` : "—"} />
+        <Stat label="Spread" value={spread != null ? `${gc(spread)} SC` : "-"} />
       </div>
 
-      {/* Bid / Ask depth table: 4 columns — bid vol, bid price, ask price, ask vol.
+      {/* Bid / Ask depth table: 4 columns - bid vol, bid price, ask price, ask vol.
           Each row has green/red depth bars in the background sized by volume / max. */}
       <div className="overflow-hidden rounded-xl">
-        {/* Divider rule under the headers — green left half, red right half */}
+        {/* Divider rule under the headers - green left half, red right half */}
         <div className="grid grid-cols-2 mb-2">
           <div className="text-[10px] uppercase tracking-[0.12em] text-white/40 font-semibold pl-2">
             Bid
@@ -136,7 +136,7 @@ export function OrderBookView({ offeringId }: { offeringId: string }) {
                   key={i}
                   className="relative grid grid-cols-4 items-center text-sm tabular-nums py-1.5"
                 >
-                  {/* Depth bar — bid side: extends RIGHT from left edge across the bid half. */}
+                  {/* Depth bar - bid side: extends RIGHT from left edge across the bid half. */}
                   {bid && (
                     <span
                       aria-hidden
@@ -144,7 +144,7 @@ export function OrderBookView({ offeringId }: { offeringId: string }) {
                       style={{ width: `calc(${bidPct / 2}%)` }}
                     />
                   )}
-                  {/* Depth bar — ask side: extends LEFT from right edge across the ask half. */}
+                  {/* Depth bar - ask side: extends LEFT from right edge across the ask half. */}
                   {ask && (
                     <span
                       aria-hidden

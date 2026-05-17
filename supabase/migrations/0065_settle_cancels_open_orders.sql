@@ -2,7 +2,7 @@
 -- offering BEFORE distributing the pool. Reason:
 --   - Sell orders escrow shares (portfolio → escrow_order_shares).
 --     If a settle fires while those orders are open, the escrowed
---     shares are NOT in portfolio.shares_held and miss the payout —
+--     shares are NOT in portfolio.shares_held and miss the payout -
 --     and the seller is left with stranded shares + no payout.
 --   - Buy orders escrow GC (available → escrow_order_buy). After
 --     settle the offering is terminal, those buy orders can never

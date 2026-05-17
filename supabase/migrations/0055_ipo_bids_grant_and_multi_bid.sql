@@ -9,11 +9,11 @@
 --
 -- (B) Drop the (offering_id, user_id) UNIQUE constraint on ipo.bids
 --     so a user can place multiple bids on the same IPO at different
---     prices — Tommy's product call (matches a real order-book mental
+--     prices - Tommy's product call (matches a real order-book mental
 --     model, not "one big bid per user"). The clearing logic already
 --     processes each bid row independently (FCFS over ipo_bid_placed
 --     transactions), so no clearing change is needed.
---     place_bid will need an idempotency guard refresh — handled in
+--     place_bid will need an idempotency guard refresh - handled in
 --     a follow-up migration; for now duplicate idempotency keys are
 --     still rejected via the audit-log layer.
 

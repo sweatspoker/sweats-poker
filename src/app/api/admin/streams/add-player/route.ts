@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "rpc_failed", detail: msg }, { status: 500 });
   }
 
-  // sessions_add_player returns table(out_offering_id, out_roster_id) — RPC returns array.
+  // sessions_add_player returns table(out_offering_id, out_roster_id) - RPC returns array.
   const first = Array.isArray(data) ? data[0] : data;
   return NextResponse.json({
     ok: true,

@@ -1,4 +1,4 @@
--- 0072: fix get_my_performance_series — ipo.offerings has no updated_at
+-- 0072: fix get_my_performance_series - ipo.offerings has no updated_at
 -- column. coalesce settled_at → created_at instead. Without this fix the
 -- function raised an error silently, leaving the Profile > Performance
 -- chart empty.

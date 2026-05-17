@@ -1,4 +1,4 @@
--- 0068: public.get_my_results() — lifetime trading aggregates for the
+-- 0068: public.get_my_results() - lifetime trading aggregates for the
 -- Profile > Results tab. Returns a single jsonb payload with:
 --
 -- Performance:

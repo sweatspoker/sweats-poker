@@ -8,7 +8,7 @@ import {
 } from "@/lib/payments/webhook-verify";
 
 /**
- * Card 3 payments webhook — receives signed payment events from either
+ * Card 3 payments webhook - receives signed payment events from either
  * Stripe (real, future cycle) or the synthetic-walkthrough simulator
  * (this cycle). The route is provider-agnostic by construction: it never
  * inspects raw Stripe object structure. The verifier maps everything into

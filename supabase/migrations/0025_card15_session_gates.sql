@@ -20,7 +20,7 @@ comment on column ipo.offerings.no_show_cancelled_at is
   'Card 15: when operator marked the session no-show. Full refund of winning bids triggered; tags the cancellation_reason as "player_no_show".';
 
 -- ============================================================================
--- 2. ipo.signal_pre_settlement_freeze — operator declares intent to settle.
+-- 2. ipo.signal_pre_settlement_freeze - operator declares intent to settle.
 --    Locks new orders for the next 5 minutes (Sec 7 voluntary-cashout gate).
 -- ============================================================================
 
@@ -218,7 +218,7 @@ revoke all on function orders.place_order(uuid, text, uuid, text, bigint, bigint
 grant execute on function orders.place_order(uuid, text, uuid, text, bigint, bigint, text, uuid, timestamptz) to service_role;
 
 -- ============================================================================
--- 5. ipo.no_show_cancel — operator marks session as player no-show.
+-- 5. ipo.no_show_cancel - operator marks session as player no-show.
 --    Refunds all winning bids fully (face + premium, since neither was real
 --    revenue if the player never played). Resets platform_revenue + treasury.
 -- ============================================================================

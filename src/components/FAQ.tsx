@@ -6,7 +6,7 @@ type Item = { q: string; a: string };
 type Group = { kicker: string; items: Item[] };
 
 // Council-converged FAQ (DeepSeek R1, 2026-05-17). 6 buckets, sharp answers
-// in product voice — no apology, no crypto jargon, no sports-betting hedge.
+// in product voice - no apology, no crypto jargon, no sports-betting hedge.
 // Where the live platform doesn't yet have a feature DeepSeek inferred
 // (referral rewards, specific redemption channels, etc.), we wrote the
 // answer in plainer terms or marked TBD so we don't ship false claims.
@@ -21,7 +21,7 @@ const groups: Group[] = [
       },
       {
         q: "Do I have to pay to play?",
-        a: "No. New accounts get a free Sweats Coin signup bonus. You can also top up with extra SC via card if you want bigger bets, but paying never increases your odds — it just gives you more volume.",
+        a: "No. New accounts get a free Sweats Coin signup bonus. You can also top up with extra SC via card if you want bigger bets, but paying never increases your odds - it just gives you more volume.",
       },
       {
         q: "How do I sign up?",
@@ -29,7 +29,7 @@ const groups: Group[] = [
       },
       {
         q: "What's a Sweats Coin worth?",
-        a: "1 SC is the in-app unit you trade with. It's not a cryptocurrency — there's no blockchain, no wallet to connect, nothing transferable outside the app. You earn it free or top up via card; you win it back as your players cash out.",
+        a: "1 SC is the in-app unit you trade with. It's not a cryptocurrency - there's no blockchain, no wallet to connect, nothing transferable outside the app. You earn it free or top up via card; you win it back as your players cash out.",
       },
     ],
   },
@@ -38,7 +38,7 @@ const groups: Group[] = [
     items: [
       {
         q: "How do I buy shares of a player?",
-        a: "Each session opens with an IPO — a sealed-bid auction where you say how many shares you want and how much you'll pay. Highest bids win. The clearing price is uniform: everyone who got allocated shares pays the same final price.",
+        a: "Each session opens with an IPO - a sealed-bid auction where you say how many shares you want and how much you'll pay. Highest bids win. The clearing price is uniform: everyone who got allocated shares pays the same final price.",
       },
       {
         q: "When does the IPO close?",
@@ -75,7 +75,7 @@ const groups: Group[] = [
       },
       {
         q: "What if the stream cuts out?",
-        a: "Trading halts immediately. No buys, no sells. If the stream comes back, trading resumes. If it doesn't, the operator settles from the last verified stack — same as a walk-off.",
+        a: "Trading halts immediately. No buys, no sells. If the stream comes back, trading resumes. If it doesn't, the operator settles from the last verified stack - same as a walk-off.",
       },
     ],
   },
@@ -105,7 +105,7 @@ const groups: Group[] = [
       },
       {
         q: "Could the operator or the player rig the outcome?",
-        a: "No. The player is on stream the whole time. Stack changes are visible to everyone. Suspicious behavior — chip dumping, soft play, walking with chips — triggers a halt and a review.",
+        a: "No. The player is on stream the whole time. Stack changes are visible to everyone. Suspicious behavior - chip dumping, soft play, walking with chips - triggers a halt and a review.",
       },
       {
         q: "Who decides the IPO price?",
@@ -125,7 +125,7 @@ const groups: Group[] = [
         a: "18+ to play, 21+ to redeem cash in jurisdictions that require it. We verify age at signup and identity at redemption.",
       },
       {
-        q: "I run a poker room — can I partner?",
+        q: "I run a poker room - can I partner?",
         a: "Yes. Email partnerships@sweats.poker. Branded sessions, custom roster, a cut of trading volume on your players.",
       },
     ],

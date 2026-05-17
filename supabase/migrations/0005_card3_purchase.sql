@@ -1,4 +1,4 @@
--- Card 3 — purchase (GC for fiat) — placeholder + real Stripe layer
+-- Card 3 - purchase (GC for fiat) - placeholder + real Stripe layer
 -- Scope amendment 2026-05-15 (Tommy directive via /sixis-pickup 8b51649a):
 --   Real Stripe integration deferred; this migration ships the ledger-side
 --   primitives (new transaction_types + thin wrapper). The same wrapper is
@@ -21,7 +21,7 @@ alter table ledger.transactions
     'admin_grant',         -- Card 2: operator credits user's available from platform_treasury
     'signup_bonus',        -- Card 2: trigger-fired one-shot credit on first age-gate completion
     'purchase_settled',    -- Card 3: user paid fiat (real or synthetic) → GC credit
-    'purchase_refunded'    -- Card 3: chargeback / explicit refund — opposite legs
+    'purchase_refunded'    -- Card 3: chargeback / explicit refund - opposite legs
   ));
 
 -- 2. Thin wrapper that calls post_transaction. Source-agnostic by design:
@@ -112,7 +112,7 @@ revoke all on function ledger.purchase_complete(text, uuid, bigint, text, uuid, 
 grant execute on function ledger.purchase_complete(text, uuid, bigint, text, uuid, jsonb) to service_role;
 
 comment on function ledger.purchase_complete is
-  'Card 3: thin wrapper around post_transaction for GC purchases. Source-agnostic — pass p_source=''stripe'' for real webhook calls, ''synthetic'' for the placeholder walkthrough endpoint. Namespaced idempotency keys keep the two flows distinguishable at audit time. Real-Stripe cutover is a single-file swap at the API route (replace /api/payments/simulate-completed with /api/stripe/webhook, add signature verification middleware, call this same RPC with p_source=''stripe''). $1 = 10 GC rate (= 1000 minor units / dollar) is enforced application-side, not here, so partial refunds can be exact.';
+  'Card 3: thin wrapper around post_transaction for GC purchases. Source-agnostic - pass p_source=''stripe'' for real webhook calls, ''synthetic'' for the placeholder walkthrough endpoint. Namespaced idempotency keys keep the two flows distinguishable at audit time. Real-Stripe cutover is a single-file swap at the API route (replace /api/payments/simulate-completed with /api/stripe/webhook, add signature verification middleware, call this same RPC with p_source=''stripe''). $1 = 10 GC rate (= 1000 minor units / dollar) is enforced application-side, not here, so partial refunds can be exact.';
 
 -- 3. Refund wrapper (opposite legs). Same idempotency-prefix discipline.
 create or replace function ledger.purchase_refund(

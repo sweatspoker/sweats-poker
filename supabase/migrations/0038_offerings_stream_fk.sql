@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0038: hard cutover — ipo.offerings now belongs to a stream.
+-- 0038: hard cutover - ipo.offerings now belongs to a stream.
 --
 -- Council R3 ratified hard cutover (zero prod offerings = no backfill).
 -- Adds stream_id NOT NULL FK + player_role + cash_reserve_minor + the

@@ -31,7 +31,7 @@ function gc(minor: number, digits = 2): string {
 }
 
 function fmtDuration(seconds: number | null): string {
-  if (!seconds || seconds <= 0) return "—";
+  if (!seconds || seconds <= 0) return "-";
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   if (h > 0) return `${h}h ${m}m`;

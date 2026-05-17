@@ -5,7 +5,7 @@
 -- pool into the actual holders even though the IPO usually clears with
 -- many shares unsold. Real-world semantic: each share represents one
 -- unit of the player's buy-in (total_shares == declared buy-in in $). If
--- the player loses, every share loses proportionally — held or not.
+-- the player loses, every share loses proportionally - held or not.
 -- Unsold shares' implicit slice of the pool stays with treasury.
 
 create or replace function settlements.distribute(

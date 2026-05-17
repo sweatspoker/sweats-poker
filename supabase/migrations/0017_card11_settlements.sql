@@ -1,4 +1,4 @@
--- Card 11 — settlement_payout (locked v1 plan Card 9 from Card 3 brain dump)
+-- Card 11 - settlement_payout (locked v1 plan Card 9 from Card 3 brain dump)
 -- Settlement distribution to shareholders proportional to ipo.portfolio.shares_held.
 -- Pattern mirrors Card 5 IPO clearing: SECURITY DEFINER RPC walks holders,
 -- credits each user's available, debits platform_treasury for total pool.
@@ -45,7 +45,7 @@ grant usage on schema settlements to service_role;
 grant select, insert, update on settlements.events to service_role;
 
 -- =============================================================================
--- settlements.distribute — credit all holders proportionally to shares_held.
+-- settlements.distribute - credit all holders proportionally to shares_held.
 -- Idempotent: re-running a settled event returns the existing summary.
 -- =============================================================================
 

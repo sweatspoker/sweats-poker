@@ -1,7 +1,7 @@
--- Card 5 — IPO mechanic (fixed-price FCFS allocation in v1)
+-- Card 5 - IPO mechanic (fixed-price FCFS allocation in v1)
 -- Council R1: DeepSeek + Claude.ai unanimous on all 6 sub-questions
--- (GPT R2 follow-up deferred — macOS screen lock at relay time).
--- Gemini judge: GO-WITH-NITS — all nits folded into this migration.
+-- (GPT R2 follow-up deferred - macOS screen lock at relay time).
+-- Gemini judge: GO-WITH-NITS - all nits folded into this migration.
 --
 -- Architecture summary:
 --   - Standalone `ipo.offerings` table (offering_id, player_id, total_shares,
@@ -18,12 +18,12 @@
 --   - RPCs (audit.events emits ipo_bid_* action_types):
 --       ipo.place_bid(p_user_id, p_offering_id, p_bid_shares, p_idempotency_key, ...)
 --       ipo.clear_offering(p_offering_id, p_admin_user_id)
---           — FCFS ordering by (bid transaction.created_at, transaction_id).
---           — Idempotent on (offering_id, clearing_status='cleared').
---           — Status transition OPEN → CLEARING → CLOSED prevents concurrent clears.
---           — Partial fill: boundary bid gets fractional shares with refund-tail.
+--           - FCFS ordering by (bid transaction.created_at, transaction_id).
+--           - Idempotent on (offering_id, clearing_status='cleared').
+--           - Status transition OPEN → CLEARING → CLOSED prevents concurrent clears.
+--           - Partial fill: boundary bid gets fractional shares with refund-tail.
 --       ipo.refund_bid(p_bid_transaction_id, p_admin_user_id)
---           — for cancelled offerings or post-clearing unfilled refunds.
+--           - for cancelled offerings or post-clearing unfilled refunds.
 --
 -- Production safety:
 --   - IPO_CLEARING_ENABLED env flag in routes (Gate-A kill switch).
@@ -113,7 +113,7 @@ comment on table ipo.offerings is
   'Card 5: a single IPO offering for a player. Lifecycle state machine: pending → open (visible to bidders) → clearing (admin-initiated, no new bids) → closed (cleared, shares_remaining=0) or cancelled. shares_remaining is decremented atomically as ipo_bid_cleared fires; refund paths increment back.';
 
 -- =============================================================================
--- 5. ipo.portfolio — user share-ownership per offering.
+-- 5. ipo.portfolio - user share-ownership per offering.
 --    Authoritative for shares. Updated inside the same ledger.post_transaction
 --    that emits ipo_bid_cleared. Replayable from ledger events (Gemini nit:
 --    "treat as Layer-B projection").
@@ -138,7 +138,7 @@ comment on table ipo.portfolio is
   'Card 5: authoritative share ownership per (user, offering). Modified atomically inside ledger.post_transaction call that fires ipo_bid_cleared. Card 7 order-book/trade-execution Card will be the next writer.';
 
 -- =============================================================================
--- 6. RLS + grants — service-role-only writes, no direct table access.
+-- 6. RLS + grants - service-role-only writes, no direct table access.
 -- =============================================================================
 
 alter table ipo.offerings enable row level security;
@@ -152,7 +152,7 @@ grant select, insert, update, delete on ipo.offerings to service_role;
 grant select, insert, update, delete on ipo.portfolio to service_role;
 
 -- =============================================================================
--- 7. ipo.place_bid — user bids on an open offering. Bid-time escrow.
+-- 7. ipo.place_bid - user bids on an open offering. Bid-time escrow.
 --    Writes ipo_bid_placed transaction with legs: available → escrow_ipo_bid.
 --    Idempotent on idempotency_key.
 -- =============================================================================
@@ -187,7 +187,7 @@ begin
 
   -- Lock the offering row for the duration so concurrent bids serialize
   -- against status transitions. The serialization point is per-offering, not
-  -- per-user (Card 2 advisory lock is per-user — different concern).
+  -- per-user (Card 2 advisory lock is per-user - different concern).
   select * into v_offering from ipo.offerings where offering_id = p_offering_id for update;
   if v_offering.offering_id is null then
     raise exception 'offering_not_found' using errcode = '23503',
@@ -266,7 +266,7 @@ revoke all on function ipo.place_bid(uuid, uuid, bigint, text, uuid, jsonb) from
 grant execute on function ipo.place_bid(uuid, uuid, bigint, text, uuid, jsonb) to service_role;
 
 -- =============================================================================
--- 8. ipo.clear_offering — FCFS allocation + portfolio updates + refund tail.
+-- 8. ipo.clear_offering - FCFS allocation + portfolio updates + refund tail.
 --    Status transition OPEN/PENDING → CLEARING → CLOSED prevents concurrent clears.
 --    Idempotent: re-running a closed offering returns the existing summary.
 -- =============================================================================

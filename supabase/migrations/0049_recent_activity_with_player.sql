@@ -1,4 +1,4 @@
--- 0049: public.get_my_recent_activity — richer activity feed that pulls
+-- 0049: public.get_my_recent_activity - richer activity feed that pulls
 -- player_display_name for bid/trade/clearing/refund entries so the wallet
 -- can show "Player · N shares @ X GC" instead of bare 'ipo_bid_placed'.
 

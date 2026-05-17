@@ -382,7 +382,7 @@ export default async function MarketsPage({
                           {" · "}${dollarsFromMinor(s.sb_minor)}/${dollarsFromMinor(s.bb_minor)}
                         </>
                       ) : (
-                        "—"
+                        "-"
                       )}
                     </div>
                   </div>

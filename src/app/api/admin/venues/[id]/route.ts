@@ -3,8 +3,8 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { checkAdminToken } from "@/lib/admin-auth";
 
 /**
- * GET    /api/admin/venues/[id] — fetch single venue
- * DELETE /api/admin/venues/[id]?soft=true|false — delete (FK-restricted) or
+ * GET    /api/admin/venues/[id] - fetch single venue
+ * DELETE /api/admin/venues/[id]?soft=true|false - delete (FK-restricted) or
  *        soft-delete (sets is_active=false)
  */
 export async function GET(
@@ -55,7 +55,7 @@ export async function DELETE(
     return NextResponse.json({ ok: true, soft: true });
   }
 
-  // Hard delete — Postgres FK on streams.streams.venue_id will refuse if
+  // Hard delete - Postgres FK on streams.streams.venue_id will refuse if
   // any stream references this venue.
   const { error } = await admin
     .schema("streams")

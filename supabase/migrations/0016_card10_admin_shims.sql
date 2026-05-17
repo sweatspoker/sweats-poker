@@ -1,4 +1,4 @@
--- Card 10 — public shims for sales.campaigns + scheduled-cleanup helpers
+-- Card 10 - public shims for sales.campaigns + scheduled-cleanup helpers
 -- so the new HTTP admin routes can use plain supabase-js .rpc() calls.
 
 set search_path = public;

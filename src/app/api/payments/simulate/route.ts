@@ -8,7 +8,7 @@ import { signSyntheticPayload, syntheticPathBlockedReason } from "@/lib/payments
  *
  * Public UI button (/wallet, founding-member tier section) POSTs here with
  * just an amount tier. This endpoint:
- *   1. Resolves the user from session cookie (must be age-verified — guard
+ *   1. Resolves the user from session cookie (must be age-verified - guard
  *      is enforced inside the RPC, not here; this route only requires a
  *      logged-in user).
  *   2. Mints a sim_event_id (uuid).
@@ -19,7 +19,7 @@ import { signSyntheticPayload, syntheticPathBlockedReason } from "@/lib/payments
  *
  * Why a forwarder instead of calling purchase_complete directly? Because the
  * point of Card 3 is to make the swap to real Stripe a single-file change at
- * the webhook route — and that requires the verify path being exercised in
+ * the webhook route - and that requires the verify path being exercised in
  * the synthetic flow too. Bypassing /webhook here would mean the synthetic
  * path tests a different code path than production will.
  */
@@ -30,7 +30,7 @@ const RATE_MINOR_PER_DOLLAR = 1000;
 const TIER_AMOUNTS_USD: Record<string, number> = {
   starter: 5,        // 50 SC
   standard: 20,      // 200 SC
-  founder: 100,      // 1000 SC — Card 3a founding-member tier
+  founder: 100,      // 1000 SC - Card 3a founding-member tier
 };
 
 export async function POST(request: NextRequest) {

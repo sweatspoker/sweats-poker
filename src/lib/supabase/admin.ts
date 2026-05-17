@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Service-role Supabase client — server-only, bypasses RLS.
+ * Service-role Supabase client - server-only, bypasses RLS.
  * Used for admin/system writers calling SECURITY DEFINER RPCs that are
  * GRANT EXECUTE'd to service_role (e.g., ledger.admin_grant, post_transaction).
  *

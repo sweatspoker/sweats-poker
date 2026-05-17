@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0036: streams.stream_roster — per-stream player roster.
+-- 0036: streams.stream_roster - per-stream player roster.
 --
 -- 1:1 with ipo.offerings (each roster row owns exactly one offering).
 -- Captures role (starting/reserve) + per-stream consent timestamp +

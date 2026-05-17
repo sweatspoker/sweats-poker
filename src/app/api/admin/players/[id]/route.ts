@@ -6,7 +6,7 @@ import { checkAdminToken } from "@/lib/admin-auth";
  * GET    /api/admin/players/[id]
  * DELETE /api/admin/players/[id]?soft=true|false
  *   - soft (default): sets status='retired' via players_upsert
- *   - hard: SQL delete (FK-restricted by offerings/consent/roster — likely
+ *   - hard: SQL delete (FK-restricted by offerings/consent/roster - likely
  *     to fail on any active player, retire instead)
  */
 export async function GET(
@@ -85,7 +85,7 @@ export async function DELETE(
     return NextResponse.json({ ok: true, soft: true, player_id: data });
   }
 
-  // Hard delete — FK from offerings.player_id + consent_releases.player_id
+  // Hard delete - FK from offerings.player_id + consent_releases.player_id
   // + stream_roster.player_id ON DELETE RESTRICT will block if referenced.
   const { error } = await admin
     .schema("players")

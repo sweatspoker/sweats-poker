@@ -141,7 +141,7 @@ export default async function MarketPage({
     }
   }
 
-  // User's open bids across ALL ipo_open offerings (not just the listed ones —
+  // User's open bids across ALL ipo_open offerings (not just the listed ones -
   // mineTab might show bids on offerings that have since dropped off the list).
   const { data: myBidsRaw } = await admin
     .schema("ipo")
@@ -189,7 +189,7 @@ export default async function MarketPage({
     }
   }
 
-  // Closed IPOs — fetch for the badge count + the Closed tab list.
+  // Closed IPOs - fetch for the badge count + the Closed tab list.
   const { data: closedRaw } = await supabase.rpc("get_my_closed_ipos", { p_limit: 50 });
   const closed = (closedRaw as ClosedIPO[] | null) ?? [];
 
@@ -211,7 +211,7 @@ export default async function MarketPage({
           </h1>
           {profile.tier !== "upgraded" && !isMineTab && !isClosedTab && (
             <p className="text-[var(--brand-red)]/80 text-base">
-              Upgraded tier required to bid — buy SC to upgrade.
+              Upgraded tier required to bid - buy SC to upgrade.
             </p>
           )}
           <TabBar tabs={tabs} active={tab} />
@@ -513,7 +513,7 @@ function ClosedIPOs({ closed }: { closed: ClosedIPO[] }) {
               <li className="flex items-center justify-between gap-3 py-1 border-t border-white/5">
                 <span className="text-white/55">IPO cleared at</span>
                 <span className="font-semibold">
-                  {cleared ? `${gcFromMinor(c.ipo_clearing_price_minor!)} SC` : "—"}
+                  {cleared ? `${gcFromMinor(c.ipo_clearing_price_minor!)} SC` : "-"}
                 </span>
               </li>
               {allocated && (

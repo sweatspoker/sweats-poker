@@ -64,7 +64,7 @@ export default async function IpoDetailPage({
     .maybeSingle();
   const playerPhoto = (playerRow as { photo_url: string | null } | null)?.photo_url ?? null;
 
-  // Top bids (price desc, then time asc — Card 5 auction sort).
+  // Top bids (price desc, then time asc - Card 5 auction sort).
   const { data: bidsRaw } = await admin
     .schema("ipo")
     .from("bids")
@@ -110,7 +110,7 @@ export default async function IpoDetailPage({
 
         {isReserve ? (
           <section className="rounded-3xl border border-amber-500/40 bg-amber-500/10 p-6 text-base text-amber-300">
-            Reserve player — bidding opens automatically when the operator promotes them after a
+            Reserve player - bidding opens automatically when the operator promotes them after a
             starting player busts.
           </section>
         ) : (

@@ -1,4 +1,4 @@
--- Card 12 — redemption_requested / redemption_paid (locked v1 plan Card 14)
+-- Card 12 - redemption_requested / redemption_paid (locked v1 plan Card 14)
 -- User requests redemption of GC for cash; admin approves/denies; payout
 -- credits a future Stripe-side fiat path (or marks as pending payout).
 --
@@ -54,7 +54,7 @@ alter table ledger.transactions
   ));
 
 -- =============================================================================
--- redemptions.request — user requests a redemption.
+-- redemptions.request - user requests a redemption.
 -- Debits user's available → escrow_redemption (new sentinel? we'll create per-user).
 -- =============================================================================
 
@@ -148,7 +148,7 @@ revoke all on function redemptions.request_redemption(uuid, bigint, text, jsonb)
 grant execute on function redemptions.request_redemption(uuid, bigint, text, jsonb) to service_role;
 
 -- =============================================================================
--- redemptions.approve_and_pay — admin approves + records payout transaction.
+-- redemptions.approve_and_pay - admin approves + records payout transaction.
 -- Debits escrow_redemption → platform_treasury (external payout happens
 -- outside the ledger). Status: requested → approved → paid.
 -- =============================================================================
@@ -225,7 +225,7 @@ revoke all on function redemptions.approve_and_pay(uuid, uuid, text, jsonb) from
 grant execute on function redemptions.approve_and_pay(uuid, uuid, text, jsonb) to service_role;
 
 -- =============================================================================
--- redemptions.deny — admin denies a request and refunds escrow → available.
+-- redemptions.deny - admin denies a request and refunds escrow → available.
 -- =============================================================================
 
 create or replace function redemptions.deny_request(

@@ -99,7 +99,7 @@ export function MarketsListPhone() {
   );
 }
 
-// ---- Step 2: Open IPO — place a bid --------------------------------------
+// ---- Step 2: Open IPO - place a bid --------------------------------------
 
 export function IPOBidPhone() {
   return (

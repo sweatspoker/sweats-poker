@@ -42,7 +42,7 @@ export function PriceChart({ offeringId, initial }: Props) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  // Refetch when range changes (skip on mount — initial covers "all").
+  // Refetch when range changes (skip on mount - initial covers "all").
   const isInitialRange = useRef(true);
   useEffect(() => {
     if (isInitialRange.current && range === initial.range) {

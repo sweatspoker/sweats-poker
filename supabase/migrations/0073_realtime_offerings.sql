@@ -1,6 +1,6 @@
 -- 0073: enable Supabase Realtime broadcasts on ipo.offerings so the
 -- SettlementCelebration modal can pop the instant an operator settles a
--- session — no page reload required. We only need UPDATE events
+-- session - no page reload required. We only need UPDATE events
 -- (session_state transitioning to 'settled'), but adding the whole
 -- table is cheap and lets future surfaces subscribe too.
 --

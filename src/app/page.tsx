@@ -122,7 +122,7 @@ function HeroCopy() {
           href="/login"
           className="inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-7 py-4 text-base font-bold text-black"
         >
-          Get started — free Sweats Coins
+          Get started - free Sweats Coins
         </a>
         <a
           href="#how-it-works"
@@ -144,7 +144,7 @@ function HeroCopy() {
 function Hero() {
   return (
     <section className="relative w-full">
-      {/* Mobile: stacked layout — copy first, then hero image below it
+      {/* Mobile: stacked layout - copy first, then hero image below it
           (matching the HowItWorks / ProductDeepDive text-then-image pattern).
           pt-24 clears the absolute-positioned header (72px tall) so the
           headline doesn't sit behind the Your-profile button. */}
@@ -173,7 +173,7 @@ function Hero() {
       </div>
 
       {/* Desktop: full-bleed image with the headline overlay on the left half
-          (the original hero composition — unchanged). */}
+          (the original hero composition - unchanged). */}
       <div className="hidden md:block relative left-1/2 -translate-x-1/2 w-screen aspect-[3/2]">
         <Image
           src="/poker-room-hero.png"
@@ -221,7 +221,7 @@ function HowItWorks() {
     {
       n: 1,
       title: "Pick a player.",
-      body: "Browse upcoming sessions on Markets. Sessions live in different states — IPO open (still bidding) and Live (already trading). Tap in to see the player, the stakes, and the order book.",
+      body: "Browse upcoming sessions on Markets. Sessions live in different states - IPO open (still bidding) and Live (already trading). Tap in to see the player, the stakes, and the order book.",
       mock: <MarketsListPhone />,
     },
     {
@@ -472,8 +472,8 @@ function PoweredByValuebet() {
             Powered by ValueBet
           </div>
           <p className="text-base md:text-lg text-white/75 leading-relaxed">
-            Host your own sports betting contests — Survivor, Pick&apos;em, and
-            Bankroll Leaderboards — at{" "}
+            Host your own sports betting contests - Survivor, Pick&apos;em, and
+            Bankroll Leaderboards - at{" "}
             <a
               href="https://www.valuebet.app"
               target="_blank"
@@ -517,7 +517,7 @@ function Footer() {
 function PokerTableArc() {
   // Soft radial mask dissolves the image's alpha at every edge so the
   // rectangle never appears. The mask is centered slightly right of
-  // image-center so the LEFT side fades earliest — required by spec.
+  // image-center so the LEFT side fades earliest - required by spec.
   // Mix-blend-mode: lighten makes any pixel darker than the page bg
   // (#0a0a0a) disappear, eliminating the chromatic cliff.
   // Headline legibility is handled by the separate scrim div below
@@ -543,7 +543,7 @@ function PokerTableArc() {
           maskRepeat: "no-repeat",
         }}
       />
-      {/* Headline legibility scrim — dark on left where copy lives, fades to
+      {/* Headline legibility scrim - dark on left where copy lives, fades to
           transparent at center so the room scene is visible behind the phones. */}
       <div
         className="absolute inset-0"

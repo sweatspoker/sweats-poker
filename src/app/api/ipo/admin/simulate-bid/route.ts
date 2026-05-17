@@ -10,7 +10,7 @@ function constantTimeEqual(a: string, b: string): boolean {
 }
 
 /**
- * Card 5 synthetic-walkthrough trigger — place a bid on behalf of a user
+ * Card 5 synthetic-walkthrough trigger - place a bid on behalf of a user
  * (operator-driven QA path before real bidding UI ships in a later cycle).
  *
  * Gated by IPO_CLEARING_ENABLED (Gate-A kill switch) + LEDGER_ADMIN_TOKEN.

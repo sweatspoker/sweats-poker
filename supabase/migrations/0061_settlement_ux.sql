@@ -1,8 +1,8 @@
--- 0061: settlement UX surface — admin one-call settle + player-side
+-- 0061: settlement UX surface - admin one-call settle + player-side
 -- "settled positions" RPC + last-seen tracking for the celebration modal.
 
 -- ============================================================================
--- (A) profiles.last_settlement_seen_at — drives the one-shot celebration.
+-- (A) profiles.last_settlement_seen_at - drives the one-shot celebration.
 --     When a new settlement appears with settled_at > last_settlement_seen_at,
 --     the SettlementCelebration component shows a fullscreen receipt; calling
 --     mark_settlements_seen() bumps the timestamp so subsequent navigations
@@ -92,7 +92,7 @@ revoke all on function public.admin_settle_offering(uuid, bigint, uuid, text) fr
 grant execute on function public.admin_settle_offering(uuid, bigint, uuid, text) to service_role;
 
 -- ============================================================================
--- (C) get_my_settled_positions(p_limit) — receipt-ready data for the player's
+-- (C) get_my_settled_positions(p_limit) - receipt-ready data for the player's
 --     /markets Closed tab and the celebration modal. Returns one row per
 --     (offering, user) pair where the user had >0 shares at settle time.
 -- ============================================================================
@@ -187,7 +187,7 @@ revoke all on function public.get_my_settled_positions(int) from public;
 grant execute on function public.get_my_settled_positions(int) to authenticated;
 
 -- ============================================================================
--- (D) get_my_unseen_settlement() + mark_settlements_seen() — drives the
+-- (D) get_my_unseen_settlement() + mark_settlements_seen() - drives the
 --     one-shot celebration modal. Returns at most ONE row (the most recent
 --     settled position whose settled_at > the user's last_settlement_seen_at).
 --     Caller renders the receipt, then calls mark_settlements_seen.

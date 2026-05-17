@@ -36,7 +36,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDef> = Object.fromEntries(
 ) as Record<BadgeId, BadgeDef>;
 
 export function unlockedBadges(lifetimePnlMinor: number): BadgeId[] {
-  // Nit is the baseline tier — everyone starts at 0+ SC, so it's always
+  // Nit is the baseline tier - everyone starts at 0+ SC, so it's always
   // available regardless of whether the user is currently in the red.
   const u: BadgeId[] = ["nit"];
   if (lifetimePnlMinor >= 1_000_000) u.push("grinder");

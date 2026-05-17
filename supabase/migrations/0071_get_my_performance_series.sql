@@ -1,4 +1,4 @@
--- 0071: public.get_my_performance_series(p_range) — cumulative realized
+-- 0071: public.get_my_performance_series(p_range) - cumulative realized
 -- P&L over time for Profile > Performance chart.
 --
 -- For each settled position the user held, compute pnl = shares_held *
@@ -49,7 +49,7 @@ begin
       and p.shares_held > 0
       and o.session_state = 'settled'
   ),
-  -- P&L that landed before the window opened — folds into the anchor.
+  -- P&L that landed before the window opened - folds into the anchor.
   pre as (
     select coalesce(sum(pnl_minor), 0) as base
     from settled where t < v_since

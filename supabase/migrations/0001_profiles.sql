@@ -1,4 +1,4 @@
--- Card 1 — Foundation & Auth
+-- Card 1 - Foundation & Auth
 -- Profiles table backing Supabase auth.users with display_name + 18+ age gate state.
 
 create table if not exists public.profiles (

@@ -1,4 +1,4 @@
--- Card 3 — thin public-schema wrappers for purchase_complete + purchase_refund.
+-- Card 3 - thin public-schema wrappers for purchase_complete + purchase_refund.
 --
 -- Reason: the `ledger` schema is not exposed to PostgREST (see Card 2 memory
 -- note); supabase-js cannot RPC into it directly. Card 2 admin_grant has the
@@ -7,7 +7,7 @@
 -- so the webhook route + admin refund route can call them with plain
 -- `supabase.rpc("purchase_complete", ...)`.
 --
--- These wrappers add ZERO logic — they just forward arguments. The whole
+-- These wrappers add ZERO logic - they just forward arguments. The whole
 -- security/idempotency stack remains in ledger.* and is untouched.
 
 set search_path = public;
@@ -58,6 +58,6 @@ comment on function public.purchase_complete is
 comment on function public.purchase_refund is
   'Card 3: PostgREST-callable shim for ledger.purchase_refund. Forwards arguments verbatim.';
 
--- PostgREST schema cache reload — picks up the two new public functions
+-- PostgREST schema cache reload - picks up the two new public functions
 -- without requiring a restart.
 notify pgrst, 'reload schema';

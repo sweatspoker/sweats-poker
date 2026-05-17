@@ -25,7 +25,7 @@ alter table public.profiles
 create index if not exists profiles_tier_idx on public.profiles (tier);
 
 -- ============================================================================
--- 2. handle_new_user — extend to grant welcome bonus on signup.
+-- 2. handle_new_user - extend to grant welcome bonus on signup.
 --    10 GC = 1000 minor. Idempotent via welcome_bonus_granted flag.
 -- ============================================================================
 
@@ -307,7 +307,7 @@ revoke all on function redemptions.request_catalog_item(uuid, uuid, text, uuid) 
 grant execute on function redemptions.request_catalog_item(uuid, uuid, text, uuid) to service_role;
 
 -- ============================================================================
--- 6. Wallet read: public.get_my_wallet — balance + tier + welcome flag.
+-- 6. Wallet read: public.get_my_wallet - balance + tier + welcome flag.
 -- ============================================================================
 
 create or replace function public.get_my_wallet()

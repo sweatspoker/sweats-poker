@@ -1,4 +1,4 @@
--- 0057: public.get_order_book(offering_id) — player-safe wrapper that
+-- 0057: public.get_order_book(offering_id) - player-safe wrapper that
 -- returns aggregated order-book depth + recent trades for a tradeable
 -- offering. Matches admin_get_order_book shape but anonymises user_ids
 -- in the bid/ask lists (only the current user sees their own user_id
