@@ -120,6 +120,7 @@ export default async function IpoDetailPage({
             sharesRemaining={o.shares_remaining}
             availableGc={availableGc}
             tierUpgraded={profile.tier === "upgraded"}
+            tierBadge={profile.selected_badge ?? "nit"}
             existingBid={
               myBid
                 ? {

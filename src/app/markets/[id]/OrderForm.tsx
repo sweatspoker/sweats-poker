@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CoinSplash } from "@/components/CoinSplash";
+import type { BadgeId } from "@/lib/badges";
 
 type Props = {
   playerId: string;
@@ -14,6 +16,8 @@ type Props = {
   lastPriceGc: number | null;
   tierUpgraded: boolean;
   sessionState: string;
+  /** User's current tier — picks which coin recolor to burst. */
+  tierBadge: BadgeId;
 };
 
 const HOLD_MS = 2500;
@@ -46,8 +50,10 @@ export function OrderForm({
   lastPriceGc,
   tierUpgraded,
   sessionState,
+  tierBadge,
 }: Props) {
   const router = useRouter();
+  const [splash, setSplash] = useState(0); // bump to retrigger
   const [side, setSide] = useState<"buy" | "sell">("buy");
   // Sensible default seed: opposite top-of-book if available, else last, else 1.00
   const seedPrice =
@@ -116,6 +122,7 @@ export function OrderForm({
         setMsg(
           `${side === "buy" ? "Buy" : "Sell"} order placed: ${sharesNum} @ ${priceNum} SC.`,
         );
+        setSplash((n) => n + 1); // burst tier coins
         router.refresh();
       }
     } catch (e) {
@@ -286,6 +293,14 @@ export function OrderForm({
         </span>
       </div>
 
+      <div className="relative">
+      {splash > 0 && (
+        <CoinSplash
+          key={splash}
+          tier={tierBadge}
+          onDone={() => setSplash(0)}
+        />
+      )}
       <button
         type="button"
         onPointerDown={startHold}
@@ -333,6 +348,7 @@ export function OrderForm({
             : `Tap and hold to ${side} ${playerName.split(" ")[0]}`}
         </span>
       </button>
+      </div>
 
       {msg && (
         <div

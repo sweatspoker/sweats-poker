@@ -222,6 +222,7 @@ export default async function MarketsTradePage({
           topAskGc={topAskGc}
           tierUpgraded={profile.tier === "upgraded"}
           sessionState={o.session_state}
+          tierBadge={profile.selected_badge ?? "nit"}
         />
 
         <MyOrders orders={myOrders} />
