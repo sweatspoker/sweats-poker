@@ -1,9 +1,13 @@
 import Image from "next/image";
-import { WaitlistForm } from "@/components/WaitlistForm";
-import { LobbyPhone } from "@/components/LobbyPhone";
 import { BuySellPhone } from "@/components/BuySellPhone";
 import { TradingViewMock } from "@/components/TradingViewMock";
 import { SettlementReceipt } from "@/components/SettlementReceipt";
+import {
+  MarketsListPhone,
+  IPOBidPhone,
+  SettlementReceiptInline,
+} from "@/components/HowItWorksMocks";
+import { FAQ } from "@/components/FAQ";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +25,8 @@ export default async function Home() {
       <ProductDeepDive />
       <WhyNow />
       <Partner />
+      <FAQ />
+      <PoweredByValuebet />
       <FooterCTA />
       <Footer />
     </main>
@@ -51,15 +57,15 @@ function Header({
           <>
             <a
               href="/login"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] transition-colors px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white whitespace-nowrap"
+              className="hidden sm:inline-flex items-center justify-center rounded-full border border-white/15 hover:border-white/30 transition-colors px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white whitespace-nowrap"
             >
               Sign in
             </a>
             <a
-              href="#waitlist"
-              className="hidden sm:inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-black whitespace-nowrap"
+              href="/login"
+              className="inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-black whitespace-nowrap"
             >
-              Get early access
+              Get started
             </a>
           </>
         )}
@@ -111,13 +117,24 @@ function HeroCopy() {
         Buy shares of players when they sit down. Trade their swings in real
         time. Settle when they do. The first market built for live poker.
       </p>
-      <div id="waitlist" className="pt-2">
-        <WaitlistForm />
+      <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <a
+          href="/login"
+          className="inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-7 py-4 text-base font-bold text-black"
+        >
+          Get started — free Sweats Coins
+        </a>
+        <a
+          href="#how-it-works"
+          className="inline-flex items-center justify-center rounded-full border border-white/15 hover:border-white/30 transition-colors px-7 py-4 text-base font-bold text-white"
+        >
+          How it works
+        </a>
       </div>
       <div className="flex items-center gap-6 text-sm text-white/55">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-[var(--brand-green)]" />
-          Free to play. Sweats Coins, no cash redemption.
+          Free to play. Win cash through the redemption tier.
         </div>
       </div>
     </div>
@@ -193,66 +210,93 @@ function Hero() {
 }
 
 function HowItWorks() {
-  const steps = [
+  const steps: Array<{
+    n: number;
+    title: string;
+    body: string;
+    mock: React.ReactNode;
+    /** Use the inline card layout (no PhoneFrame) for receipt-style mocks. */
+    inline?: boolean;
+  }> = [
     {
       n: 1,
-      title: "Player sits, shares mint",
-      body: "A streamed player buys in for $1,000. We mint 1,000 shares. The pool tracks their chip stack.",
+      title: "Pick a player.",
+      body: "Browse upcoming sessions on Markets. Sessions live in different states — IPO open (still bidding) and Live (already trading). Tap in to see the player, the stakes, and the order book.",
+      mock: <MarketsListPhone />,
     },
     {
       n: 2,
-      title: "Bid in the IPO",
-      body: "Auction-style bidding before the session starts. Highest bids win shares. Clearing price is whatever the market pays.",
+      title: "Bid in the IPO.",
+      body: "Sealed-bid auction before the player sits. You say how many shares you want and how much you'll pay. Highest bids win. Everyone pays the same uniform clearing price the market sets.",
+      mock: <IPOBidPhone />,
     },
     {
       n: 3,
-      title: "Trade the swings",
-      body: "Order book opens when cards fly. Buy when they tilt, sell when they stack. No pauses. No circuit breakers.",
+      title: "Trade the swings.",
+      body: "Once the player sits, the real-time order book opens. Price moves with every hand. Sell when they tilt, buy when they stack up. Peer-to-peer limit orders, no algorithm in the middle.",
+      mock: <BuySellPhone />,
     },
     {
       n: 4,
-      title: "Settle when they do",
-      body: "Final share value = final stack ÷ total shares. The pool pays every shareholder. Game over.",
+      title: "Settle when they cash out.",
+      body: "Per-share payout = final chip stack ÷ total shares minted. Every shareholder gets paid proportionally the moment the operator confirms the settle. The receipt hits your wallet in real time.",
+      mock: (
+        <div className="max-w-md mx-auto">
+          <SettlementReceiptInline />
+        </div>
+      ),
+      inline: true,
     },
   ];
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <section
+      id="how-it-works"
+      className="w-full max-w-6xl mx-auto px-6 py-20 md:py-28"
+    >
       <SectionHeading
         kicker="How it works"
-        title="A real market on every session."
+        title="From sit-down to settle, in four steps."
       />
-      <div className="mt-14 grid lg:grid-cols-[minmax(0,360px)_1fr] gap-10 lg:gap-14 items-center">
-        <div className="order-2 lg:order-1 flex justify-center lg:justify-start relative">
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 blur-3xl opacity-50"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(239,43,43,0.35), transparent 65%)",
-            }}
-          />
-          <BuySellPhone />
-        </div>
-        <div className="order-1 lg:order-2 flex flex-col gap-4">
-          {steps.map((s) => (
+      <div className="mt-14 md:mt-20 flex flex-col gap-16 md:gap-24">
+        {steps.map((s, idx) => {
+          const reversed = idx % 2 === 1;
+          return (
             <div
               key={s.n}
-              className="rounded-2xl border border-white/8 bg-[var(--surface)]/60 p-6 md:p-7 backdrop-blur-sm flex items-start gap-5"
+              className={`grid md:grid-cols-2 gap-10 md:gap-16 items-center ${
+                reversed ? "md:[&>*:first-child]:order-2" : ""
+              }`}
             >
-              <div className="shrink-0 size-12 md:size-14 rounded-full bg-[var(--brand-red)] grid place-items-center font-black text-2xl md:text-3xl text-white shadow-[0_0_24px_rgba(239,43,43,0.35)]">
-                {s.n}
+              <div className="flex justify-center relative">
+                <div
+                  aria-hidden
+                  className="absolute inset-0 -z-10 blur-3xl opacity-50"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at center, rgba(239,43,43,0.28), transparent 65%)",
+                  }}
+                />
+                {s.mock}
               </div>
-              <div className="flex flex-col gap-2 pt-1">
-                <div className="font-semibold text-xl md:text-2xl leading-tight">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 md:size-12 rounded-full bg-[var(--brand-red)] grid place-items-center font-black text-xl md:text-2xl text-white shadow-[0_0_24px_rgba(239,43,43,0.35)]">
+                    {s.n}
+                  </div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-[var(--brand-red)] font-bold">
+                    Step {s.n}
+                  </div>
+                </div>
+                <h3 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
                   {s.title}
-                </div>
-                <div className="text-base text-white/65 leading-relaxed">
+                </h3>
+                <p className="text-base md:text-lg text-white/65 leading-relaxed max-w-md">
                   {s.body}
-                </div>
+                </p>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -379,14 +423,67 @@ function FooterCTA() {
     <section className="w-full max-w-6xl mx-auto px-6 py-24 md:py-32">
       <div className="rounded-3xl border border-[var(--brand-red)]/30 bg-gradient-to-br from-[var(--brand-red)]/20 via-transparent to-transparent px-8 py-14 md:px-14 md:py-24 text-center">
         <h2 className="text-5xl md:text-7xl font-black tracking-tight leading-[0.95]">
-          Get on the floor early.
+          Get on the floor.
         </h2>
         <p className="mt-6 text-lg md:text-xl text-white/75 max-w-lg mx-auto leading-relaxed">
-          We&apos;re opening the waitlist before our first stream. Drop your
-          email. First-day traders get a Sweats Coin bonus on launch.
+          Free Sweats Coins when you sign up. Trade the next session as soon as
+          the player sits down.
         </p>
-        <div className="mt-10 max-w-md mx-auto">
-          <WaitlistForm />
+        <div className="mt-10 flex flex-col sm:flex-row gap-3 items-center justify-center">
+          <a
+            href="/login"
+            className="inline-flex items-center justify-center rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-8 py-4 text-base font-bold text-black"
+          >
+            Get started
+          </a>
+          <a
+            href="#how-it-works"
+            className="inline-flex items-center justify-center rounded-full border border-white/15 hover:border-white/30 transition-colors px-8 py-4 text-base font-bold text-white"
+          >
+            How it works
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PoweredByValuebet() {
+  return (
+    <section className="w-full max-w-5xl mx-auto px-6 py-16 md:py-24">
+      <div className="rounded-3xl border border-white/8 bg-[var(--surface)]/40 px-8 py-10 md:px-14 md:py-14 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+        <a
+          href="https://www.valuebet.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="ValueBet"
+          className="shrink-0 rounded-2xl bg-white p-4 md:p-6 hover:opacity-90 transition-opacity"
+        >
+          <Image
+            src="/partners/valuebet.png"
+            alt="ValueBet"
+            width={1200}
+            height={300}
+            className="h-10 md:h-14 w-auto"
+          />
+        </a>
+        <div className="flex flex-col gap-3 text-center md:text-left">
+          <div className="text-xs uppercase tracking-[0.18em] text-white/45 font-bold">
+            Powered by ValueBet
+          </div>
+          <p className="text-base md:text-lg text-white/75 leading-relaxed">
+            Host your own sports betting contests — Survivor, Pick&apos;em, and
+            Bankroll Leaderboards — at{" "}
+            <a
+              href="https://www.valuebet.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white font-semibold underline decoration-[var(--brand-red)] decoration-2 underline-offset-4 hover:text-[var(--brand-red)] transition-colors"
+            >
+              valuebet.app
+            </a>
+            .
+          </p>
         </div>
       </div>
     </section>
@@ -412,26 +509,6 @@ function Footer() {
           </a>
           <span>© {new Date().getFullYear()} Sweats</span>
         </div>
-      </div>
-      <div className="flex items-center justify-center gap-3 pt-4 border-t border-white/5">
-        <span className="text-xs uppercase tracking-[0.18em] text-white/40">
-          Owned &amp; Powered by
-        </span>
-        <a
-          href="https://www.valuebet.app"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="ValueBet"
-          className="opacity-80 hover:opacity-100 transition-opacity"
-        >
-          <Image
-            src="/valuebet-logo.png"
-            alt="ValueBet"
-            width={1498}
-            height={291}
-            className="h-6 w-auto"
-          />
-        </a>
       </div>
     </footer>
   );
