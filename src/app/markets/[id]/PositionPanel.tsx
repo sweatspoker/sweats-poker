@@ -16,7 +16,6 @@ type Props = {
   topAskGc: number | null;
   tierUpgraded: boolean;
   sessionState: string;
-  tierBadge: import("@/lib/badges").BadgeId;
 };
 
 function gc(minor: number, digits = 2): string {

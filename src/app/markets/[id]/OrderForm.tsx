@@ -2,9 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CoinSplash } from "@/components/CoinSplash";
-import { HeroCoinSeal } from "@/components/HeroCoinSeal";
-import { BADGE_BY_ID, type BadgeId } from "@/lib/badges";
 
 type Props = {
   playerId: string;
@@ -17,8 +14,6 @@ type Props = {
   lastPriceGc: number | null;
   tierUpgraded: boolean;
   sessionState: string;
-  /** User's current tier — picks which coin recolor to burst. */
-  tierBadge: BadgeId;
 };
 
 const HOLD_MS = 2500;
@@ -51,10 +46,8 @@ export function OrderForm({
   lastPriceGc,
   tierUpgraded,
   sessionState,
-  tierBadge,
 }: Props) {
   const router = useRouter();
-  const [splash, setSplash] = useState(0); // bump to retrigger
   const [side, setSide] = useState<"buy" | "sell">("buy");
   // Sensible default seed: opposite top-of-book if available, else last, else 1.00
   const seedPrice =
@@ -123,7 +116,6 @@ export function OrderForm({
         setMsg(
           `${side === "buy" ? "Buy" : "Sell"} order placed: ${sharesNum} @ ${priceNum} SC.`,
         );
-        setSplash((n) => n + 1); // burst tier coins
         router.refresh();
       }
     } catch (e) {
@@ -294,25 +286,6 @@ export function OrderForm({
         </span>
       </div>
 
-      <div className="relative">
-      {splash > 0 && (
-        <>
-          <HeroCoinSeal key={`hero-${splash}`} tier={tierBadge} />
-          <CoinSplash
-            key={`splash-${splash}`}
-            tier={tierBadge}
-            onDone={() => setSplash(0)}
-          />
-          <span
-            key={`halo-${splash}`}
-            aria-hidden
-            className="button-halo"
-            style={{
-              ["--halo-color" as string]: `${BADGE_BY_ID[tierBadge].color}66`,
-            }}
-          />
-        </>
-      )}
       <button
         type="button"
         onPointerDown={startHold}
@@ -322,7 +295,6 @@ export function OrderForm({
         onContextMenu={(e) => e.preventDefault()}
         disabled={!formValid}
         aria-label={`Tap and hold to place ${side} order`}
-        data-celebrating={splash > 0 ? "1" : "0"}
         className={`relative overflow-hidden w-full rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all px-4 py-4 text-base font-bold uppercase tracking-[0.12em] select-none ${
           isHolding ? "bg-white" : ""
         } ${holdProgress >= 1 ? "scale-[1.02]" : "scale-100"}`}
@@ -361,7 +333,6 @@ export function OrderForm({
             : `Tap and hold to ${side} ${playerName.split(" ")[0]}`}
         </span>
       </button>
-      </div>
 
       {msg && (
         <div

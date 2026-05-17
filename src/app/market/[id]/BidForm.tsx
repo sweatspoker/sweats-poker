@@ -2,9 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CoinSplash } from "@/components/CoinSplash";
-import { HeroCoinSeal } from "@/components/HeroCoinSeal";
-import { BADGE_BY_ID, type BadgeId } from "@/lib/badges";
 
 type Props = {
   offeringId: string;
@@ -13,7 +10,6 @@ type Props = {
   availableGc: number;
   tierUpgraded: boolean;
   existingBid: { bid_id: string; shares: number; price_per_share_minor: number } | null;
-  tierBadge: BadgeId;
 };
 
 const MIN_SHARES = 1;
@@ -50,7 +46,6 @@ export function BidForm({
   availableGc,
   tierUpgraded,
   existingBid,
-  tierBadge,
 }: Props) {
   const router = useRouter();
   const [shares, setShares] = useState(String(MIN_SHARES));
@@ -58,7 +53,6 @@ export function BidForm({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [splash, setSplash] = useState(0);
 
   const sharesNum = Math.max(0, Math.floor(Number(shares) || 0));
   const priceNum = Math.max(0, Number(price) || 0);
@@ -104,7 +98,6 @@ export function BidForm({
         setErr(prettyError(json.error ?? `HTTP ${res.status}`, json.detail));
       } else {
         setMsg(`Bid placed: ${sharesNum} shares @ ${priceNum} SC each.`);
-        setSplash((n) => n + 1);
         router.refresh();
       }
     } catch (e) {
@@ -229,25 +222,6 @@ export function BidForm({
         <span className="tabular-nums">{availableGc.toLocaleString()} SC</span>
       </div>
 
-      <div className="relative">
-      {splash > 0 && (
-        <>
-          <HeroCoinSeal key={`hero-${splash}`} tier={tierBadge} />
-          <CoinSplash
-            key={`splash-${splash}`}
-            tier={tierBadge}
-            onDone={() => setSplash(0)}
-          />
-          <span
-            key={`halo-${splash}`}
-            aria-hidden
-            className="button-halo"
-            style={{
-              ["--halo-color" as string]: `${BADGE_BY_ID[tierBadge].color}66`,
-            }}
-          />
-        </>
-      )}
       <button
         type="button"
         onPointerDown={startHold}
@@ -257,7 +231,6 @@ export function BidForm({
         onContextMenu={(e) => e.preventDefault()}
         disabled={!formValid}
         aria-label="Tap and hold to confirm bid"
-        data-celebrating={splash > 0 ? "1" : "0"}
         className={`relative overflow-hidden w-full rounded-full ${
           isHolding ? "bg-white text-[var(--brand-red)]" : "bg-[var(--brand-red)] hover:bg-[var(--brand-red-deep)] text-white"
         } disabled:opacity-40 disabled:cursor-not-allowed transition-all px-4 py-4 text-base font-bold uppercase tracking-[0.12em] select-none ${
@@ -291,7 +264,6 @@ export function BidForm({
             : "Tap and hold to buy"}
         </span>
       </button>
-      </div>
 
       {msg && (
         <div role="status" className="rounded-2xl border border-[var(--brand-green)]/30 bg-[var(--brand-green)]/10 px-4 py-3 text-base text-[var(--brand-green)]">

@@ -1,52 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   SettlementReceiptCard,
   type Receipt,
 } from "@/components/SettlementReceiptCard";
-import { CoinBurst } from "@/components/CoinBurst";
-import { BADGE_BY_ID, coinAsset, type BadgeId } from "@/lib/badges";
 
 /**
- * Pure presentational layer for the settlement celebration: takes a
- * Receipt + an onDismiss handler and renders the full-screen modal.
- * No data fetching, no auth — safe to mount from a preview page or
- * Storybook-style harness.
+ * Pure presentational layer for the settlement modal: takes a Receipt
+ * + an onDismiss handler and renders the full-screen takeover. No data
+ * fetching, no auth — safe to mount from any caller.
  *
- * Behavior (council-converged, 2026-05-17):
- *   - Backdrop fades in, modal scales 0.88 → 1.02 → 1 with overshoot
- *   - WIN: tier-colored radial pulse from behind headline +
- *          CoinBurst (8 coins) erupting from the receipt and settling
- *          around its edges. Receipt is the hero, coins orbit it.
- *   - LOSS: single tier coin (loss-side badge) drops from headline,
- *           modal gets a brief ±4px y-shake. No glow, no burst.
- *   - BREAKEVEN: single coin spins in place behind the headline. No
- *                burst. "Push" energy.
+ * Tone-aware headline pill (win / loss / breakeven) is the only visual
+ * cue beyond the receipt. The modal lands with a standard scale-in
+ * entrance from globals.css (no particles, no glow).
  */
 export function SettlementCelebrationView({
   receipt,
   onDismiss,
   dismissLabel = "Got it",
-  tier = "nit",
 }: {
   receipt: Receipt;
   onDismiss: () => void;
   dismissLabel?: string;
-  tier?: BadgeId;
 }) {
   const win = receipt.pnl_minor > 0;
   const loss = receipt.pnl_minor < 0;
-
-  // Slight delay so the modal lands first, then the celebration arrives.
-  const [burstReady, setBurstReady] = useState(false);
-  useEffect(() => {
-    if (!win) return;
-    const t = setTimeout(() => setBurstReady(true), 140);
-    return () => clearTimeout(t);
-  }, [win]);
-
-  const tierColor = BADGE_BY_ID[tier].color;
 
   const headlinePill = win
     ? {
@@ -74,86 +52,20 @@ export function SettlementCelebrationView({
       role="dialog"
       aria-modal="true"
     >
-      <div
-        className={`celebration-modal relative w-full max-w-md flex flex-col gap-4 max-h-full overflow-y-auto ${loss ? "loss-shake" : ""}`}
-        style={{ ["--tier-color"]: tierColor } as React.CSSProperties}
-      >
-        {/* WIN: radial tier-tinted pulse from behind the headline pill.
-            Mounted absolutely so it doesn't push layout. */}
-        {win && burstReady && (
-          <span
-            aria-hidden
-            className="win-radial-pulse"
-            style={{
-              width: "260px",
-              height: "260px",
-              marginLeft: "-130px",
-              marginTop: "-130px",
-              top: "40px",
-            }}
-          />
-        )}
-
-        {/* LOSS: single tier coin (loss-side badge color) drops from above
-            the headline, scales down, fades. */}
-        {loss && (
-          <span
-            aria-hidden
-            className="absolute left-1/2 -translate-x-1/2 z-30"
-            style={{ top: "12px" }}
+      <div className="celebration-modal w-full max-w-md flex flex-col gap-4 max-h-full overflow-y-auto">
+        <div className="text-center">
+          <div
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.16em] font-bold ${headlinePill.tone}`}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={coinAsset(tier)}
-              alt=""
-              className="loss-coin-drop block"
-              style={{ width: "96px", height: "96px" }}
-            />
-          </span>
-        )}
-
-        {/* BREAKEVEN: single coin spins in place behind the headline. */}
-        {!win && !loss && (
-          <span
-            aria-hidden
-            className="absolute z-0"
-            style={{ left: "50%", top: "40px" }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={coinAsset(tier)}
-              alt=""
-              className="breakeven-coin-spin block"
-              style={{ width: "120px", height: "120px" }}
-            />
-          </span>
-        )}
-
-        {/* WIN: contained coin burst that erupts from the receipt center
-            and settles around its edges (council: receipt is the hero,
-            coins orbit it). The CoinBurst anchor is inside the receipt
-            wrapper so getBoundingClientRect measures its bounds. */}
-        <div className="relative">
-          {win && burstReady && (
-            <CoinBurst tier={tier} count={8} onDone={() => setBurstReady(false)} />
-          )}
-          <div className="flex flex-col gap-4">
-            <div className="text-center relative z-10">
-              <div
-                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.16em] font-bold ${headlinePill.tone}`}
-              >
-                <span className={`size-2 rounded-full live-dot ${headlinePill.dot}`} />
-                {headlinePill.label}
-              </div>
-            </div>
-            <SettlementReceiptCard r={receipt} />
+            <span className={`size-2 rounded-full live-dot ${headlinePill.dot}`} />
+            {headlinePill.label}
           </div>
         </div>
-
+        <SettlementReceiptCard r={receipt} />
         <button
           type="button"
           onClick={onDismiss}
-          className="w-full rounded-full bg-white text-black px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] hover:bg-white/90 transition-colors relative z-10"
+          className="w-full rounded-full bg-white text-black px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] hover:bg-white/90 transition-colors"
         >
           {dismissLabel}
         </button>

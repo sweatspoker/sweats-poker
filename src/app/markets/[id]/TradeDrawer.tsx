@@ -15,7 +15,6 @@ type Props = {
   lastPriceMinor: number | null;
   tierUpgraded: boolean;
   sessionState: string;
-  tierBadge: import("@/lib/badges").BadgeId;
   onClose: () => void;
 };
 
@@ -30,7 +29,6 @@ export function TradeDrawer({
   lastPriceMinor,
   tierUpgraded,
   sessionState,
-  tierBadge,
   onClose,
 }: Props) {
   // Esc to close + lock body scroll while open.
@@ -96,7 +94,6 @@ export function TradeDrawer({
             lastPriceGc={lastPriceGc}
             tierUpgraded={tierUpgraded}
             sessionState={sessionState}
-            tierBadge={tierBadge}
           />
         </div>
       </div>

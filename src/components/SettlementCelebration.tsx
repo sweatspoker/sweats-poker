@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { Receipt } from "@/components/SettlementReceiptCard";
 import { SettlementCelebrationView } from "@/components/SettlementCelebrationView";
-import type { BadgeId } from "@/lib/badges";
 
 /**
  * Listens for newly-settled positions on every navigation. The RPC returns
@@ -14,13 +13,7 @@ import type { BadgeId } from "@/lib/badges";
  * full-screen takeover with the receipt. The dismiss button bumps the
  * profile timestamp so the modal doesn't fire again for the same event.
  */
-export function SettlementCelebration({
-  signedIn,
-  tier,
-}: {
-  signedIn: boolean;
-  tier: BadgeId;
-}) {
+export function SettlementCelebration({ signedIn }: { signedIn: boolean }) {
   const router = useRouter();
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
@@ -79,7 +72,5 @@ export function SettlementCelebration({
   }
 
   if (!receipt) return null;
-  return (
-    <SettlementCelebrationView receipt={receipt} onDismiss={dismiss} tier={tier} />
-  );
+  return <SettlementCelebrationView receipt={receipt} onDismiss={dismiss} />;
 }
