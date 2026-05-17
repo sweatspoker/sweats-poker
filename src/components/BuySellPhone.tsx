@@ -18,12 +18,11 @@ function TradePlayerScreen() {
       <div className="flex-1 overflow-hidden flex flex-col gap-3 px-4 pt-9 pb-4">
         {/* Header */}
         <div className="flex items-start gap-3">
-          <div
-            className="size-12 rounded-full shrink-0"
-            style={{
-              background:
-                "linear-gradient(135deg, hsl(12, 70%, 50%), hsl(52, 70%, 35%))",
-            }}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/players/tommy_ho.jpg"
+            alt=""
+            className="size-12 rounded-full shrink-0 object-cover border border-white/15"
           />
           <div className="flex flex-col gap-1 min-w-0 flex-1">
             <span className="inline-flex w-fit items-center rounded-full border border-[var(--brand-green)]/30 bg-[var(--brand-green)]/15 px-2 py-0.5 text-[9px] uppercase tracking-[0.12em] font-bold text-[var(--brand-green)]">
@@ -33,7 +32,7 @@ function TradePlayerScreen() {
               Tommy Ho
             </div>
             <div className="text-[9px] text-white/50 break-words leading-tight">
-              Friday Night Cash · Palace Poker · $5/$10
+              Friday Night Cash · $5/$10
             </div>
             <div className="text-[10px] text-white/70 tabular-nums">
               IPO cleared at <span className="font-semibold">1.00 SC</span>

@@ -9,11 +9,11 @@ import {
 // same UI they'll see when their own player cashes out.
 const mockReceipt: Receipt = {
   offering_id: "preview-tommy-ho",
-  stream_name: "Friday Night Cash · Palace Poker",
-  venue_name: "Palace Poker",
+  stream_name: "Friday Night Cash",
+  venue_name: null,
   player_id: "tommy_ho",
   player_display_name: "Tommy Ho",
-  player_photo_url: null,
+  player_photo_url: "/players/tommy_ho.jpg",
   session_started_at: new Date(Date.now() - 4 * 3600 * 1000).toISOString(),
   settled_at: new Date().toISOString(),
   duration_seconds: 4 * 3600,
