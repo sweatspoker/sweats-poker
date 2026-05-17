@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { BADGE_BY_ID, badgeAsset, type BadgeId } from "@/lib/badges";
+import { BADGE_BY_ID, coinAsset, type BadgeId } from "@/lib/badges";
 
 type Props = {
   /** Which tier-colored coin to use. */
@@ -68,7 +68,7 @@ export function HeroCoinSeal({ tier, size = 140, onDone }: Props) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={badgeAsset(tier)}
+                src={coinAsset(tier)}
                 alt=""
                 className="hero-coin-seal block"
                 style={{ width: `${size}px`, height: `${size}px` }}

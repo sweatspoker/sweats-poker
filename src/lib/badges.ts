@@ -53,6 +53,11 @@ export function badgeAsset(id: BadgeId): string {
   return `/badges/${id}.png`;
 }
 
+/** Tier-recolored round Sweats Coin sprite — used in all celebration motion. */
+export function coinAsset(id: BadgeId): string {
+  return `/coins/${id}.png`;
+}
+
 /**
  * The single most-applicable tier for a given lifetime P&L. Used on the
  * Profile > Performance card to print the user's current rank.

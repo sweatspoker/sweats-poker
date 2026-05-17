@@ -6,7 +6,7 @@ import {
   type Receipt,
 } from "@/components/SettlementReceiptCard";
 import { CoinBurst } from "@/components/CoinBurst";
-import { BADGE_BY_ID, badgeAsset, type BadgeId } from "@/lib/badges";
+import { BADGE_BY_ID, coinAsset, type BadgeId } from "@/lib/badges";
 
 /**
  * Pure presentational layer for the settlement celebration: takes a
@@ -104,7 +104,7 @@ export function SettlementCelebrationView({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={badgeAsset(tier)}
+              src={coinAsset(tier)}
               alt=""
               className="loss-coin-drop block"
               style={{ width: "96px", height: "96px" }}
@@ -121,7 +121,7 @@ export function SettlementCelebrationView({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={badgeAsset(tier)}
+              src={coinAsset(tier)}
               alt=""
               className="breakeven-coin-spin block"
               style={{ width: "120px", height: "120px" }}
