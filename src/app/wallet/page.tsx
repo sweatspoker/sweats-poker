@@ -77,15 +77,27 @@ type PortfolioRow = {
   bb_minor: number | null;
 };
 
+// Wallet→Activities pagination via URL: ?show=N grows the page until we
+// hit the RPC's hard cap (1000). Capped to prevent abusive scrapes; if a
+// real user ever asks for more we add date-range filtering instead of
+// raising the cap further.
+const ACTIVITY_PAGE_SIZE = 25;
+const ACTIVITY_MAX = 1000;
+
 export default async function WalletPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; show?: string }>;
 }) {
   const { supabase, user, profile } = await requireVerifiedUser();
   void user;
-  const { tab = "coins" } = await searchParams;
+  const { tab = "coins", show } = await searchParams;
   const isActivityTab = tab === "activity";
+
+  const requestedShow = Number.parseInt(show ?? "", 10);
+  const activityLimit = Number.isFinite(requestedShow) && requestedShow > 0
+    ? Math.min(requestedShow, ACTIVITY_MAX)
+    : ACTIVITY_PAGE_SIZE;
 
   const [
     { data: ledgerData, error: ledgerErr },
@@ -94,7 +106,7 @@ export default async function WalletPage({
   ] = await Promise.all([
     supabase.rpc("get_my_ledger_summary"),
     supabase.rpc("get_my_portfolio"),
-    supabase.rpc("get_my_recent_activity", { p_limit: 25 }),
+    supabase.rpc("get_my_recent_activity", { p_limit: activityLimit }),
   ]);
   if (ledgerErr) console.error("[wallet] get_my_ledger_summary failed:", ledgerErr);
   if (portfolioErr) console.error("[wallet] get_my_portfolio failed:", portfolioErr);
@@ -308,6 +320,27 @@ export default async function WalletPage({
                 );
               })}
             </ul>
+          )}
+
+          {/* "Show more" button: only when the current page hit its limit
+              (could be more rows underneath) AND we haven't already
+              reached the hard cap. Doubles each click, then snaps to the
+              cap. */}
+          {activity.length >= activityLimit && activityLimit < ACTIVITY_MAX && (
+            <div className="border-t border-white/5 px-5 py-4 flex justify-center">
+              <a
+                href={`/wallet?tab=activity&show=${Math.min(activityLimit * 2, ACTIVITY_MAX)}`}
+                className="inline-flex items-center justify-center rounded-full border border-white/15 hover:border-white/30 transition-colors px-5 py-2.5 text-sm font-semibold text-white"
+              >
+                Show more
+              </a>
+            </div>
+          )}
+          {activity.length > 0 && activityLimit >= ACTIVITY_MAX && (
+            <div className="border-t border-white/5 px-5 py-4 text-center text-xs text-white/40">
+              Showing the most recent {ACTIVITY_MAX.toLocaleString()} entries.
+              Older history is in your statements.
+            </div>
           )}
         </section>
         )}
