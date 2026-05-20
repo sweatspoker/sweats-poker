@@ -181,7 +181,7 @@ function Hero() {
           }}
         />
         <div className="absolute inset-0">
-          <div className="w-full max-w-6xl mx-auto h-full px-6 grid grid-cols-12 items-center">
+          <div className="w-full max-w-6xl mx-auto h-full px-6 grid grid-cols-12 items-center pt-28 sm:pt-32 md:pt-36">
             <div className="col-span-6">
               <HeroCopy />
             </div>
