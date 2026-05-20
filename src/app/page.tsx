@@ -273,7 +273,7 @@ function HowItWorks() {
                 <h3 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
                   {s.title}
                 </h3>
-                <p className="text-base md:text-lg text-white/65 leading-relaxed max-w-md">
+                <p className="text-lg md:text-xl text-white/65 leading-relaxed max-w-md">
                   {s.body}
                 </p>
               </div>
