@@ -246,11 +246,13 @@ function HowItWorks() {
           return (
             <div
               key={s.n}
-              className={`grid md:grid-cols-2 gap-10 md:gap-16 items-center ${
-                reversed ? "md:[&>*:first-child]:order-2" : ""
-              }`}
+              className="grid md:grid-cols-2 gap-10 md:gap-16 items-center"
             >
-              <div className="flex justify-center relative">
+              <div
+                className={`flex justify-center relative order-2 ${
+                  reversed ? "md:order-2" : "md:order-1"
+                }`}
+              >
                 <div
                   aria-hidden
                   className="absolute inset-0 -z-10 blur-3xl opacity-50"
@@ -261,7 +263,11 @@ function HowItWorks() {
                 />
                 {s.mock}
               </div>
-              <div className="flex flex-col gap-4">
+              <div
+                className={`flex flex-col gap-4 order-1 ${
+                  reversed ? "md:order-1" : "md:order-2"
+                }`}
+              >
                 <div className="flex items-center gap-3">
                   <div className="size-10 md:size-12 rounded-full bg-[var(--brand-red)] grid place-items-center font-black text-xl md:text-2xl text-white shadow-[0_0_24px_rgba(239,43,43,0.35)]">
                     {s.n}
