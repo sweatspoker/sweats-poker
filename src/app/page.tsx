@@ -102,8 +102,9 @@ function HeroCopy() {
         <span className="text-[var(--brand-red)]">live.</span>
       </h1>
       <p className="text-xl md:text-2xl text-white/75 max-w-xl leading-relaxed">
-        Buy shares of players when they sit down. Trade their swings in real
-        time. Settle when they do. The first market built for live poker.
+        Buy shares of players before they sit down. Trade their shares in real
+        time while they play. Settle when they do. The first market built for
+        live poker.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <a
