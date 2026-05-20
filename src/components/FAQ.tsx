@@ -145,7 +145,7 @@ export function FAQ() {
         <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0]">
           Every question, no hedge.
         </h2>
-        <p className="text-base md:text-lg text-white/55 max-w-xl">
+        <p className="text-lg md:text-xl text-white/55 max-w-xl">
           What this is, how the money moves, what happens when the stream goes
           sideways.
         </p>

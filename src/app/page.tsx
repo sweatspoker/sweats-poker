@@ -301,7 +301,7 @@ function ProductDeepDive() {
           <h3 className="mt-4 text-4xl md:text-5xl font-black tracking-tight leading-tight">
             Watch the spread move with every all-in.
           </h3>
-          <p className="mt-5 text-lg text-white/75 leading-relaxed">
+          <p className="mt-5 text-lg md:text-xl text-white/75 leading-relaxed">
             Bids and asks update in real time as the table plays. Peer-to-peer
             trading, the way real markets work. Watch the depth, post your
             limit, take the market when the stream tells you to move.
