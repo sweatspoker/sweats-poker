@@ -371,6 +371,26 @@ function Footer() {
           <span>© {new Date().getFullYear()} Sweats</span>
         </div>
       </div>
+      <div className="flex items-center justify-center gap-3 pt-4 border-t border-white/5">
+        <span className="text-xs uppercase tracking-[0.18em] text-white/40">
+          Owned &amp; Powered by
+        </span>
+        <a
+          href="https://www.valuebet.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="ValueBet"
+          className="opacity-80 hover:opacity-100 transition-opacity"
+        >
+          <Image
+            src="/valuebet-logo.png"
+            alt="ValueBet"
+            width={1498}
+            height={291}
+            className="h-6 w-auto"
+          />
+        </a>
+      </div>
     </footer>
   );
 }
