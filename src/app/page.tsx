@@ -203,25 +203,25 @@ function HowItWorks() {
     {
       n: 1,
       title: "Pick a player.",
-      body: "Open IPOs are sealed-bid auctions that open hours before each session. Browse the upcoming roster - players, stakes, when they sit down - and tap in to size up a bid.",
+      body: "Once a stream is scheduled and session bankrolls are declared, shares are issued via a sealed-bid IPO auction. $1 = 1 share. Browse the upcoming streams and bid on your favorite players.",
       mock: <MarketsListPhone />,
     },
     {
       n: 2,
       title: "Bid in the IPO.",
-      body: "Sealed-bid auction before the player sits. You say how many shares you want and how much you'll pay. Highest bids win. Everyone pays the same uniform clearing price the market sets.",
+      body: "Buy player shares before the stream starts. Submit your bid: how many shares, what you'll pay. Highest bids win.",
       mock: <IPOBidPhone />,
     },
     {
       n: 3,
       title: "Trade the swings.",
-      body: "Once the player sits, the real-time order book opens. Price moves with every hand. Sell when they tilt, buy when they stack up. Peer-to-peer limit orders, no algorithm in the middle.",
+      body: "Once the stream starts, shares hit the open market. Real-time order book. Price moves with every hand.",
       mock: <BuySellPhone />,
     },
     {
       n: 4,
       title: "Settle when they cash out.",
-      body: "Per-share payout = final chip stack ÷ total shares minted. Every shareholder gets paid proportionally the moment the operator confirms the settle. The receipt hits your wallet in real time.",
+      body: "Final Share Value = Final Chip Stack ÷ Total Shares Minted.",
       mock: (
         <div className="max-w-md mx-auto">
           <SettlementReceiptInline />
