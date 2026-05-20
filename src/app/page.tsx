@@ -266,7 +266,7 @@ function HowItWorks() {
                   <div className="size-10 md:size-12 rounded-full bg-[var(--brand-red)] grid place-items-center font-black text-xl md:text-2xl text-white shadow-[0_0_24px_rgba(239,43,43,0.35)]">
                     {s.n}
                   </div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-[var(--brand-red)] font-bold">
+                  <div className="text-lg md:text-xl uppercase tracking-[0.18em] text-[var(--brand-red)] font-bold">
                     Step {s.n}
                   </div>
                 </div>
