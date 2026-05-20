@@ -209,7 +209,7 @@ function HowItWorks() {
     {
       n: 2,
       title: "Bid in the IPO.",
-      body: "Buy player shares before the stream starts. Submit your bid: how many shares, what you'll pay. Highest bids win.",
+      body: "Buy shares before the stream starts. Highest bids win, but every winner pays the same final clearing price. You'll never overpay.",
       mock: <IPOBidPhone />,
     },
     {
