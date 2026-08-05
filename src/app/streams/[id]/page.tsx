@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireVerifiedUser } from "@/lib/auth/require-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { ApplyToPlay } from "./ApplyToPlay";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function StreamDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireVerifiedUser();
+  const { user, profile } = await requireVerifiedUser();
   const { id } = await params;
   const admin = createSupabaseAdminClient();
 
@@ -85,6 +86,22 @@ export default async function StreamDetailPage({
   const isRunning = stream.status === "live";
   const isEnded = stream.status === "ended";
 
+  // Existing application (if any) for this user on this stream.
+  let applicationStatus: "pending" | "approved" | "denied" | null = null;
+  if (isUpcoming) {
+    const { data: apps } = await admin
+      .schema("streams").from("play_applications")
+      .select("status")
+      .eq("stream_id", id)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const s = apps?.[0]?.status;
+    if (s === "pending" || s === "approved" || s === "denied") applicationStatus = s;
+  }
+  const hasLegalName =
+    !!profile.first_name?.trim() && !!profile.last_name?.trim();
+
   const stakes = [
     stream.game_type,
     `${money(stream.sb_minor)}/${money(stream.bb_minor)}`,
@@ -120,22 +137,7 @@ export default async function StreamDetailPage({
       </div>
 
       {isUpcoming && (
-        <section className="rounded-2xl border border-[var(--brand-red)]/30 bg-[var(--brand-red)]/10 p-5 flex flex-col gap-2">
-          <div className="text-lg font-bold">Want a seat at this game?</div>
-          <div className="text-sm text-white/70">
-            Applications to play are opening soon. Make sure your legal name is filled in on your{" "}
-            <Link href="/profile" className="underline decoration-[var(--brand-red)] underline-offset-2 hover:text-white">profile</Link>{" "}
-            so you&apos;re ready to apply.
-          </div>
-          <button
-            type="button"
-            disabled
-            className="mt-1 w-fit rounded-full bg-white/10 text-white/40 px-5 py-2.5 text-sm font-bold uppercase tracking-[0.12em] cursor-not-allowed"
-            title="Applications open soon"
-          >
-            Apply to Play — opening soon
-          </button>
-        </section>
+        <ApplyToPlay streamId={id} hasLegalName={hasLegalName} existingStatus={applicationStatus} />
       )}
 
       <section className="flex flex-col gap-3">

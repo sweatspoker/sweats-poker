@@ -70,11 +70,20 @@ export async function GET(
     offering: offeringByOffering.get(r.offering_id) ?? null,
   }));
 
+  const { data: applications } = await admin
+    .schema("streams")
+    .from("play_applications")
+    .select("application_id, user_id, first_name, last_name, status, applicant_note, created_at")
+    .eq("stream_id", id)
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
   return NextResponse.json({
     ok: true,
     stream,
     venue,
     roster: enrichedRoster,
     stakes_events: stakesEvents ?? [],
+    applications: applications ?? [],
   });
 }
