@@ -59,7 +59,7 @@ export async function GET(
     const { data: offerings } = await admin
       .schema("ipo")
       .from("offerings")
-      .select("offering_id, total_shares, shares_remaining, cash_reserve_minor, session_state, session_status, player_role")
+      .select("offering_id, total_shares, shares_remaining, cash_reserve_minor, session_state, session_status, player_role, opens_at, closes_at, clearing_status, price_per_share_minor")
       .in("offering_id", offeringIds);
     for (const o of offerings ?? []) offeringByOffering.set(o.offering_id, o);
   }
