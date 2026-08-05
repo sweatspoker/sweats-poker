@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "invalid_json" }, { status: 400 });
 
-  const { stream_id, name, start_time, end_time, notes, clear_end, admin_user_id } =
+  const { stream_id, name, start_time, end_time, notes, clear_end, game_type, admin_user_id } =
     body as Record<string, unknown>;
   if (!stream_id || !admin_user_id) {
     return NextResponse.json({ error: "stream_id + admin_user_id required" }, { status: 400 });
@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
     p_end_time: end_time ?? null,
     p_notes: notes ?? null,
     p_clear_end: clear_end ?? false,
+    p_game_type: game_type ?? null,
     p_admin_user_id: admin_user_id,
   });
   if (error) {

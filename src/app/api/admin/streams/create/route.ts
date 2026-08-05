@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   const {
     name, venue_id, start_time, end_time,
     sb_minor, bb_minor, ante_minor, straddle_minor, stakes_extras,
-    ipo_lead_open_minutes, ipo_lead_close_minutes, notes, admin_user_id,
+    ipo_lead_open_minutes, ipo_lead_close_minutes, notes, game_type, admin_user_id,
   } = body as Record<string, unknown>;
   if (!name || !venue_id || !start_time || !sb_minor || !bb_minor || !admin_user_id) {
     return NextResponse.json(
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     p_ipo_lead_open_minutes: ipo_lead_open_minutes ?? null,
     p_ipo_lead_close_minutes: ipo_lead_close_minutes ?? null,
     p_notes: notes ?? null,
+    p_game_type: game_type ?? null,
     p_admin_user_id: admin_user_id,
   });
   if (error) {
