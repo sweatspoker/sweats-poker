@@ -8,6 +8,7 @@ import {
 } from "@/components/HowItWorksMocks";
 import { FAQ } from "@/components/FAQ";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { LoggedInHome } from "./LoggedInHome";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,11 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Logged-in users get the streams browser as their Home; logged-out visitors
+  // get the marketing landing.
+  if (user) return <LoggedInHome />;
+
   return (
     <main className="relative flex flex-col w-full">
       <Header signedIn={!!user} className="absolute top-0 left-0 right-0 z-50" />
