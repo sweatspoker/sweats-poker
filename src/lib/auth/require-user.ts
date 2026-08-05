@@ -4,6 +4,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export type Profile = {
   user_id: string;
   display_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
   dob: string | null;
   age_verified: boolean;
   kyc_status: "none" | "pending" | "verified" | "rejected";
@@ -36,7 +38,7 @@ export async function loadProfile(userId: string) {
   const { data } = await supabase
     .from("profiles")
     .select(
-      "user_id, display_name, dob, age_verified, kyc_status, tos_accepted_at, privacy_accepted_at, tier, welcome_bonus_granted, tier_upgraded_at, avatar_url, selected_badge, show_badge_on_avatar, created_at, updated_at"
+      "user_id, display_name, first_name, last_name, dob, age_verified, kyc_status, tos_accepted_at, privacy_accepted_at, tier, welcome_bonus_granted, tier_upgraded_at, avatar_url, selected_badge, show_badge_on_avatar, created_at, updated_at"
     )
     .eq("user_id", userId)
     .maybeSingle();

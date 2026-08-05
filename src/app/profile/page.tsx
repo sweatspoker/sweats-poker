@@ -77,14 +77,46 @@ export default async function ProfilePage({
                 showBadgeOnAvatar={profile.show_badge_on_avatar}
               />
               <form action="/profile/save" method="post" className="flex flex-col gap-3">
-                <input
-                  type="text"
-                  name="display_name"
-                  defaultValue={profile.display_name ?? ""}
-                  placeholder="pick a handle"
-                  maxLength={32}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-base placeholder:text-white/30 focus:outline-none focus:border-[var(--brand-red)]/60"
-                />
+                <label className="flex flex-col gap-1">
+                  <span className="text-sm text-white/50">Display name (public handle)</span>
+                  <input
+                    type="text"
+                    name="display_name"
+                    defaultValue={profile.display_name ?? ""}
+                    placeholder="pick a handle"
+                    maxLength={32}
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-base placeholder:text-white/30 focus:outline-none focus:border-[var(--brand-red)]/60"
+                  />
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="flex flex-col gap-1">
+                    <span className="text-sm text-white/50">First name</span>
+                    <input
+                      type="text"
+                      name="first_name"
+                      defaultValue={profile.first_name ?? ""}
+                      placeholder="First name"
+                      maxLength={60}
+                      autoComplete="given-name"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-base placeholder:text-white/30 focus:outline-none focus:border-[var(--brand-red)]/60"
+                    />
+                  </label>
+                  <label className="flex flex-col gap-1">
+                    <span className="text-sm text-white/50">Last name</span>
+                    <input
+                      type="text"
+                      name="last_name"
+                      defaultValue={profile.last_name ?? ""}
+                      placeholder="Last name"
+                      maxLength={60}
+                      autoComplete="family-name"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-base placeholder:text-white/30 focus:outline-none focus:border-[var(--brand-red)]/60"
+                    />
+                  </label>
+                </div>
+                <p className="text-xs text-white/40 -mt-1">
+                  Your real name stays private. It&apos;s used when you apply to play in a stream.
+                </p>
                 <button
                   type="submit"
                   className="self-start rounded-full bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)] transition-colors px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.15em] text-black"

@@ -5,6 +5,10 @@ export async function POST(request: NextRequest) {
   const form = await request.formData();
   const raw = String(form.get("display_name") ?? "").trim();
   const display_name = raw.length === 0 ? null : raw.slice(0, 32);
+  const firstRaw = String(form.get("first_name") ?? "").trim();
+  const lastRaw = String(form.get("last_name") ?? "").trim();
+  const first_name = firstRaw.length === 0 ? null : firstRaw.slice(0, 60);
+  const last_name = lastRaw.length === 0 ? null : lastRaw.slice(0, 60);
   const { origin } = new URL(request.url);
 
   const supabase = await createSupabaseServerClient();
@@ -26,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   const { error } = await supabase
     .from("profiles")
-    .update({ display_name })
+    .update({ display_name, first_name, last_name })
     .eq("user_id", user.id);
   if (error) {
     console.error("[profile/save] update failed:", error);
